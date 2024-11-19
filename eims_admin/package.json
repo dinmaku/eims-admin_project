@@ -16,6 +16,7 @@
     "@inertiajs/inertia-vue3": "^0.6.0",
     "@popperjs/core": "^2.11.8",
     "apexcharts": "^3.54.0",
+    "axios": "^1.7.7",
     "dayspan-vuetify": "^0.4.0",
     "flowbite": "^2.5.1",
     "v-calendar": "^3.1.2",
