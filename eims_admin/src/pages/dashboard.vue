@@ -114,11 +114,7 @@
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-1">Support</a>
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-2">License</a>
-                <router-link to="/">
-                <form method="POST" action="#" role="none">
-                  <button type="submit" class="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
-                </form>
-              </router-link>
+                  <button type="submit" @click="handleLogout" class="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
               </div>
             </div>
           </div>
@@ -138,6 +134,11 @@
   </template>
   
   <script>
+  import axios from 'axios';
+
+
+  axios.defaults.withCredentials = true;
+
   export default {
     name: 'AdminDashboard',
   data() {
@@ -155,11 +156,19 @@
     // toggle user 
     toggleDrop() {
       this.showDropDown = !this.showDropDown
+      localStorage.removeItem('access_token');
 
-    }
+    },
+    handleLogout() {
+      this.loggedIn = false; // Update Vue component state
+      localStorage.removeItem('loggedIn'); // Remove login status from localStorage
+      localStorage.removeItem('access_token');
+      this.showDropDown = false; // Close dropdown
+      this.$router.push('/'); // Optionally redirect to home or login page
+      },
   }
 
-}
+};
   </script>
   
   <style scoped>

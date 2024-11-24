@@ -1,7 +1,7 @@
 #routes.py
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from .models import check_user, create_user
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
+from .models import check_user,create_user, create_vendor, get_users_by_type, get_vendors_with_users
 import logging
 import jwt
 from functools import wraps
@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
 
 def init_routes(app):
-    
+
     @app.route('/login', methods=['POST'])
     def login():
         try:
@@ -26,44 +26,26 @@ def init_routes(app):
                 return jsonify({'message': 'Email and password are required!'}), 400
 
             # Check the user credentials
-            if check_user(email, password):
-                # Generate JWT token
-                access_token = create_access_token(identity=email)
+            is_valid, user_type = check_user(email, password)
+            if is_valid:
+                # Generate JWT token with additional claims
+                access_token = create_access_token(identity=email, additional_claims={"user_type": user_type})
 
                 return jsonify({
                     'message': 'Login successful!',
-                    'access_token': access_token
+                    'access_token': access_token,
+                    'user_type': user_type
                 }), 200
             else:
-                print("Invalid credentials")
-                return jsonify({'message': 'Invalid email or password.'}), 401
+                print("Invalid credentials or unauthorized user type")
+                return jsonify({'message': '* Invalid email, password, or unauthorized access.'}), 401
 
         except Exception as e:
             print(f"Error during login: {e}")
             return jsonify({'message': 'An error occurred during login.'}), 500
 
-    @app.route('/register', methods=['POST'])
-    def register():
-        data = request.json
-        first_name = data.get('firstName')
-        last_name = data.get('lastName')
-        email = data.get('email')
-        address = data.get('address')
-        contact_number = data.get('contactNumber')
-        password = data.get('password')
-        user_type = 'client'  # Default user type
-
-        # Validate required fields
-        if not all([first_name, last_name, email, address, contact_number, password]):
-            return jsonify({'message': 'All fields are required!'}), 400
-
-        # Attempt to create the user
-        if create_user(first_name, last_name, email, address, contact_number, password, user_type):
-            return jsonify({'message': 'Registration successful!'}), 201
-        else:
-            return jsonify({'message': 'Email already exists!'}), 409
         
-        # Decorator to protect routes and check token
+    # Decorator to protect routes and check token
     def token_required(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -105,6 +87,108 @@ def init_routes(app):
 
 
     @app.route('/logout', methods=['POST'])
+    @jwt_required()  # This decorator ensures that the request has a valid JWT token
     def logout():
-       
-        return jsonify({'message': 'Logged out successfully'}), 200
+        try:
+            # Prepare the response and unset the JWT cookie
+            response = jsonify({'message': 'Successfully logged out.'})
+            unset_jwt_cookies(response)  # This clears the JWT cookie, if using cookies for JWT
+            return response, 200
+        except Exception as e:
+            return jsonify({'message': f"Error during logout: {str(e)}"}), 500
+
+
+
+#routes for manage users
+
+
+    @app.route('/add-user', methods=['POST'])
+    def add_user():
+        try:
+            data = request.json
+            app.logger.info(f"Received data: {data}")
+
+            required_fields = [
+                'firstName', 'lastName', 'email', 'contactNumber', 
+                'country', 'city', 'street', 'password', 'user_type'
+            ]
+            
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    app.logger.error(f"Missing field: {field}")
+                    return jsonify({"message": f"Missing required field: {field}"}), 400
+
+            if data['user_type'] == 'vendor':
+                vendor_fields = ['service', 'minPrice', 'maxPrice']
+                for field in vendor_fields:
+                    if field not in data or not data[field]:
+                        app.logger.error(f"Missing vendor-specific field: {field}")
+                        return jsonify({"message": f"Missing vendor-specific field: {field}"}), 400
+
+            # Insert the user into the database
+            user_created, user_id = create_user(
+                first_name=data['firstName'],
+                last_name=data['lastName'],
+                email=data['email'],
+                contact_number=data['contactNumber'],
+                password=data['password'],
+                user_type=data['user_type'],
+                country=data['country'],
+                city=data['city'],
+                street=data['street']
+            )
+
+            if user_created:
+                if data['user_type'] == 'vendor':
+                    # Insert the vendor entry after the user is created
+                    vendor_created = create_vendor(
+                        userid=user_id,
+                        service=data['service'],
+                        min_price=data['minPrice'],
+                        max_price=data['maxPrice']
+                    )
+                    if vendor_created:
+                        app.logger.info("Vendor data inserted successfully")
+                    else:
+                        app.logger.error("Failed to create vendor")
+                        return jsonify({"message": "Failed to create vendor"}), 500
+                app.logger.info("User data validated and inserted into the database successfully")
+                return jsonify({"message": "User registered successfully"}), 201
+            else:
+                app.logger.error("User creation failed due to duplicate email")
+                return jsonify({"message": "Email already exists"}), 400
+
+        except Exception as e:
+            app.logger.error(f"Error processing request: {str(e)}")
+            return jsonify({"message": "Internal server error"}), 500
+        
+
+    @app.route('/created-users', methods=['GET'])
+    @jwt_required()
+    def get_users_by_type_route():
+        try:
+            # Fetch users with user_type 'assistant' or 'staff'
+            users = get_users_by_type()
+            return jsonify(users), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching users: {e}")
+            return jsonify({'message': 'An error occurred while fetching users'}), 500
+
+
+
+    @app.route('/vendors', methods=['GET'])
+    @jwt_required()
+    def get_vendors_route():
+        try:
+            # Fetch vendors with their associated user details
+            vendors = get_vendors_with_users()
+            return jsonify(vendors), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching vendors: {e}")
+            return jsonify({'message': 'An error occurred while fetching vendors'}), 500
+
+
+
+
+
+

@@ -61,7 +61,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
               :key="vendor.no"
               class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
             <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ vendor.no }}</th>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.Name }}</td>
+            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.fullName }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.email }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.contact }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.service }}</td>
@@ -99,7 +99,6 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             <th scope="col" class="px-2 py-3">Email</th>
             <th scope="col" class="px-2 py-3">Contact</th>
             <th scope="col" class="px-2 py-3">Position</th>
-            <th scope="col" class="px-2 py-3">Salary per Month</th>
             <th scope="col" class="px-2 py-3">Action</th>
           </tr>
         </thead>
@@ -113,7 +112,6 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             <td class="px-1 py-3 hidden sm:table-cell">{{ staff.email }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">{{ staff.contact }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">{{ staff.position }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ staff.salary }}</td>
   
             <td class="px-1 py-3 hidden sm:table-cell">
               <button class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600"
@@ -136,104 +134,98 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
     </div>
   </div>
 
-  <!--Add User Form-->
-<form v-if="addUserForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-  <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
-        <div class = "flex justify-between items-center m-3">
-              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Add User</h1>
-               <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeAddUserForm">
-                  Close
-                </button>
+ <!-- Add User Form -->
+ <form v-if="addUserForm" @submit.prevent="handleRegister" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+  <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
+    <div class="flex justify-between items-center m-3">
+      <h1 class="font-semibold text-xl font-raleway text-gray-800">Add User</h1>
+      <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeAddUserForm">
+        Close
+      </button>
+    </div>
+    <div class="border border-gray-500 mt-5 items-center"></div>
+    <div class="m-5">
+      <span>{{ errorMessage }}</span>
+      <!-- First Name and Last Name -->
+      <div class="flex flex-row">
+        <div class="flex items-center space-x-2">
+          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="firstName" placeholder="First Name" required>
         </div>
-        <div class = "border border-gray-500 mt-5 items-center"></div>
-               <div class = "m-5">
-
-              
-                <div class = "flex items-center space-x-2">
-                  <input type="text"class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Full Name" required>
-                </div>
-  
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="full-name" placeholder="Email" required>
-                </div>
-              </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="full-name" placeholder="Contact Number" required>
-                </div>
-              </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="full-name" placeholder="Address" required>
-                </div>
-              </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="password" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="full-name" placeholder="Password" required>
-                </div>
-              </div>
-
-              <div class="mt-5">
-                      <select 
-                        class="flex mt-4 ml-2 p-2 w-52 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700"
-                        v-model="selectedOption" 
-                        @change="selectAddForm"
-                      >
-                        <option value="" class = "text-gray-700" disabled selected>Select a Type of User</option>
-                        <option value="vendors">Vendors</option>
-                        <option value="staffs">Staffs</option>
-                      </select>
-                    </div>
-
-              <div v-if = "addVendorDetails" class = "mt-5">
-                <div class = "flex items-center">
-                  <select type="text" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
-                    <option value="" class = "text-gray-700" disabled selected>Select Service Type</option>
-                    <option value="">Catering</option>
-                    <option value="">Hair and Makeup</option>
-                    <option value="">Host</option>
-                    <option value="">Entertainer / Singer</option>
-                    <option value="">Photographer and Videographer</option>
-                    <option value="">Sound and Lighting</option>
-                    <option value="">Transportation</option>
-                    <option value="">Invitations and Stationery</option>
-                    <option value="">Favor and Gifts</option>
-                </select>
-                </div>
-                <div class = "flex items-center mt-4">
-                  <input type="text" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="minPrice" placeholder="Minimum Price" required>
-                  <input type="text" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="maxPrice" placeholder="Maximum Price" required>
-                </div>
- 
-              </div>
-
-              <div v-if = "addStaffDetails" class = "mt-5">
-                <div class = "flex items-center">
-                  <select class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
-                    <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="manager">Assistant</option>
-                    <option value="secretary">Secretary</option>
-                    <option value="receptionist">Receptionist</option>
-                    <option value="waiter">Waiter</option>
-                  </select>
-                </div>
-                <div class = "flex items-center mt-4">
-                  <input type="text" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="salary" placeholder="Salary per Month" required>
-                </div>
-              </div>
-           
-
-              <div class = "flex justify-center items-center mt-10">
-                   <button class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
-                     Confirm
-                   </button>
-              </div>
-
-
+        <div class="flex items-center space-x-2">
+          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="lastName" placeholder="Last Name" required>
         </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mt-5">
+        <input type="email" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" placeholder="Email" required>
+      </div>
+
+      <!-- Contact Number -->
+      <div class="mt-5">
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="contactNumber" placeholder="Contact Number" required>
+      </div>
+
+      <!-- Address -->
+      <div class="mt-5">
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="country" placeholder="Country" required>
+      </div>
+
+      <div class="mt-5 flex flex-row">
+        <div class="flex items-center space-x-2">
+          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="city" placeholder="City" required>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="street" placeholder="Street" required>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mt-5">
+        <input type="password" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="registerPassword" placeholder="Password" required>
+      </div>
+
+      <!-- User Type Selection -->
+      <div class="mt-5">
+        <select class="flex mt-4 ml-2 p-2 w-52 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
+          <option value="" class="text-gray-700" disabled selected>Select a Type of User</option>
+          <option value="vendor">Vendors</option>
+          <option value="assistant">Assistant</option>
+          <option value="staff">Staff</option>
+        </select>
+      </div>
+
+      <!-- Vendor Details (only if vendor is selected) -->
+      <div v-if="addVendorDetails" class="mt-5">
+        <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="service">
+          <option value="" class="text-gray-700" disabled selected>Select Service Type</option>
+          <option value="Catering">Catering</option>
+          <option value="Glam">Hair and Makeup</option>
+          <option value="Host">Host</option>
+          <option value="Entertainment">Entertainer / Singer</option>
+          <option value="Multimedia">Photographer and Videographer</option>
+          <option value="Sound and Lighting">Sound and Lighting</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Invitations">Invitations and Stationery</option>
+          <option value="Keepsakes">Favor and Gifts</option>
+        </select>
+
+        <div class="flex items-center mt-4">
+          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="minPrice" placeholder="Minimum Price" required>
+          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="maxPrice" placeholder="Maximum Price" required>
+        </div>
+      </div>
+
+      <!-- Confirm Button -->
+      <div class="flex justify-center items-center mt-10">
+        <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
+          Confirm
+        </button>
+      </div>
+    </div>
   </div>
-</form> 
+</form>
+
 
 <!--Edit Vendor Form-->
 <form v-if="editVendorForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -289,10 +281,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 <div class = "flex items-center">
                   <select class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="manager">Manager</option>
-                    <option value="secretary">Secretary</option>
-                    <option value="receptionist">Receptionist</option>
-                    <option value="waiter">Waiter</option>
+                    <option value="manager">Assistant</option>
+                    <option value="secretary">Staff</option>
                   </select>
                 </div>
  
@@ -345,22 +335,11 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 <div class = "flex items-center">
                   <select v-model="selectedStaff.position" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="Manager">Assistant</option>
-                    <option value="Assistant">Assistant</option>
-                    <option value="Secretary">Secretary</option>
-                    <option value="Tailor">Tailoring</option>
-                  
+                    <option value="assistant">Assistant</option>
+                    <option value="staff">Staff</option>       
                   </select>
-                </div>
-                
-                <div class = "flex items-center mt-4">
-                  <input type="text" v-model="selectedStaff.salary" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="salary" placeholder="Salary per Month" required>
-                </div>
- 
-              </div>
-              <div class = "flex items-center mt-4">
-                  <input type="text" v-model="selectedStaff.salary" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="salary" placeholder="Salary per Month" required>
-                </div>
+                </div>   
+             </div>
 
               <div class = "flex justify-center items-center mt-10 space-x-3">
                    <button class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
@@ -381,6 +360,10 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </template>
 
 <script>
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
+
 export default {
   name: 'ManageUsers',
   data() {
@@ -405,32 +388,29 @@ export default {
       selectedStaff: null, 
       editStaffForm: false,
 
+      //add users inputs
+      selectedUserType: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      contactNumber: '',
+      country: '',
+      city: '',
+      street: '',
+      registerPassword: '',
+      service: '',
+      minPrice: '',
+      maxPrice: '',
+      errorMessage: '',
 
 
-      vendors: [
-        { no: 1, Name: 'Delightful Bites Catering', email: 'bites.catering@example.com', contact: '123-456-7890', service: 'Catering', minPrice:'30k php', maxPrice: '250k php' },
-        { no: 2, Name: 'Vivid Memories Media', email: 'vivid.media@example.com', contact: '234-567-8901', service: 'Multimedia', minPrice:'20k php', maxPrice: '120k php' },
-        { no: 3, Name: 'Elegant Eats Events', email: 'elegant.eats@example.com', contact: '345-678-9012', service: 'Catering', minPrice: '20k php', maxPrice: '150k php' },
-        { no: 4, Name: 'Elegant Essence', email: 'essence22@example.com', contact: '456-789-0123', service: 'Hair and Makeup', minPrice: '10k php', maxPrice: '40k php' },
-        { no: 5, Name: 'Nico Shepherd', email: 'nico.shepherd@example.com', contact: '567-890-1234', service: 'Sound and Light', minPrice: '20k php', maxPrice: '70k php' },
-        { no: 6, Name: 'Jovit Baldemonyo', email: 'jovit.baldemonyo@example.com', contact: '678-901-2345', service: 'Entertainment', minPrice: '5k php', maxPrice: '80k php' },
-        { no: 7, Name: 'November Revenue', email: 'november.revenue@example.com', contact: '789-012-3456', service: 'Entertainment', minPrice: '10k php', maxPrice: '100k php' },
-        { no: 8, Name: 'Edward Backward', email: 'edward.backward@example.com', contact: '890-123-4567', service: 'Host', minPrice: '7k php', maxPrice: '40k php' },
-        { no: 9, Name: 'Vintage Car Rentals', email: 'vintage.rentals@example.com', contact: '901-234-5678', service: 'Transportation', minPrice: '15k php', maxPrice: '60k php' },
-        { no: 10, Name: 'Custom Invitations Studio', email: 'custom.studio@example.com', contact: '012-345-6789', service: 'Invitations and Stationery', minPrice: '20k php', maxPrice: '70k php' },
-        { no: 11, Name: 'Personalized Keepsakes Co.', email: 'personalized.keepsakes@example.com', contact: '123-456-7890', service: 'Favors and Gifts', minPrice: '15k php', maxPrice: '100k php' },
-        { no: 12, Name: 'Radiant Luxe Studio', email: 'radiant.luxe@example.com', contact: '234-567-8901', service: 'Hair and Makeup', minPrice: '7k php', maxPrice: '30k php' }
-      ],
+      staffs: [],
+      vendors: [],
+  
+      
 
 
-      staffs: [
-        { no: 1, fullName: 'Ashley Calimpong', email: 'ashley.calimpong@example.com', contact: '555-123-4567', position: 'Manager', salary: 'Null'},
-        { no: 2, fullName: 'Bob Smith', email: 'bob.s@example.com', contact: '555-234-5678', position: 'Assistant',salary: '12k php' },
-        { no: 3, fullName: 'Charlie Brown', email: 'charlie.b@example.com', contact: '555-345-6789', position: 'Tailor', salary: '10k php'},
-        { no: 4, fullName: 'Diana Prince', email: 'diana.p@example.com', contact: '555-456-7890', position: 'Assistant', salary: '12k php'},
-        { no: 5, fullName: 'Ethan Hunt', email: 'ethan.h@example.com', contact: '555-567-8901', position: 'Assistant', salary: '12k php'},
-        { no: 6, fullName: 'Fiona Green', email: 'fiona.g@example.com', contact: '555-678-9012', position: 'Tailor', salary: '10k php'},
-      ],
+      
     };
   },
   computed: {
@@ -462,6 +442,141 @@ export default {
     
   },
   methods: {
+    async handleRegister() {
+          try {
+              // Validate required fields
+              const fields = [
+                  this.firstName, this.lastName, this.email, this.contactNumber,
+                  this.registerPassword, this.country, this.city, this.street
+              ];
+
+              if (fields.some(field => !field)) {
+                  this.errorMessage = 'All fields are required!';
+                  return;
+              }
+
+              // Additional validation for vendors
+              if (this.selectedUserType === 'vendor') {
+                  if (!this.service || !this.minPrice || !this.maxPrice) {
+                      this.errorMessage = 'Vendor details are incomplete!';
+                      return;
+                  }
+              }
+
+              // Prepare the data payload
+              const requestData = {
+                  firstName: this.firstName,
+                  lastName: this.lastName,
+                  email: this.email,
+                  contactNumber: this.contactNumber,
+                  password: this.registerPassword,
+                  country: this.country,
+                  city: this.city,
+                  street: this.street,
+                  user_type: this.selectedUserType,
+              };
+
+              // Include vendor-specific details if applicable
+              if (this.selectedUserType === 'vendor') {
+                  requestData.service = this.service;
+                  requestData.minPrice = this.minPrice;
+                  requestData.maxPrice = this.maxPrice;
+              }
+
+              // Send the request to the backend
+              const response = await axios.post('http://127.0.0.1:5000/add-user', requestData);
+
+              if (response.status === 201) {
+                  alert('User added successfully!');
+                  this.resetRegisterForm(); // Reset the form after success
+              }
+          } catch (error) {
+              // Handle error feedback
+              this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+          }
+      },
+
+
+      resetRegisterForm() {
+          this.firstName = '';
+          this.lastName = '';
+          this.email = '';
+          this.contactNumber = '';
+          this.country = '';
+          this.city = '';
+          this.street = '';
+          this.registerPassword = '';
+          this.selectedUserType = '';
+          this.service = '';
+          this.minPrice = '';
+          this.maxPrice = '';
+          this.errorMessage = '';
+      },
+      async fetchStaffs() {
+            try {
+                const token = localStorage.getItem('access_token'); // Get the JWT token
+                if (!token) {
+                    alert('You are not logged in. Please log in to view staff users.');
+                    return;
+                }
+
+                const response = await axios.get('http://127.0.0.1:5000/created-users', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`, // Send the JWT token
+                    },
+                    withCredentials: true, // Send cookies if needed
+                });
+
+                // Populate staffs array with data from API
+                this.staffs = response.data.map((user, index) => ({
+                    no: index + 1,
+                    fullName: `${user.firstname} ${user.lastname}`,
+                    email: user.email,
+                    contact: user.contactnumber,
+                    position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
+                }));
+            } catch (error) {
+                console.error('Error fetching staff users:', error.response?.data || error.message);
+            }
+        },
+        async fetchVendors() {
+            try {
+                const token = localStorage.getItem('access_token'); // Get the JWT token
+                if (!token) {
+                    alert('You are not logged in. Please log in to view vendor data.');
+                    return;
+                }
+
+                const response = await axios.get('http://127.0.0.1:5000/vendors', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`, // Send the JWT token
+                    },
+                    withCredentials: true, // Send cookies if needed
+                });
+
+                // Populate vendors array with data from API
+                this.vendors = response.data.map((vendor, index) => ({
+                    no: index + 1,
+                    fullName: `${vendor.firstname} ${vendor.lastname}`,
+                    email: vendor.email,
+                    contact: vendor.contactnumber,
+                    service: vendor.service,
+                    minPrice: vendor.min_price,
+                    maxPrice: vendor.max_price,
+                }));
+            } catch (error) {
+                console.error('Error fetching vendors:', error.response?.data || error.message);
+            }
+        },
+          
+      
+
+
+
+
+
     changeVendorsPage(page) {
       this.currentVendorsPage = page;
     },
@@ -498,18 +613,20 @@ export default {
       this.selectedOption = '';
     },
 
-    selectAddForm(){
-       this.addVendorDetails = false;
-       this.addStaffDetails = false;
+    selectAddForm() {
+          if (this.selectedUserType === 'vendor') {
+              this.addVendorDetails = true;
+              this.addStaffDetails = false;
+          } else if (this.selectedUserType === 'assistant' || this.selectedUserType === 'staff') {
+              this.addStaffDetails = true;
+              this.addVendorDetails = false;
+          } else {
+              this.addVendorDetails = false;
+              this.addStaffDetails = false;
+          }
+      },
+  
 
-       if(this.selectedOption ===  'vendors') {
-        this.addVendorDetails = true;
-
-       } else if(this.selectedOption ===  'staffs') {
-          this.addStaffDetails = true;
-        
-       } 
-    },
 
     editVendorBtn(){
       this.editVendorForm = true;
@@ -545,7 +662,23 @@ export default {
         this.selectedStaff = null; 
     },
     
-  }
+  },
+  mounted() {
+    if (this.showTable === 'staffs') {
+        this.fetchStaffs(); // Fetch staff data on component mount
+    } else if (this.showTable === 'vendors') {
+        this.fetchVendors(); // Fetch vendor data on component mount
+    }
+},
+watch: {
+    showTable(newTable) {
+        if (newTable === 'staffs') {
+            this.fetchStaffs();
+        } else if (newTable === 'vendors') {
+            this.fetchVendors();
+        }
+    },
+},
 };
 </script>
 

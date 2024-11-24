@@ -58,33 +58,33 @@ export default {
   methods: {
     async handleLogin() {
         try {
-          const response = await axios.post('http://127.0.0.1:5000/login', {
-            email: this.email,
-            password: this.password,
-          });
+            const response = await axios.post('http://127.0.0.1:5000/login', {
+                email: this.email,
+                password: this.password,
+            });
 
-          // Store the JWT token in localStorage (ensure it's the correct field name based on your API response)
-          localStorage.setItem('access_token', response.data.access_token); // assuming your API returns 'token'
+            // Store the JWT token in localStorage
+            localStorage.setItem('access_token', response.data.access_token); // assuming your API returns 'token'
 
-          // Emit an event with login success
-          this.$emit('loginSuccess');
-          
+            // Set the 'loggedIn' status to true
+            localStorage.setItem('loggedIn', 'true'); // Mark as logged in
 
-     
+            // Emit an event with login success
+            this.$emit('loginSuccess');
 
-          // Redirect to /add-wishlist or desired page after successful login
-          this.$router.push('/dashboard');  // Ensure this is the correct route
+            // Redirect to /add-wishlist or desired page after successful login
+            this.$router.push('/dashboard');  // Ensure this is the correct route
 
         } catch (error) {
-          // Handle errors during login attempt
-          if (error.response && error.response.data) {
-            this.errorMessage = error.response.data.message || 'Login failed. Please check your credentials.';
-          } else {
-            this.errorMessage = 'An error occurred. Please try again later.';
-          }
-          console.error('Login error:', error);
+            // Handle errors during login attempt
+            if (error.response && error.response.data) {
+                this.errorMessage = error.response.data.message || 'Login failed. Please check your credentials.';
+            } else {
+                this.errorMessage = 'An error occurred. Please try again later.';
+            }
+            console.error('Login error:', error);
         }
-      },
+    },
 
     resetLoginForm() {
       this.email = '';
