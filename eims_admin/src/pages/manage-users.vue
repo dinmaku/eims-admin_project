@@ -241,7 +241,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
              
                 <div class = "flex items-center space-x-2">
-                  <input type="text"  v-model="selectedVendor.Name" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
+                  <input type="text"  v-model="selectedVendor.fullName" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
               
               </div>
               <div class = "mt-5">
@@ -281,8 +281,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 <div class = "flex items-center">
                   <select class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="manager">Assistant</option>
-                    <option value="secretary">Staff</option>
+                    <option value="Assistant">Assistant</option>
+                    <option value="Staff">Staff</option>
                   </select>
                 </div>
  
@@ -335,17 +335,17 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 <div class = "flex items-center">
                   <select v-model="selectedStaff.position" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="assistant">Assistant</option>
-                    <option value="staff">Staff</option>       
+                    <option value="Assistant">Assistant</option>
+                    <option value="Staff">Staff</option>       
                   </select>
                 </div>   
              </div>
 
               <div class = "flex justify-center items-center mt-10 space-x-3">
-                   <button class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
+                   <button @click.prevent="deleteUserItem(selectedStaff.no)" class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                      Delete
                    </button>
-                   <button class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
+                   <button @click.prevent="confirmEditStaff" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                      Confirm
                    </button>
               </div>
@@ -513,33 +513,34 @@ export default {
           this.errorMessage = '';
       },
       async fetchStaffs() {
-            try {
-                const token = localStorage.getItem('access_token'); // Get the JWT token
+              try {
+                const token = localStorage.getItem('access_token');
                 if (!token) {
-                    alert('You are not logged in. Please log in to view staff users.');
-                    return;
+                  alert('You are not logged in. Please log in to view staff users.');
+                  return;
                 }
 
                 const response = await axios.get('http://127.0.0.1:5000/created-users', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // Send the JWT token
-                    },
-                    withCredentials: true, // Send cookies if needed
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                  },
+                  withCredentials: true,
                 });
 
-                // Populate staffs array with data from API
-                this.staffs = response.data.map((user, index) => ({
-                    no: index + 1,
-                    fullName: `${user.firstname} ${user.lastname}`,
-                    email: user.email,
-                    contact: user.contactnumber,
-                    position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
+                this.staffs = response.data.map((user) => ({
+                  no: user.userid,
+                  fullName: `${user.firstname} ${user.lastname}`,
+                  email: user.email,
+                  contact: user.contactnumber,
+                  position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
                 }));
-            } catch (error) {
+
+              
+              } catch (error) {
                 console.error('Error fetching staff users:', error.response?.data || error.message);
-            }
-        },
+              }
+            },
         async fetchVendors() {
             try {
                 const token = localStorage.getItem('access_token'); // Get the JWT token
@@ -570,7 +571,93 @@ export default {
                 console.error('Error fetching vendors:', error.response?.data || error.message);
             }
         },
-          
+
+
+        async confirmEditStaff() {
+            try {
+              const token = localStorage.getItem('access_token');
+
+              if (!this.selectedStaff || !this.selectedStaff.no) {
+                alert("Staff ID is missing or invalid.");
+                return;
+              }
+
+              const [firstName, ...lastNameParts] = this.selectedStaff.fullName.split(' ');
+              const lastName = lastNameParts.join(' ');
+
+              const response = await axios.put(
+                `http://127.0.0.1:5000/created-users/${this.selectedStaff.no}`,
+                {
+                  firstname: firstName,
+                  lastname: lastName,
+                  email: this.selectedStaff.email,
+                  contactnumber: this.selectedStaff.contact,
+                  user_type: this.selectedStaff.position.toLowerCase() // Convert 'Assistant' or 'Staff' to lowercase
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (response.status === 200) {
+                alert('Staff updated successfully!');
+                
+                const index = this.staffs.findIndex(staff => staff.no === this.selectedStaff.no);
+                if (index !== -1) {
+                  this.staffs[index] = { ...this.selectedStaff };
+                }
+                
+                this.closeEditStaffBtn();
+              } else {
+                alert('Failed to update staff.');
+              }
+            } catch (error) {
+              console.error('Error updating staff:', error);
+              if (error.response) {
+                alert(`Error updating staff: ${error.response.data.message}`);
+              } else {
+                alert('Error updating staff. Please try again.');
+              }
+            }
+          },
+
+          async deleteUserItem(userid) {
+              try {
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                  return;
+                }
+
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                  alert('You are not logged in. Please log in to delete users.');
+                  return;
+                }
+
+                const response = await axios.delete(`http://127.0.0.1:5000/created-users/${userid}`, {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                  },
+                });
+
+                if (response.status === 200) {
+                  alert('User deleted successfully!');
+                  // Remove the deleted user from the staffs array
+                  this.staffs = this.staffs.filter(staff => staff.no !== userid);
+                  this.closeEditStaffBtn();
+                } else {
+                  alert('Failed to delete user.');
+                }
+              } catch (error) {
+                console.error('Error deleting user:', error);
+                if (error.response) {
+                  alert(`Error deleting user: ${error.response.data.message}`);
+                } else {
+                  alert('Error deleting user. Please try again.');
+                }
+              }
+            },
       
 
 
@@ -654,9 +741,10 @@ export default {
     },
 
     editStaffBtn(index) {
-        this.selectedStaff = this.paginatedStaffs[index]; 
-        this.editStaffForm = true; 
-    },
+          console.log("Selected Staff from paginatedStaffs: ", JSON.parse(JSON.stringify(this.paginatedStaffs[index])));
+          this.selectedStaff = this.paginatedStaffs[index]; 
+          this.editStaffForm = true;
+      },
     closeEditStaffBtn() {
         this.editStaffForm = false;
         this.selectedStaff = null; 

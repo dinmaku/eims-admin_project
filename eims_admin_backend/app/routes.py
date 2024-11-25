@@ -1,7 +1,7 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user,create_user, create_vendor, get_users_by_type, get_vendors_with_users
+from .models import check_user,create_user, create_vendor, get_users_by_type, get_vendors_with_users, delete_user, update_staff
 import logging
 import jwt
 from functools import wraps
@@ -186,6 +186,54 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching vendors: {e}")
             return jsonify({'message': 'An error occurred while fetching vendors'}), 500
+
+
+
+    @app.route('/created-users/<int:userid>', methods=['PUT'])
+    @jwt_required()  # Authentication required
+    def edit_staff(userid):
+        try:
+            if not userid:
+                return jsonify({"message": "Invalid user ID"}), 400
+
+            data = request.json
+            firstname = data.get('firstname')
+            lastname = data.get('lastname')
+            email = data.get('email')
+            contact = data.get('contactnumber')  # Changed from 'contactnumber' to 'contact'
+            user_type = data.get('user_type')
+
+            # Validate that all required fields are provided
+            if not all([firstname, lastname, email, contact, user_type]):
+                return jsonify({"message": "All fields are required"}), 400
+
+            # Update the user data
+            if update_staff(userid, firstname, lastname, email, contact, user_type):
+                return jsonify({"message": "Staff updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update staff. User not found or database error occurred."}), 404
+        except Exception as e:
+            app.logger.error(f"Error in edit_staff route: {e}")
+            return jsonify({"message": f"Error: {str(e)}"}), 500
+
+
+
+
+    @app.route('/created-users/<int:userid>', methods=['DELETE'])
+    @jwt_required()
+    def delete_users(userid):
+        """
+        Deletes a user and related events based on the user ID.
+        """
+        try:
+            result = delete_user(userid)
+            if result:
+                return jsonify({"message": "User and related events deleted successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to delete user and related events"}), 404
+        except Exception as e:
+            app.logger.error(f"Error in delete_users route: {e}")
+            return jsonify({"message": "An error occurred while deleting the user"}), 500
 
 
 

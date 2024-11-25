@@ -146,3 +146,54 @@ def get_vendors_with_users():
     finally:
         cursor.close()
         conn.close()
+
+
+def update_staff(userid, firstname, lastname, email, contactnumber, user_type):
+    if not userid:
+        logger.error("Invalid userid provided")
+        return False
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            UPDATE users 
+            SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, user_type = %s 
+            WHERE userid = %s
+            """,
+            (firstname, lastname, email, contactnumber, user_type, userid),
+        )
+        if cursor.rowcount == 0:
+            logger.warning(f"No user found with userid {userid}")
+            return False
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error updating staff {userid}: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def delete_user(userid):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # First, delete related events (to avoid foreign key violation)
+        cursor.execute("DELETE FROM events WHERE userid = %s", (userid,))
+        conn.commit()
+
+        # Then delete the user from the users table
+        cursor.execute("DELETE FROM users WHERE userid = %s", (userid,))
+        conn.commit()
+
+        return True
+    except Exception as e:
+        logger.error(f"Error deleting user {userid}: {e}")
+        conn.rollback()  # Rollback in case of error
+        return False
+    finally:
+        cursor.close()
+        conn.close()

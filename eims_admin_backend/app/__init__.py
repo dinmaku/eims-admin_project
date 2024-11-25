@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager
 def create_app():
     app = Flask(__name__)
 
-    CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
+    CORS(app, origins=["http://localhost:5173"], methods=["GET", "POST", "PUT", "DELETE"], supports_credentials=True)
 
     # Set up the Flask-JWT-Extended configuration
     app.config['JWT_SECRET_KEY'] = os.getenv('eims', 'fallback_jwt_secret')  # Ensure you set a JWT secret key
