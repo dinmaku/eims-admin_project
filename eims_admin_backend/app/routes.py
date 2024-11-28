@@ -1,11 +1,12 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user,create_user, create_vendor, get_users_by_type, get_vendors_with_users, delete_user, update_staff
+from .models import check_user,create_user, create_vendor, get_users_by_type, get_vendors_with_users, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding
 import logging
 import jwt
 from functools import wraps
 import os
+from decimal import Decimal
 
 logging.basicConfig(level=logging.DEBUG)
 SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
@@ -239,4 +240,160 @@ def init_routes(app):
 
 
 
+#routes for add-services
 
+    @app.route('/created-packages', methods=['GET'])
+    @jwt_required()
+    def get_packages_route():
+        try:
+            # Fetch all event packages
+            packages = get_packages()
+            return jsonify(packages), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching packages: {e}")
+            return jsonify({'message': 'An error occurred while fetching packages'}), 500
+
+    @app.route('/create-package', methods=['POST'])
+    @jwt_required()
+    def create_package_route():
+        data = request.get_json()
+        print("Received data:", data)
+
+        # Extract fields from the incoming data
+        package_name = data.get('package_name')
+        package_type = data.get('package_type')
+        venue = data.get('venue')
+        price = data.get('price')
+        capacity = data.get('capacity')
+        description = data.get('description')
+
+        # Check if all required fields are provided
+        if not all([package_name, package_type, venue, price, capacity, description]):
+            return jsonify({"error": "All fields are required"}), 400
+
+        try:
+            # Convert price and capacity to correct types
+            price = Decimal(price)  # Convert price to Decimal for precise handling
+            capacity = int(capacity)  # Convert capacity to integer
+        except ValueError:
+            return jsonify({"error": "Price must be a decimal and capacity must be an integer"}), 400
+
+        try:
+            # Call the function to create the package in the database
+            if create_package(package_name, package_type, venue, price, capacity, description):
+                return jsonify({"status": "success", "message": "Package created successfully"}), 201
+            else:
+                return jsonify({"status": "error", "message": "Failed to create package"}), 500
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+        
+
+    @app.route('/created-package/<int:package_id>', methods=['PUT'])
+    @jwt_required()  # Authentication required
+    def edit_package(package_id):
+        try:
+            if not package_id:
+                return jsonify({"message": "Invalid package ID"}), 400
+
+            data = request.json
+            required_fields = ["package_name", "package_type", "venue", "price", "capacity", "description"]
+
+            # Ensure all required fields are present
+            if not all(field in data and data[field] for field in required_fields):
+                return jsonify({"message": "All fields are required"}), 400
+
+            # Extract data
+            package_name = data["package_name"]
+            package_type = data["package_type"]
+            venue = data["venue"]
+            price = data["price"]
+            capacity = data["capacity"]
+            description = data["description"]
+
+            # Update the package data
+            if update_package(package_id, package_name, package_type, venue, price, capacity, description):
+                return jsonify({"message": "Package updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update package. Package not found or database error occurred."}), 404
+        except Exception as e:
+            app.logger.error(f"Error in edit_package route: {e}")
+            return jsonify({"message": f"Error: {str(e)}"}), 500
+        
+
+
+
+    @app.route('/created-package/<int:package_id>', methods=['DELETE'])
+    @jwt_required()
+    def delete_package_route(package_id):
+        """
+        Deletes a package based on the package ID.
+        """
+        try:
+            result = delete_package(package_id)
+            if result:
+                return jsonify({"message": "Package deleted successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to delete package. Package not found."}), 404
+        except Exception as e:
+            app.logger.error(f"Error in delete_package_route: {e}")
+            return jsonify({"message": "An error occurred while deleting the package"}), 500
+
+        
+
+#manage events routes
+    @app.route('/booked-wishlist', methods=['GET'])
+    def get_all_booked_wishlist_for_admin():
+        try:
+            # Fetch all events with status 'Wishlist'
+            all_wishlist_events = get_all_booked_wishlist()
+            return jsonify(all_wishlist_events), 200
+        except Exception as e:
+            logging.error(f"Error fetching all 'Wishlist' events for admin: {e}")
+            return jsonify({'message': f'Error fetching wishlist events: {str(e)}'}), 500
+
+
+    @app.route('/booked-wishlist/<int:events_id>', methods=['PUT'])
+    @jwt_required()  # Authentication required
+    def update_booked_wishlist(events_id):
+        try:
+            if not events_id:
+                return jsonify({"message": "Invalid event ID"}), 400
+
+            data = request.json
+            required_fields = ["event_name", "event_type", "event_theme", "event_color", "venue"]
+
+            # Ensure all required fields are present
+            if not all(field in data and data[field] for field in required_fields):
+                return jsonify({"message": "All fields are required"}), 400
+
+            # Extract data
+            event_name = data["event_name"]
+            event_type = data["event_type"]
+            event_theme = data["event_theme"]
+            event_color = data["event_color"]
+            venue = data["venue"]
+
+            # Update the event data
+            if update_event(events_id, event_name, event_type, event_theme, event_color, venue):
+                return jsonify({"message": "Event updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update event. Event not found or database error occurred."}), 404
+        except Exception as e:
+            app.logger.error(f"Error in update_booked_wishlist route: {e}")
+            return jsonify({"message": f"Error: {str(e)}"}), 500
+
+
+
+#create event routes
+
+
+    @app.route('/created-packages-wedding', methods=['GET'])
+    @jwt_required()
+    def get_packages_wedding_route():
+        try:
+            # Fetch all event packages
+            packages = get_packages_wedding()
+            return jsonify(packages), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching packages: {e}")
+            return jsonify({'message': 'An error occurred while fetching packages'}), 500

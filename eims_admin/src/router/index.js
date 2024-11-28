@@ -11,8 +11,10 @@ import UploadGallery from '../pages/upload-gallery.vue';
 import CreateEvent from '../pages/create-event.vue';
 import WeddingForm from '../pages/wedding-form.vue';
 import BirthdayForm from '../pages/birthday-form.vue';
+import DebutForm from '../pages/debut-form.vue';
 import EventCalendar from '../pages/event-calendar.vue';
 import Invoice from '../pages/invoice.vue';
+import AddServices from '../pages/add-services.vue'
 
 const routes = [
   {
@@ -77,6 +79,10 @@ const routes = [
             path: '/birthday-form',
             component: BirthdayForm,
           },
+          {
+            path: '/debut-form',
+            component: DebutForm,
+          },
           
 
         ],
@@ -85,6 +91,13 @@ const routes = [
         name: 'Invoice',
         path: '/invoice',
         component: Invoice,
+        props: true,     
+      
+      },
+      {
+        name: 'AddServices',
+        path: '/add-services',
+        component: AddServices,
         props: true,     
       
       },

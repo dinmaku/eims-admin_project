@@ -9,11 +9,11 @@
   <div class="flex flex-row items-center m-5 space-x-5">
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
         <img class="w-auto h-12" src="/img/vendor2.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalVendors }} <span class = "text-sm antialiased text-gray-600">vendors</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalVendors }} <span class = "text-sm antialiased text-gray-600">suppliers</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
         <img class="w-auto h-12" src="/img/staff.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600">staffs</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600">crews</span></h2>
     </div>
 </div>
 
@@ -23,14 +23,14 @@
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
     { 'bg-white text-teal-800': showTable === 'vendors', 'bg-gray-800 text-white': showTable !== 'vendors' } 
   ]" @click="showTable = 'vendors'">
-    Vendors
+    Suppliers
   </button>
   
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
     { 'bg-white text-teal-800': showTable === 'staffs', 'bg-gray-800 text-white': showTable !== 'staffs' } 
   ]" @click="showTable = 'staffs'">
-    Staffs
+    Crews
   </button>
 </div>
 <button class = "mr-2 w-28 h-10 bg-blue-600 font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 

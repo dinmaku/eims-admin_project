@@ -1,10 +1,10 @@
 <template>
-    <h1>This is birthday form</h1>
+    <h1>This is debut form</h1>
 </template>
     
     <script>
     export default {
-      name: 'BirthdayForm',
+      name: 'DebutForm',
     };
     
     

@@ -13,16 +13,6 @@
     <option>This Month</option>
     <option>This Year</option>
   </select>
-  <router-link to="/create-event">
-    <button 
-    @click="createEvent"
-    :disabled="selectedIndex === null"
-    :class = "buttonCursor"
-    class="w-[130px] h-11 bg-blue-600 hover:bg-blue-700  hover: font-semiBold text-white shadow-md rounded transition-transform transform hover:scale-105">
-    + Create Event
-    </button>
-  </router-link>
-
   </div>
 </div>
  
@@ -30,7 +20,7 @@
 <!--Information Cards-->
  <div class = "flex justify-start space-x-5">
     <div class ="w-60 h-[80px] bg-white py-2 px-3 ml-5 mt-10 border-l-2 border-green-400 shadow-md flex items-center justify-between ">
-    <h1 class ="font-amaticBold font-regular text-3xl ml-3 text-blue-900">76</h1>
+    <h1 class ="font-amaticBold font-regular text-3xl ml-3 text-blue-900">{{ totalWishlist }}</h1>
      <p class = "font-amaticBold font-regular text-lg text-gray-700 mr-5">Total Wishlist</p>
     </div>
     <div class ="w-60 h-[80px] bg-white py-2 px-3 ml-5 mt-10 border-l-2 border-red-400 shadow-md flex items-center justify-between ">
@@ -109,16 +99,16 @@
             :key="event.no"
             :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
             class="border-b dark:border-gray-700">
-          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.theme }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.color }}</td>
+          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ index + 1 }}</th>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_name }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_theme}}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_color}}</td>
           <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.name }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.contact }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ event.firstname }} {{ event.lastname }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ event.contactnumber }}</td>
           <td class="px-1 py-3 hidden sm:table-cell">
             <button
-                @click="selectRow(index)"
+                @click="selectRowAndRedirect(index)"
                 class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
                 Select
               </button>
@@ -635,8 +625,12 @@
 
 
  <script>
+  import axios from 'axios';
+
+  axios.defaults.withCredentials = true;
 
  export default {
+  
   name: 'ManageEvents',
   data() {
     return {
@@ -721,16 +715,9 @@
         { no: 4, event: 'Charity Gala', eventName: 'Annual Charity Ball', packageDeal: 'Platinum Package', venue: 'Grand Palace', schedule: '2025-05-30', totalCharges: "170k"},
           // Insert diri!!
       ],
-      wishlist: [
-       { no: 1, event: 'Wedding', theme: 'Vintage Glamour', color: 'Navy Blue and Rose Gold', venue: 'Grand Heritage Hotel', name: 'Daniel Brown', contact: '09456248672'},
-       { no: 2, event: 'Wedding', theme: 'Vintage Glamour', color: 'Navy Blue and Rose Gold', venue: 'Grand Heritage Hotel', name: 'Daniel Brown', contact: '09456248672' },
-       { no: 3, event: 'Wedding', theme: 'Beach Paradise', color: 'Turquoise and Coral', venue: 'Sunset Beach Resort', name: 'Samantha Martinez', contact: '09124685434' },
-       { no: 4, event: 'Debut', theme: 'Modern Minimalist', color: 'Charcoal Gray and White', venue: 'Urban Loft Space', name: 'Olivia Turner', contact: '09247865142' },
-      { no: 5, event: 'Wedding', theme: 'Fairy Tale Romance', color: 'Blush and Lavender', venue: 'Enchanted Garden Estate', name: 'Avery Carter', contact: '09786524568' },
-      { no: 5, event: 'Wedding', theme: 'Fairy Tale Romance', color: 'Blush and Lavender', venue: 'Enchanted Garden Estate', name: 'Avery Carter', contact: '09786524568' }
-        // Insert diri!!
-      ],
-
+      wishlist: [],
+      
+      
       vendors: [
         { no: 1, Name: 'Delightful Bites Catering', email: 'bites.catering@example.com', contact: '123-456-7890', service: 'Catering', minPrice:'30k php', maxPrice: '250k php' },
         { no: 2, Name: 'Vivid Memories Media', email: 'vivid.media@example.com', contact: '234-567-8901', service: 'Multimedia', minPrice:'20k php', maxPrice: '120k php' },
@@ -754,7 +741,8 @@
         if (newEvent) {
             this.selectedPackage = newEvent.packageDeal;
         }
-    }
+    },
+    
 },
 
   computed: {
@@ -785,9 +773,59 @@
     buttonCursor() {
       return this.selectedIndex === null? 'cursor-not-allowed' : 'cursor-pointer';
     },
+    totalWishlist() {
+       return this.wishlist.length;
+    },
   },
 
   methods: {
+    async fetchBookedWishlist() {
+          try {
+        const token = localStorage.getItem('access_token');  // Get the JWT token from localStorage
+
+        if (!token) {
+            console.error('No access token found');
+            return;
+        }
+
+        // Make the GET request to fetch the booked wishlist
+        const response = await axios.get('http://127.0.0.1:5000/booked-wishlist', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,  // Send the JWT token in the Authorization header
+            },
+            withCredentials: true  // Send cookies with the request if needed
+        });
+
+        // Check if response contains data and map it accordingly
+        if (response.data && Array.isArray(response.data)) {
+            this.wishlist = response.data.map(item => ({
+                events_id: item.events_id,
+                userid: item.userid,
+                event_name: item.event_name,
+                event_type: item.event_type,
+                event_theme: item.event_theme,
+                event_color: item.event_color,
+                venue: item.venue,
+                schedule: item.schedule,
+                start_time: item.start_time,
+                end_time: item.end_time,
+                status: item.status,
+                firstname: item.firstname,
+                lastname: item.lastname,
+                contactnumber: item.contactnumber,
+                
+            }));
+        } else {
+            console.warn('No wishlist data found or data is not an array');
+        }
+
+    } catch (error) {
+        console.error('Error fetching booked wishlist:', error.message || error);
+    }
+            },
+
+
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
@@ -834,10 +872,29 @@
       this.showTable = tableName;
     },
 
-    selectRow(index) {
-      this.selectedIndex = index;
-      this.selectedEvent = this.paginatedWishlist[index];
-      this.showAlert = false;
+    selectRowAndRedirect(index) {
+        // Get the selected event data based on the index
+        const selectedEvent = this.paginatedWishlist[index];
+
+        // Use Vue Router to navigate to /create-event and pass selected data via query params
+        this.$router.push({
+            path: '/create-event',
+            query: {
+                events_id: selectedEvent.events_id,
+                event_name: selectedEvent.event_name,
+                event_type: selectedEvent.event_type,
+                event_theme: selectedEvent.event_theme,
+                event_color: selectedEvent.event_color,
+                venue: selectedEvent.venue,
+                schedule: selectedEvent.schedule,
+                start_time: selectedEvent.start_time,
+                end_time: selectedEvent.end_time,
+                status: selectedEvent.status,
+                firstname: selectedEvent.firstname,
+                lastname: selectedEvent.lastname,
+                contactnumber: selectedEvent.contactnumber,
+            }
+        });
     },
 
     viewEvent(event) {
@@ -988,6 +1045,12 @@
     },
 
   },
+
+  mounted() {
+        this.fetchBookedWishlist();
+        console.log(this.paginatedWishlist);
+         
+    },
 
 
   

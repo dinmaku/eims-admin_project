@@ -197,3 +197,255 @@ def delete_user(userid):
     finally:
         cursor.close()
         conn.close()
+
+
+# models for add-services
+
+def get_packages():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT package_id, package_name, package_type, venue, price, capacity, description
+            FROM event_packages
+            """
+        )
+        packages = cursor.fetchall()
+        # Transform the result into a list of dictionaries
+        return [
+            {
+                'package_id': item[0],
+                'package_name': item[1],
+                'package_type': item[2],
+                'venue': item[3],
+                'price': item[4],
+                'capacity': item[5],
+                'description': item[6],
+            }
+            for item in packages
+        ]
+    finally:
+        cursor.close()
+        conn.close()
+
+def create_package(package_name, package_type, venue, price, capacity, description):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Insert the package data into the event_packages table
+        cursor.execute(
+            "INSERT INTO event_packages (package_name, package_type, venue, price, capacity, description) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            (package_name, package_type, venue, price, capacity, description)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error inserting package: {e}")  # Log the error message
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def update_package(package_id, package_name, package_type, venue, price, capacity, description):
+    if not package_id:
+        logger.error("Invalid package_id provided")
+        return False
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        query = """
+            UPDATE event_packages
+            SET package_name = %s, package_type = %s, venue = %s, price = %s, capacity = %s, description = %s
+            WHERE package_id = %s
+        """
+        cursor.execute(query, (package_name, package_type, venue, price, capacity, description, package_id))
+        if cursor.rowcount == 0:
+            logger.warning(f"No package found with package_id {package_id}")
+            return False
+        conn.commit()
+        logger.info(f"Package {package_id} updated successfully.")
+        return True
+    except Exception as e:
+        logger.error(f"Error updating package {package_id}: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def delete_package(package_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Delete the package from the event_packages table
+        cursor.execute("DELETE FROM event_packages WHERE package_id = %s", (package_id,))
+        conn.commit()
+
+        # Return True if the package was deleted
+        if cursor.rowcount == 0:
+            logger.warning(f"No package found with package_id {package_id}")
+            return False
+        return True
+    except Exception as e:
+        logger.error(f"Error deleting package {package_id}: {e}")
+        conn.rollback()  # Rollback in case of error
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+
+#models for create event
+def get_user_id_by_email(email):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT userid FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        if user:
+            return user[0]
+        else:
+            logger.warning(f"No user found with email: {email}")
+            return None
+    except Exception as e:
+        logger.error(f"Error retrieving user ID for email {email}: {str(e)}")
+        return None
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_all_booked_wishlist():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT 
+                e.events_id, 
+                e.userid, 
+                e.event_name, 
+                e.event_type, 
+                e.event_theme, 
+                e.event_color, 
+                e.venue, 
+                e.schedule, 
+                e.start_time, 
+                e.end_time, 
+                e.status,
+                u.firstname,
+                u.lastname,
+                u.contactnumber
+            FROM events e
+            JOIN users u ON e.userid = u.userid
+            WHERE e.status = 'Wishlist'  -- Filter for events with 'Wishlist' status
+        """)
+        
+        events = cursor.fetchall()
+        if events:
+            return [
+                {
+                    'events_id': item[0],
+                    'userid': item[1],
+                    'event_name': item[2],
+                    'event_type': item[3],
+                    'event_theme': item[4],
+                    'event_color': item[5],
+                    'venue': item[6],
+                    'schedule': item[7],
+                    'start_time': item[8],
+                    'end_time': item[9],
+                    'status': item[10],
+                    'firstname': item[11],
+                    'lastname': item[12],
+                    'contactnumber': item[13]
+                }
+                for item in events
+            ]
+        else:
+            return []  # No events found
+    except Exception as e:
+        logging.error(f"Error fetching 'Wishlist' events: {e}")
+        return []  # Return empty list if there's an error
+    finally:
+        cursor.close()
+        conn.close()
+
+    
+def update_event(events_id, event_name, event_type, event_theme, event_color, venue):
+    if not events_id:
+        logger.error("Invalid events_id provided")
+        return False
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        query = """
+            UPDATE events
+            SET event_name = %s, event_type = %s, event_theme = %s, event_color = %s, venue = %s
+            WHERE events_id = %s
+        """
+        cursor.execute(query, (event_name, event_type, event_theme, event_color, venue, events_id))
+        if cursor.rowcount == 0:
+            logger.warning(f"No event found with events_id {events_id}")
+            return False
+        conn.commit()
+        logger.info(f"Event {events_id} updated successfully.")
+        return True
+    except Exception as e:
+        logger.error(f"Error updating event {events_id}: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+def get_packages_wedding():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT package_id, package_name, package_type, venue, price, capacity, description
+            FROM event_packages
+            WHERE package_type = 'Wedding'
+            """
+        )
+        packages = cursor.fetchall()
+        # Transform the result into a list of dictionaries
+        return [
+            {
+                'package_id': item[0],
+                'package_name': item[1],
+                'package_type': item[2],
+                'venue': item[3],
+                'price': item[4],
+                'capacity': item[5],
+                'description': item[6],
+            }
+            for item in packages
+        ]
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+
+
+
+
+
+
+
+
+

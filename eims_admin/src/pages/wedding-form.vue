@@ -13,184 +13,49 @@
 <div class = "border border-gray-700 mt-5">
 </div>
 
-<!--Basic package-->
-<div class = "flex">
-  <div class="flex flex-col bg-[#f7c5f7] rounded-3xl m-10 h-[520]">
-  <div class="px-6 py-8 sm:p-10 sm:pb-6">
-    <div class="grid items-center justify-center w-full grid-cols-1 text-left">
-      <div>
-        <h2
-          class="text-lg font-medium tracking-tighter text-gray-600 lg:text-3xl"
-        >
-          Basic 
-        </h2>
-        <p class="mt-2 text-sm text-gray-500 font-raleway">Essential for your wedding.</p>
-      </div>
-      <div class="mt-6">
-        <p>
-          <span class="text-5xl font-light tracking-tight text-black">
-            35k
-          </span>
-          <span class="text-base font-medium text-gray-500">php only</span>
-        </p>
-      </div>
+<div v-if="showPackageForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-center mt-10">
+      <div
+        v-for="(pkg, index) in packages"
+        :key="pkg.packageId"
+        class="flex flex-col rounded-3xl h-[380px] w-[300px] m-auto cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-opacity-90"
+        :style="{ backgroundColor: pkg.backgroundColor }"
+        @click="selectPackage(pkg)"
+      >
+        <div class="px-6 py-8 sm:p-10 sm:pb-6">
+          <div class="grid items-center justify-center w-full grid-cols-1 text-left">
+            <div>
+              <h2 class="text-lg font-medium tracking-tighter text-gray-600 lg:text-3xl">
+                {{ pkg.package_name }}
+              </h2>
+              <p class="mt-2 text-sm text-gray-500 font-raleway">
+                {{ pkg.description }}
+              </p>
+            </div>
+            <div class="mt-6">
+              <p>
+                <span class="text-4xl font-light tracking-tight text-black">
+                  {{ pkg.price }}
+                </span>
+                <span class="text-sm font-medium text-gray-500 ml-2">php only</span>
+              </p>
+            </div>
 
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Reception Venue</span>
-      </div>
-        <div class ="flex mt-1 ml-7">
-          <span class="text-xs font-medium text-gray-800">Creative design of lively decors</span>
+            <div class="mt-4">
+              <p class="text-xs font-semibold text-gray-500">Venue: {{ pkg.venue }}</p>
+              <p class="text-xs font-semibold text-gray-500">Capacity: {{ pkg.capacity }}</p>
+            </div>
+
+            <div v-for="(item, i) in pkg.features" :key="i" class="flex mt-4">
+              <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
+              <span class="text-base font-semibold text-gray-800">{{ item.name }}</span>
+              <div v-if="item.description" class="ml-7">
+                <span class="text-xs font-medium text-gray-800">{{ item.description }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Stage Decor</span>
       </div>
-        <div class ="flex mt-1 ml-7">
-          <span class="text-xs font-medium text-gray-800">Beautiful Backdrop</span>
-        </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Entrance</span>
       </div>
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Boquet</span>
-      </div>
-
-
-    </div>
-  </div>
-  <div class="flex px-6 pb-8 sm:px-8 mt-5 ">
-    <a
-      aria-describedby="tier-company"
-      class="flex items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none focus-visible:outline-black text-sm focus-visible:ring-black"
-      href="#"
-       @click.prevent="selectPackage"
-    >
-     Select
-    </a>
-  </div>
-</div>
-
-<!--Premium package-->
-<div class = "flex">
-  <div class="flex flex-col bg-[#afe2f8] rounded-3xl m-10 h-[520px]">
-  <div class="px-6 py-8 sm:p-10 sm:pb-6">
-    <div class="grid items-center justify-center w-full grid-cols-1 text-left">
-      <div>
-        <h2
-          class="text-lg font-medium tracking-tighter text-gray-600 lg:text-3xl"
-        >
-          Premium
-        </h2>
-        <p class="mt-2 text-sm text-gray-500 font-raleway ">Enhanced elegance and details..</p>
-      </div>
-      <div class="mt-6">
-        <p>
-          <span class="text-5xl font-light tracking-tight text-black">
-            60k
-          </span>
-          <span class="text-base font-medium text-gray-500">php only</span>
-        </p>
-      </div>
-
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Everything in Basic</span>
-      </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Ceiling Works</span>
-      </div>
-        <div class ="flex mt-1 ml-7">
-          <span class="text-xs font-medium text-gray-800">Stylish stands with flower</span>
-        </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-1">
-        <span class="text-base font-semibold text-gray-800">Vanity Wall with couple's name</span>
-      </div>
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Boquet</span>
-      </div>
-      <div class ="flex mt-1 ml-7">
-          <span class="text-xs font-medium text-gray-800">Premium flowers</span>
-        </div>
-
-
-    </div>
-  </div>
-  <div class="flex px-6 pb-8 sm:px-8 mt-4">
-    <a
-      aria-describedby="tier-company"
-      class="flex items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none focus-visible:outline-black text-sm focus-visible:ring-black"
-      href="#"
-      @click.prevent="selectPackage"
-    >
-     Select
-    </a>
-  </div>
-</div>
-</div>
-
-
-<!--VIP package-->
-<div class = "flex">
-  <div class="flex flex-col bg-[#f6f9a0] rounded-3xl m-10 h-[520px]">
-  <div class="px-6 py-8 sm:p-10 sm:pb-6">
-    <div class="grid items-center justify-center w-full grid-cols-1 text-left">
-      <div>
-        <h2
-          class="text-lg font-medium tracking-tighter text-gray-600 lg:text-3xl"
-        >
-         VIP
-        </h2>
-        <p class="mt-2 text-sm text-gray-500 font-raleway">Ultimate experience and exclusivity.</p>
-      </div>
-      <div class="mt-6">
-        <p>
-          <span class="text-5xl font-light tracking-tight text-black">
-            100k
-          </span>
-          <span class="text-base font-medium text-gray-500">php only</span>
-        </p>
-      </div>
-
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Everything in Premium</span>
-      </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Elegant Grand Entrance Arch</span>
-      </div>
-        <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Customized drapery and linens</span>
-      </div>
-      <div class = "flex mt-4">
-        <img src="/img/check-icon.png" alt="" class="w-5 flex h-5 mr-2">
-        <span class="text-base font-semibold text-gray-800">Themed table settings</span>
-      </div>
-
-
-    </div>
-  </div>
-  <div class="flex px-6 pb-8 sm:px-8 mt-8">
-    <a
-      aria-describedby="tier-company"
-      class="flex items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none focus-visible:outline-black text-sm focus-visible:ring-black"
-      href="#"
-       @click.prevent="selectPackage"
-    >
-     Select
-    </a>
-  </div>
-</div>
-</div>
-
-</div>
 </div>
 
 </form>
@@ -433,13 +298,13 @@
     </div>
   <div class = "grid grid-cols-4 gap-4 mt-8">
     <div
-       v-for="(gown, gownIndex) in gowns"
-      :key="index"
-      class="row cursor-pointer w-[270px] h-[360px] bg-[#E6E6FA] border border-black rounded-xl p-1 shadow transition-all duration-300"
-      :class="[
-        'border', 
-        activeGownIndex === gownIndex ? 'border-blue-500 ring-2 ring-blue-500' : 'border-black'
-      ]">
+        v-for="(gown, gownIndex) in gowns"
+        :key="index"
+        class="row cursor-pointer w-[270px] h-[360px] bg-[#E6E6FA] border border-black rounded-xl p-1 shadow transition-all duration-300"
+        :class="[
+          'border', 
+          activeGownIndex === gownIndex ? 'border-blue-500 ring-2 ring-blue-500' : 'border-black'
+        ]">
 
         <div class = "flex h-44 bg-gray-100 justify-center items-center">
            <img :src="gown.img" alt="gown" class = "w-28 h-34">
@@ -677,10 +542,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
+
 export default {
   name: 'WeddingForm',
   data() {
     return {
+     
+      packages: [],
+
+
       activeGownIndex: null,
       activeTuxedoIndex: null,
 
@@ -692,6 +565,7 @@ export default {
        showVendorDetailsForm: false,
        showGownSelectionForm: false,
        showCompleteEventProcess: false,
+       selectedPackage: null,
 
 
        quantity: [
@@ -804,10 +678,7 @@ export default {
     };
   },
   methods: {
-     selectPackage() {
-       this.showPackageForm = false;
-       this.showVendorDetailsForm = true;
-     },
+
      backBtnVendor() {
       this.showPackageForm = true;
       this.showVendorDetailsForm = false;
@@ -860,8 +731,60 @@ export default {
        
        } 
     },
-     
-  }
+    async fetchPackages() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          alert('You are not logged in. Please log in to view event packages.');
+          return;
+        }
+
+        const response = await axios.get('http://127.0.0.1:5000/created-packages-wedding', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        // Populate packages array with data from API and assign random background colors
+        this.packages = response.data.map((pkg, index) => ({
+          packageId: pkg.package_id,   // API returns package_id, so map to packageId
+          package_name: pkg.package_name,
+          package_type: pkg.package_type,
+          venue: pkg.venue,
+          price: pkg.price,
+          capacity: pkg.capacity,
+          description: pkg.description,
+          dummyIndex: index + 1,  // Dummy index, independent of package_id
+          backgroundColor: this.getRandomColor(), // Assign random background color
+        }));
+      } catch (error) {
+        console.error('Error fetching event packages:', error.response?.data || error.message);
+      }
+    },
+    getRandomColor() {
+      const colors = [
+        '#f7c5f7', // Light pink
+        '#afe2f8', // Light blue
+        '#f6f9a0', // Light yellow
+        '#f7c5c5', // Light red
+        '#d9f7c5', // Light green
+        '#e3f5d4', // Pale green
+        '#fce6e2', // Pale peach
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    selectPackage(pkg) {
+      this.selectedPackage = pkg;  // Store the selected package
+      this.showPackageForm = false;  // Hide the package selection form
+      this.showVendorDetailsForm = true;  // Show the vendor details form
+    },
+  },
+  created() {
+    this.fetchPackages();
+  },
+
 };
 
 
