@@ -76,58 +76,85 @@
     
 
     <!-- Tables -->
-
-    <!--Wishlist Table-->
     <div v-if="showTable === 'wishlist'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-          <th scope="col" class="px-2 py-3">#</th>
-          <th scope="col" class="px-2 py-3">Event</th>
-          <th scope="col" class="px-2 py-3">Theme</th>
-          <th scope="col" class="px-2 py-3">Color</th>
-          <th scope="col" class="px-2 py-3">Venue</th>
-          <th scope="col" class="px-2 py-3">Booked by</th>
-          <th scope="col" class="px-2 py-3">Contact Number</th>
-          <th scope="col" class="px-2 py-3">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-            v-for="(event, index) in paginatedWishlist"
-            :key="event.no"
-            :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
-            class="border-b dark:border-gray-700">
-          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ index + 1 }}</th>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_name }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_theme}}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_color}}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.firstname }} {{ event.lastname }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.contactnumber }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">
-            <button
-                @click="selectRowAndRedirect(index)"
-                class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
-                Select
-              </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-2 py-3">#</th>
+              <th scope="col" class="px-2 py-3">Event</th>
+              <th scope="col" class="px-2 py-3">Theme</th>
+              <th scope="col" class="px-2 py-3">Color</th>
+              <th scope="col" class="px-2 py-3">Venue</th>
+              <th scope="col" class="px-2 py-3">Booked by</th>
+              <th scope="col" class="px-2 py-3">Contact Number</th>
+              <th scope="col" class="px-2 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+                v-for="(event, index) in paginatedWishlist"
+                :key="event.events_id"
+                :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
+                class="border-b dark:border-gray-700">
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ index + 1 }}</th>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_name }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_theme }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_color }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue_name }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.firstname }} {{ event.lastname }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.contactnumber }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">
+                <button
+                    @click="openEventModal(event)"
+                    class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
+                    View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
-      <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
-      <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-blue-900': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
-        {{ page }}
-      </button>
-      <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
+        <!-- Pagination Controls -->
+        <div class="flex justify-center space-x-2 mt-4 mb-6">
+          <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
+          <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-blue-900': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+            {{ page }}
+          </button>
+          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
+<!-- Event Details Modal -->
+<div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl overflow-auto max-h-[90vh]">
+        <h2 class="text-2xl font-semibold mb-4">Event Details</h2>
+        <div class="mb-4">
+          <p class="text-lg"><strong>Event Name:</strong> {{ selectedEvent.event_name }}</p>
+          <p class="text-lg"><strong>Event Type:</strong> {{ selectedEvent.event_type }}</p>
+          <p class="text-lg"><strong>Theme:</strong> {{ selectedEvent.event_theme }}</p>
+          <p class="text-lg"><strong>Color:</strong> {{ selectedEvent.event_color }}</p>
+          <p class="text-lg"><strong>Venue:</strong> {{ selectedEvent.venue_name }}</p>
+          <p class="text-lg"><strong>Booked By:</strong> {{ selectedEvent.firstname }} {{ selectedEvent.lastname }}</p>
+          <p class="text-lg"><strong>Contact Number:</strong> {{ selectedEvent.contactnumber }}</p>
+          <p class="text-lg"><strong>Total Price:</strong> {{ selectedEvent.total_price }}</p>
+          <p class="text-lg"><strong>Gown Package:</strong> {{ selectedEvent.gown_package_name }}</p>
+          <p class="text-lg"><strong>Price:</strong> {{ selectedEvent.gown_package_price }}</p>
+        </div>
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold">Suppliers</h3>
+          <div v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="mb-2">
+            <p class="text-lg"><strong>Name:</strong> {{ supplier.name }}</p>
+            <p class="text-lg"><strong>Service:</strong> {{ supplier.service }}</p>
+            <p class="text-lg"><strong>Price:</strong> {{ supplier.price }}</p>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button @click="closeEventModal" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Close</button>
+        </div>
+      </div>
+    </div>
    
 
  <!--Upcoming Events Table-->
@@ -649,6 +676,12 @@
       editVendorDetails: false,
       editServiceDetails: false,
 
+      bookedEvents: [],
+      wishlist: [],
+
+      showEventModal: false,
+      selectedEvent: {},
+
      //Dummy rani!!
      selectedCapacity: '150to200',
      selectedCatering: 'catering1',
@@ -780,7 +813,7 @@
 
   methods: {
     async fetchBookedWishlist() {
-          try {
+    try {
         const token = localStorage.getItem('access_token');  // Get the JWT token from localStorage
 
         if (!token) {
@@ -806,24 +839,33 @@
                 event_type: item.event_type,
                 event_theme: item.event_theme,
                 event_color: item.event_color,
-                venue: item.venue,
                 schedule: item.schedule,
                 start_time: item.start_time,
                 end_time: item.end_time,
                 status: item.status,
+                package_id: item.package_id,
+                package_name: item.package_name,
+                package_type: item.package_type,
+                capacity: item.capacity,
+                package_description: item.package_description,
+                total_price: item.total_price,
+                venue_name: item.venue_name,
+                location: item.location,
+                gown_package_name: item.gown_package_name,
+                gown_package_price: item.gown_package_price,
                 firstname: item.firstname,
                 lastname: item.lastname,
                 contactnumber: item.contactnumber,
-                
+                suppliers: item.suppliers || []
             }));
         } else {
             console.warn('No wishlist data found or data is not an array');
         }
 
     } catch (error) {
-        console.error('Error fetching booked wishlist:', error.message || error);
+        console.error('Error fetching wishlist:', error.message || error);
     }
-            },
+},
 
 
     prevPage() {
@@ -873,10 +915,8 @@
     },
 
     selectRowAndRedirect(index) {
-        // Get the selected event data based on the index
         const selectedEvent = this.paginatedWishlist[index];
 
-        // Use Vue Router to navigate to /create-event and pass selected data via query params
         this.$router.push({
             path: '/create-event',
             query: {
@@ -885,7 +925,7 @@
                 event_type: selectedEvent.event_type,
                 event_theme: selectedEvent.event_theme,
                 event_color: selectedEvent.event_color,
-                venue: selectedEvent.venue,
+                venue_name: selectedEvent.venue_name,
                 schedule: selectedEvent.schedule,
                 start_time: selectedEvent.start_time,
                 end_time: selectedEvent.end_time,
@@ -893,9 +933,27 @@
                 firstname: selectedEvent.firstname,
                 lastname: selectedEvent.lastname,
                 contactnumber: selectedEvent.contactnumber,
+                suppliers: JSON.stringify(selectedEvent.suppliers),
+                total_price: selectedEvent.total_price,
+                gown_package_name: selectedEvent.gown_package_name,
+                gown_package_price: selectedEvent.gown_package_price,
             }
         });
     },
+
+    openEventModal(event) {
+      this.selectedEvent = event;
+      this.showEventModal = true;
+    },
+    closeEventModal() {
+      this.showEventModal = false;
+      this.selectedEvent = {};
+    },
+
+    
+
+
+
 
     viewEvent(event) {
     this.selectedEvent = event; 

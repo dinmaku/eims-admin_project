@@ -15,6 +15,8 @@ import DebutForm from '../pages/debut-form.vue';
 import EventCalendar from '../pages/event-calendar.vue';
 import Invoice from '../pages/invoice.vue';
 import AddServices from '../pages/add-services.vue'
+import AddVenue from '../pages/add-venue.vue';
+import AddOutfitPackage from '../pages/add-outfitPackage.vue'
 
 const routes = [
   {
@@ -98,6 +100,20 @@ const routes = [
         name: 'AddServices',
         path: '/add-services',
         component: AddServices,
+        props: true,     
+      
+      },
+      {
+        name: 'AddVenue',
+        path: '/add-venue',
+        component: AddVenue,
+        props: true,     
+      
+      },
+      {
+        name: 'AddOutfitPackage',
+        path: '/add-outfitPackage',
+        component: AddOutfitPackage,
         props: true,     
       
       },

@@ -69,6 +69,8 @@ export default {
             // Set the 'loggedIn' status to true
             localStorage.setItem('loggedIn', 'true'); // Mark as logged in
 
+           
+
             // Emit an event with login success
             this.$emit('loginSuccess');
 

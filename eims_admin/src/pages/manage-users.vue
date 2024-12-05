@@ -9,7 +9,7 @@
   <div class="flex flex-row items-center m-5 space-x-5">
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
         <img class="w-auto h-12" src="/img/vendor2.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalVendors }} <span class = "text-sm antialiased text-gray-600">suppliers</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalSuppliers }} <span class = "text-sm antialiased text-gray-600">suppliers</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
         <img class="w-auto h-12" src="/img/staff.png" alt="Vendor Image">
@@ -21,15 +21,15 @@
   <div class = "flex">
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'vendors', 'bg-gray-800 text-white': showTable !== 'vendors' } 
-  ]" @click="showTable = 'vendors'">
+    { 'bg-white text-teal-800': showTable === 'Suppliers', 'bg-gray-800 text-white': showTable !== 'Suppliers' } 
+  ]" @click="showTable = 'Suppliers'">
     Suppliers
   </button>
   
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'staffs', 'bg-gray-800 text-white': showTable !== 'staffs' } 
-  ]" @click="showTable = 'staffs'">
+    { 'bg-white text-teal-800': showTable === 'Staffs', 'bg-gray-800 text-white': showTable !== 'Staffs' } 
+  ]" @click="showTable = 'Staffs'">
     Crews
   </button>
 </div>
@@ -39,57 +39,62 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </button>
 </div>
 
-<!--- Vendor Table--->
-<div v-if="showTable === 'vendors'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" class="px-2 py-3">#</th>
-            <th scope="col" class="px-2 py-3">Name</th>
-            <th scope="col" class="px-2 py-3">Email</th>
-            <th scope="col" class="px-2 py-3">Contact</th>
-            <th scope="col" class="px-2 py-3">Service</th>
-            <th scope="col" class="px-2 py-3">Minimum price</th>
-            <th scope="col" class="px-2 py-3">Maximum price</th>
-            <th scope="col" class="px-2 py-3">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-              v-for="(vendor, index) in paginatedVendors"
-              :key="vendor.no"
-              class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-            <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ vendor.no }}</th>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.fullName }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.email }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.contact }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.service }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.minPrice }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ vendor.maxPrice }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">
-              <button
-                  class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600" @click="editVendorBtn(index)">
-                  Edit
-                </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
 
-      <!-- Pagination Controls -->
-      <div class="flex justify-center space-x-2 mt-4 mb-6">
-        <button @click="prevVendorsPage" :disabled="currentVendorsPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
-        <button v-for="page in totalVendorsPages" :key="page" @click="changeVendorsPage(page)" :class="{'bg-blue-900': currentVendorsPage === page, 'bg-gray-300': currentVendorsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
-          {{ page }}
-        </button>
-        <button @click="nextVendorsPage" :disabled="currentVendorsPage === totalVendorsPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
-      </div>
+<!--- Supplier Table --->
+<div v-if="showTable === 'Suppliers'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-2 py-3">#</th>
+                    <th scope="col" class="px-2 py-3">Name</th>
+                    <th scope="col" class="px-2 py-3">Email</th>
+                    <th scope="col" class="px-2 py-3">Contact</th>
+                    <th scope="col" class="px-2 py-3">Service</th>
+                    <th scope="col" class="px-2 py-3">Price</th>
+                    <th scope="col" class="px-2 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    v-for="(supplier, index) in paginatedSuppliers"
+                    :key="supplier.no"
+                    class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
+                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ supplier.dummyIndex }}</th>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.fullName }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.email }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.contact }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.service }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.price }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">
+                        <button
+                            class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600" 
+                            @click="editSupplierBtn(index)">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-center space-x-2 mt-4 mb-6">
+            <button @click="prevSuppliersPage" :disabled="currentSuppliersPage === 1" 
+                class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
+            <button v-for="page in totalSuppliersPages" :key="page" @click="changeSuppliersPage(page)" 
+                :class="{'bg-blue-900': currentSuppliersPage === page, 'bg-gray-300': currentSuppliersPage !== page}" 
+                class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+                {{ page }}
+            </button>
+            <button @click="nextSuppliersPage" :disabled="currentSuppliersPage === totalSuppliersPages" 
+                class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+        </div>
     </div>
-  </div>
+</div>
+
 
   <!--- Staff Table--->
-  <div v-if="showTable === 'staffs'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+  <div v-if="showTable === 'Staffs'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -156,9 +161,14 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         </div>
       </div>
 
+      <!-- Username -->
+      <div class="mt-5">
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" placeholder="Username" required>
+      </div>
+
       <!-- Email -->
       <div class="mt-5">
-        <input type="email" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" placeholder="Email" required>
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" placeholder="Email" required>
       </div>
 
       <!-- Contact Number -->
@@ -168,42 +178,31 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
       <!-- Address -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="country" placeholder="Country" required>
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="address" placeholder="Address" required>
       </div>
 
-      <div class="mt-5 flex flex-row">
-        <div class="flex items-center space-x-2">
-          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="city" placeholder="City" required>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="street" placeholder="Street" required>
-        </div>
-      </div>
-
-      <!-- Password -->
-      <div class="mt-5">
-        <input type="password" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="registerPassword" placeholder="Password" required>
-      </div>
 
       <!-- User Type Selection -->
       <div class="mt-5">
         <select class="flex mt-4 ml-2 p-2 w-52 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
           <option value="" class="text-gray-700" disabled selected>Select a Type of User</option>
-          <option value="vendor">Vendors</option>
-          <option value="assistant">Assistant</option>
-          <option value="staff">Staff</option>
+          <option value="Suppliers">Supplier</option>
+          <option value="Assistant">Assistant</option>
+          <option value="Staff">Staff</option>
         </select>
       </div>
 
-      <!-- Vendor Details (only if vendor is selected) -->
-      <div v-if="addVendorDetails" class="mt-5">
+      <!-- Suppliers Details (only if supplier is selected) -->
+      <div v-if="addSupplierDetails" class="mt-5">
         <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="service">
           <option value="" class="text-gray-700" disabled selected>Select Service Type</option>
           <option value="Catering">Catering</option>
-          <option value="Glam">Hair and Makeup</option>
+          <option value="Hair Stylist">Hair Stylist</option>
+          <option value="Makeup Artist">Makeup Artist</option>
           <option value="Host">Host</option>
           <option value="Entertainment">Entertainer / Singer</option>
-          <option value="Multimedia">Photographer and Videographer</option>
+          <option value="Photographer">Photographer</option>
+          <option value="Videographer">Videographer</option>
           <option value="Sound and Lighting">Sound and Lighting</option>
           <option value="Transportation">Transportation</option>
           <option value="Invitations">Invitations and Stationery</option>
@@ -211,8 +210,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         </select>
 
         <div class="flex items-center mt-4">
-          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="minPrice" placeholder="Minimum Price" required>
-          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="maxPrice" placeholder="Maximum Price" required>
+          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="price" placeholder="Supplier Price" required>
+    
         </div>
       </div>
 
@@ -227,12 +226,12 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </form>
 
 
-<!--Edit Vendor Form-->
-<form v-if="editVendorForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+<!--Edit Supplier Form-->
+<form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
               <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Vendor</h1>
-               <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditVendorBtn">
+               <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditSupplierBtn">
                   Close
                 </button>
         </div>
@@ -241,23 +240,34 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
              
                 <div class = "flex items-center space-x-2">
-                  <input type="text"  v-model="selectedVendor.fullName" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
+                  <input type="text"  v-model="selectedSupplier.fullName" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
               
               </div>
               <div class = "mt-5">
                 <div class = "flex items-center">
-                  <input type="text"  v-model="selectedVendor.email" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Email" required>
+                  <input type="text"  v-model="selectedSupplier.username" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Username" required>
                 </div>
               </div>
               <div class = "mt-5">
                 <div class = "flex items-center">
-                  <input type="text"  v-model="selectedVendor.contact" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
+                  <input type="text"  v-model="selectedSupplier.email" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Email" required>
                 </div>
               </div>
 
               <div class = "mt-5">
                 <div class = "flex items-center">
-                  <select v-model="selectedVendor.service" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
+                  <input type="text"  v-model="selectedSupplier.contact" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
+                </div>
+              </div>
+              <div class = "mt-5">
+                <div class = "flex items-center">
+                  <input type="password"  v-model="selectedSupplier.password" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
+                </div>
+              </div>
+
+              <div class = "mt-5">
+                <div class = "flex items-center">
+                  <select v-model="selectedSupplier.service" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Service Type</option>
                     <option value="Catering">Catering</option>
                     <option value="Hair and Makeup">Hair and Makeup</option>
@@ -271,8 +281,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 </select>
                 </div>
                 <div class = "flex items-center mt-4">
-                  <input type="text" v-model="selectedVendor.minPrice" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="minPrice" placeholder="Minimum Price" required>
-                  <input type="text" v-model="selectedVendor.maxPrice" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="maxPrice" placeholder="Maximum Price" required>
+                  <input type="text" v-model="selectedSupplier.price" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="minPrice" placeholder="Price" required>
                 </div>
  
               </div>
@@ -292,7 +301,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                    <button class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                      Delete
                    </button>
-                   <button class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
+                   <button @click.prevent ="confirmEditSupplier" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                      Confirm
                    </button>
               </div>
@@ -362,27 +371,28 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 <script>
 import axios from 'axios';
 
+
 axios.defaults.withCredentials = true;
 
 export default {
   name: 'ManageUsers',
   data() {
     return {
-      showTable: 'vendors',
-      currentVendorsPage: 1,
-      rowsPerVendorsPage: 6,
+      showTable: 'Suppliers',
+      currentSuppliersPage: 1,
+      rowsPerSuppliersPage: 6,
 
       currentStaffsPage: 1,
       rowsPerStaffsPage: 6,
 
       addUserForm: false,
-      addVendorDetails: false,
+      addSupplierDetails: false,
       addStaffDetails: false,
       selectedOption: '',
 
-      editVendorForm: false,
-      selectedVendor: null, 
-      editVendorForm: false,
+      editSupplierForm: false,
+      selectedSupplier: null, 
+      editSupplierForm: false,
 
       editStaffForm: false,
       selectedStaff: null, 
@@ -391,21 +401,20 @@ export default {
       //add users inputs
       selectedUserType: '',
       email: '',
+      username: '',
       firstName: '',
       lastName: '',
+      username: '',
       contactNumber: '',
-      country: '',
-      city: '',
-      street: '',
+      address: '',
       registerPassword: '',
       service: '',
-      minPrice: '',
-      maxPrice: '',
+      price: '',
       errorMessage: '',
 
 
       staffs: [],
-      vendors: [],
+      suppliers: [],
   
       
 
@@ -414,16 +423,16 @@ export default {
     };
   },
   computed: {
-    totalVendorsPages() {
-      return Math.ceil(this.vendors.length / this.rowsPerVendorsPage);
+    totalSuppliersPages() {
+        return Math.ceil(this.suppliers.length / this.rowsPerSuppliersPage);
     },
-    paginatedVendors() {
-      const start = (this.currentVendorsPage - 1) * this.rowsPerVendorsPage;
-      const end = start + this.rowsPerVendorsPage;
-      return this.vendors.slice(start, end);
+    paginatedSuppliers() {
+        const start = (this.currentSuppliersPage - 1) * this.rowsPerSuppliersPage;
+        const end = start + this.rowsPerSuppliersPage;
+        return this.suppliers.slice(start, end);
     },
-    totalVendors() {
-       return this.vendors.length;
+    totalSuppliers() {
+        return this.suppliers.length;
     },
 
     totalStaff() {
@@ -443,135 +452,146 @@ export default {
   },
   methods: {
     async handleRegister() {
-          try {
-              // Validate required fields
-              const fields = [
-                  this.firstName, this.lastName, this.email, this.contactNumber,
-                  this.registerPassword, this.country, this.city, this.street
-              ];
+            try {
+                // Validate required fields
+                const fields = [
+                    this.username, this.email, this.firstName, this.lastName,
+                    this.contactNumber, this.address,
+                ];
 
-              if (fields.some(field => !field)) {
-                  this.errorMessage = 'All fields are required!';
+                if (fields.some(field => !field)) {
+                    this.errorMessage = 'All fields are required!';
+                    return;
+                }
+
+                // Automatically set registerPassword to match username if username is provided
+                if (this.username) {
+                    this.registerPassword = this.username;
+                }
+
+                // Additional validation for vendors
+                if (this.selectedUserType === 'Suppliers') {
+                    if (!this.service || !this.price) {
+                        this.errorMessage = 'Vendor details are incomplete!';
+                        return;
+                    }
+                }
+
+                // Prepare the data payload
+                const requestData = {
+                    email: this.email,
+                    username: this.username,
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    contactNumber: this.contactNumber,
+                    address: this.address,
+                    password: this.registerPassword,
+                    user_type: this.selectedUserType,
+                };
+
+                // Include vendor-specific details if applicable
+                if (this.selectedUserType === 'Suppliers') {
+                    requestData.service = this.service;
+                    requestData.price = this.price;
+                }
+
+                // Send the request to the backend
+                const response = await axios.post('http://127.0.0.1:5000/add-user', requestData);
+
+                if (response.status === 201) {
+                    alert('User added successfully!');
+                    this.resetRegisterForm(); // Reset the form after success
+                }
+            } catch (error) {
+                // Handle error feedback
+                this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+            }
+        },
+
+        resetRegisterForm() {
+            this.email = '';
+            this.username = '';
+            this.firstName = '';
+            this.lastName = '';
+            this.contactNumber = '';
+            this.address = '';
+            this.registerPassword = '';
+            this.selectedUserType = '';
+            this.service = '';
+            this.price = '';
+            this.errorMessage = '';
+        },
+
+
+      async fetchStaffs() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    alert('You are not logged in. Please log in to view staff users.');
+                    return;
+                }
+
+                const response = await axios.get('http://127.0.0.1:5000/created-users', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                });
+
+                // Update position to be uppercase in the first letter
+                this.staffs = response.data.map((user) => ({
+                    no: user.userid,
+                    fullName: `${user.firstname} ${user.lastname}`,
+                    email: user.email,
+                    contact: user.contactnumber,
+                    // Capitalizing the first letter of the position
+                    position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
+                }));
+
+            } catch (error) {
+                console.error('Error fetching staff users:', error.response?.data || error.message);
+            }
+        },
+
+        async fetchSuppliers() {
+          try {
+              const token = localStorage.getItem('access_token');
+              if (!token) {
+                  alert('You are not logged in. Please log in to view supplier data.');
                   return;
               }
 
-              // Additional validation for vendors
-              if (this.selectedUserType === 'vendor') {
-                  if (!this.service || !this.minPrice || !this.maxPrice) {
-                      this.errorMessage = 'Vendor details are incomplete!';
-                      return;
-                  }
-              }
+              const response = await axios.get('http://127.0.0.1:5000/suppliers', {
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`,
+                  },
+                  withCredentials: true,
+              });
 
-              // Prepare the data payload
-              const requestData = {
-                  firstName: this.firstName,
-                  lastName: this.lastName,
-                  email: this.email,
-                  contactNumber: this.contactNumber,
-                  password: this.registerPassword,
-                  country: this.country,
-                  city: this.city,
-                  street: this.street,
-                  user_type: this.selectedUserType,
-              };
+              console.log(response.data); // Log the response to verify
 
-              // Include vendor-specific details if applicable
-              if (this.selectedUserType === 'vendor') {
-                  requestData.service = this.service;
-                  requestData.minPrice = this.minPrice;
-                  requestData.maxPrice = this.maxPrice;
-              }
-
-              // Send the request to the backend
-              const response = await axios.post('http://127.0.0.1:5000/add-user', requestData);
-
-              if (response.status === 201) {
-                  alert('User added successfully!');
-                  this.resetRegisterForm(); // Reset the form after success
-              }
+              // Populate suppliers array with data from API
+              this.suppliers = response.data.map((supplier, index) => ({
+                  no: supplier.supplier_id,
+                  fullName: `${supplier.firstname} ${supplier.lastname}`,
+                  email: supplier.email,
+                  username: supplier.username,
+                  password: supplier.password,
+                  contact: supplier.contactnumber,
+                  service: supplier.service,
+                  price: supplier.price,
+                  userid: supplier.userid, // Include userid here
+                  dummyIndex: index + 1, // Properly set the dummyIndex here
+              }));
           } catch (error) {
-              // Handle error feedback
-              this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+              console.error('Error fetching suppliers:', error.response?.data || error.message);
           }
       },
 
 
-      resetRegisterForm() {
-          this.firstName = '';
-          this.lastName = '';
-          this.email = '';
-          this.contactNumber = '';
-          this.country = '';
-          this.city = '';
-          this.street = '';
-          this.registerPassword = '';
-          this.selectedUserType = '';
-          this.service = '';
-          this.minPrice = '';
-          this.maxPrice = '';
-          this.errorMessage = '';
-      },
-      async fetchStaffs() {
-              try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                  alert('You are not logged in. Please log in to view staff users.');
-                  return;
-                }
-
-                const response = await axios.get('http://127.0.0.1:5000/created-users', {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                  },
-                  withCredentials: true,
-                });
-
-                this.staffs = response.data.map((user) => ({
-                  no: user.userid,
-                  fullName: `${user.firstname} ${user.lastname}`,
-                  email: user.email,
-                  contact: user.contactnumber,
-                  position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
-                }));
-
-              
-              } catch (error) {
-                console.error('Error fetching staff users:', error.response?.data || error.message);
-              }
-            },
-        async fetchVendors() {
-            try {
-                const token = localStorage.getItem('access_token'); // Get the JWT token
-                if (!token) {
-                    alert('You are not logged in. Please log in to view vendor data.');
-                    return;
-                }
-
-                const response = await axios.get('http://127.0.0.1:5000/vendors', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // Send the JWT token
-                    },
-                    withCredentials: true, // Send cookies if needed
-                });
-
-                // Populate vendors array with data from API
-                this.vendors = response.data.map((vendor, index) => ({
-                    no: index + 1,
-                    fullName: `${vendor.firstname} ${vendor.lastname}`,
-                    email: vendor.email,
-                    contact: vendor.contactnumber,
-                    service: vendor.service,
-                    minPrice: vendor.min_price,
-                    maxPrice: vendor.max_price,
-                }));
-            } catch (error) {
-                console.error('Error fetching vendors:', error.response?.data || error.message);
-            }
-        },
-
+   
 
         async confirmEditStaff() {
             try {
@@ -623,6 +643,105 @@ export default {
             }
           },
 
+
+          async confirmEditSupplier() {
+              try {
+                const token = localStorage.getItem('access_token');
+
+                if (!this.selectedSupplier) {
+                  alert("No supplier selected for editing.");
+                  return;
+                }
+
+                if (!this.selectedSupplier.no) {
+                  alert("Supplier ID is missing or invalid.");
+                  return;
+                }
+
+                // Use the userid from the selectedSupplier
+                const userid = this.selectedSupplier.userid;
+
+                if (!userid) {
+                  alert("User ID is missing for this supplier. Unable to edit.");
+                  return;
+                }
+
+                const requiredFields = [
+                  'fullName', 'email', 'contact', 'service', 'price', 'username', 'password'
+                ];
+                
+                const missingFields = requiredFields.filter(field => !this.selectedSupplier[field]);
+                
+                if (missingFields.length > 0) {
+                  console.error('Missing fields:', missingFields);
+                  alert(`Missing fields: ${missingFields.join(', ')}`);
+                  return;
+                }
+
+                const [firstname, ...lastnameParts] = this.selectedSupplier.fullName.split(' ');
+                if (!firstname || lastnameParts.length === 0) {
+                  alert("Full name must contain both first and last name.");
+                  return;
+                }
+                const lastname = lastnameParts.join(' ');
+
+                const supplierData = {
+                  firstname,
+                  lastname,
+                  email: this.selectedSupplier.email,
+                  contactnumber: this.selectedSupplier.contact,
+                  service: this.selectedSupplier.service,
+                  price: this.selectedSupplier.price,
+                  username: this.selectedSupplier.username,
+                  password: this.selectedSupplier.password,
+                  userid: userid
+                };
+
+                console.log('Payload:', supplierData);
+
+                const response = await axios.put(
+                  `http://127.0.0.1:5000/edit-supplier/${this.selectedSupplier.no}`,
+                  supplierData,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+
+                if (response.status === 200) {
+                  alert("Supplier updated successfully!");
+
+                  const index = this.suppliers.findIndex(
+                    (supplier) => supplier.no === this.selectedSupplier.no
+                  );
+                  if (index !== -1) {
+                    this.suppliers[index] = {
+                      ...this.selectedSupplier,
+                      fullName: `${firstname} ${lastname}`,
+                    };
+                  }
+
+                  this.closeEditSupplierBtn();
+                } else {
+                  alert("Failed to update supplier.");
+                }
+              } catch (error) {
+                console.error("Error updating supplier:", error);
+                if (error.response) {
+                  alert(`Error updating supplier: ${error.response.data.message}`);
+                } else {
+                  alert("Error updating supplier. Please try again.");
+                }
+              }
+            },
+
+
+
+
+
+
+
           async deleteUserItem(userid) {
               try {
                 if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
@@ -658,24 +777,21 @@ export default {
                 }
               }
             },
+            
       
 
-
-
-
-
-    changeVendorsPage(page) {
-      this.currentVendorsPage = page;
+    changeSuppliersPage(page) {
+        this.currentSuppliersPage = page;
     },
-    prevVendorsPage() {
-      if (this.currentVendorsPage > 1) {
-        this.currentVendorsPage--;
-      }
+    prevSuppliersPage() {
+        if (this.currentSuppliersPage > 1) {
+            this.currentSuppliersPage--;
+        }
     },
-    nextVendorsPage() {
-      if (this.currentVendorsPage < this.totalVendorsPages) {
-        this.currentVendorsPage++;
-      }
+    nextSuppliersPage() {
+        if (this.currentSuppliersPage < this.totalSuppliersPages) {
+            this.currentSuppliersPage++;
+        }
     },
 
     prevStaffsPage() {
@@ -701,35 +817,37 @@ export default {
     },
 
     selectAddForm() {
-          if (this.selectedUserType === 'vendor') {
-              this.addVendorDetails = true;
+          if (this.selectedUserType === 'Suppliers') {
+              this.addSupplierDetails = true;
               this.addStaffDetails = false;
-          } else if (this.selectedUserType === 'assistant' || this.selectedUserType === 'staff') {
+          } else if (this.selectedUserType === 'Assistant' || this.selectedUserType === 'Staff') {
               this.addStaffDetails = true;
-              this.addVendorDetails = false;
+              this.addSupplierDetails = false;
           } else {
-              this.addVendorDetails = false;
+              this.addSupplierDetails = false;
               this.addStaffDetails = false;
           }
       },
   
 
 
-    editVendorBtn(){
-      this.editVendorForm = true;
+    editSupplierBtn(index){
+      this.editSupplierForm = true;
+      const selectedSupplier = this.suppliers[index]; 
+      this.supplierFormData = { ...selectedSupplier };
     },
 
-    closeEditVendorBtn() {
-      this.editVendorForm = false;
+    closeEditSupplierBtn() {
+      this.editSupplierForm = false;
     },
 
-    editVendorBtn(index) {
-        this.selectedVendor = this.paginatedVendors[index]; 
-        this.editVendorForm = true; // Show the edit form
+    editSupplierBtn(index) {
+        this.selectedSupplier = this.paginatedSuppliers[index]; 
+        this.editSupplierForm = true; // Show the edit form
     },
     closeEditUserBtn() {
         this.editUserForm = false; 
-        this.selectedVendor = null; 
+        this.selectedSupplier = null; 
     },
 
     editStaffBtn(){
@@ -752,18 +870,18 @@ export default {
     
   },
   mounted() {
-    if (this.showTable === 'staffs') {
+    if (this.showTable === 'Staffs') {
         this.fetchStaffs(); // Fetch staff data on component mount
-    } else if (this.showTable === 'vendors') {
-        this.fetchVendors(); // Fetch vendor data on component mount
+    } else if (this.showTable === 'Suppliers') {
+        this.fetchSuppliers(); // Fetch vendor data on component mount
     }
 },
 watch: {
     showTable(newTable) {
-        if (newTable === 'staffs') {
+        if (newTable === 'Staffs') {
             this.fetchStaffs();
-        } else if (newTable === 'vendors') {
-            this.fetchVendors();
+        } else if (newTable === 'Suppliers') {
+            this.fetchSuppliers();
         }
     },
 },

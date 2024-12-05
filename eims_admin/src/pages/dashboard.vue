@@ -18,41 +18,49 @@
               </img>
               Dashboard
             </router-link>
-            <router-link to="/manage-events" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
-              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/events-booked.png">
-                <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
-              </img>
-             Booked Events 
-            </router-link>
-            <router-link to="/event-calendar" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md rounded-b-lg hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
-              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/upload.png">
-                <path fill-rule="evenodd" d="M2 9.5A3.5 3.5 0 005.5 13H9v2.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 15.586V13h2.5a4.5 4.5 0 10-.616-8.958 4.002 4.002 0 10-7.753 1.977A3.5 3.5 0 002 9.5zm9 3.5H9V8a1 1 0 012 0v5z" clip-rule="evenodd"></path>
-              </img>
-               Event Calendar
-            </router-link>
-            <router-link to="/manage-outfits" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
-              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/wedding-dress.png">
-                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path>
-              </img>
-             Wardrobes
-            </router-link>
+            <p class = "text-lg font-bold text-gray-400">Set up</p>
             <router-link to="/manage-users" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
               <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/manage-user.png">
                 <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path>
               </img>
-              Manage Users
+              Add Accounts 
+            </router-link>
+            <router-link to="/add-venue" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
+              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/venue.png">
+                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path>
+              </img>
+              Add Venue
+            </router-link>
+            <router-link to="/add-outfitPackage" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
+              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/add-wardrobe.png">
+                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path>
+              </img>
+              Add Wardrobes Package
             </router-link>
             <router-link to="/add-services" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md rounded-b-lg hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
               <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/customer-service.png">
                 <path fill-rule="evenodd" d="M2 9.5A3.5 3.5 0 005.5 13H9v2.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 15.586V13h2.5a4.5 4.5 0 10-.616-8.958 4.002 4.002 0 10-7.753 1.977A3.5 3.5 0 002 9.5zm9 3.5H9V8a1 1 0 012 0v5z" clip-rule="evenodd"></path>
               </img>
-               Add Services
+               Add Package Deals
             </router-link>
-            <router-link to="/upload-gallery" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
-              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/upload-gallery.png">
+            <p class = "text-lg font-bold text-gray-400">Management</p>
+            <router-link to="/manage-events" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
+              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/events-booked.png">
+                <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
+              </img>
+            Events 
+            </router-link>
+            <router-link to="/event-calendar" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md rounded-b-lg hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
+              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/upload.png">
+                <path fill-rule="evenodd" d="M2 9.5A3.5 3.5 0 005.5 13H9v2.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 15.586V13h2.5a4.5 4.5 0 10-.616-8.958 4.002 4.002 0 10-7.753 1.977A3.5 3.5 0 002 9.5zm9 3.5H9V8a1 1 0 012 0v5z" clip-rule="evenodd"></path>
+              </img>
+               Event Schedules
+            </router-link>
+            <router-link to="/manage-outfits" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE]  hover:text-gray-900 transition duration-400 ease-in-out">
+              <img aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/wedding-dress.png">
                 <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path>
               </img>
-              Events Gallery
+             Booked Wardrobes
             </router-link>
 
           </div>
@@ -74,13 +82,6 @@
       <div class ="w-full h-full bg-gray-500 text-center">
         <div class ="h-[50px] bg-[#F7E7CE] flex items-center shadow-xl px-[20px] w-full py-[10px] z-10 border-b">
         <!--Hamburger Menu-->
-
-        <div class="cursor-pointer w-[30px]" @click="toggleSideBar">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class=" w-[25px] h-[25px]">
-           
-           <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-          </svg>
-        </div>
         <div class="w-[calc(100%-200px)] flex justify-center ">
             <!-- Search bar -->
             <form class="flex items-center w-[500px]">
@@ -118,7 +119,7 @@
             <div v-show="showDropDown" class="absolute right-[10px] z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
+                <a href="/profile" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-0">Profile</a>
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-1">Support</a>
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-2">License</a>
                   <button type="submit" @click="handleLogout" class="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-200" role="menuitem" tabindex="-1" id="menu-item-3">Log out</button>
@@ -151,7 +152,8 @@
   data() {
     return {
       showDropDown: false,
-      showSide: true
+      showSide: true,
+      toggleSideBar: false,
     }
   },
   methods: {
@@ -170,6 +172,7 @@
       this.loggedIn = false; // Update Vue component state
       localStorage.removeItem('loggedIn'); // Remove login status from localStorage
       localStorage.removeItem('access_token');
+      localStorage.removeItem('userid');
       this.showDropDown = false; // Close dropdown
       this.$router.push('/'); // Optionally redirect to home or login page
       },
