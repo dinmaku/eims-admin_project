@@ -49,3 +49,8 @@ LINE 2: ...   SELECT package_id, package_name, package_type, venue, pri...
 2024-12-06 02:44:09,782 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
 2024-12-06 03:39:21,134 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
 2024-12-06 03:39:44,877 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-08 19:56:18,497 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-08 19:56:20,844 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-08 20:04:08,242 INFO: Received data: {'email': 'inazuma@example.com', 'username': 'inazuma', 'firstName': 'Inazuma', 'lastName': 'Newkama', 'contactNumber': '0905789444544', 'address': 'South Blue', 'password': 'inazuma', 'user_type': 'Suppliers', 'service': 'Hair Stylist', 'price': '8000'} [in E:\eims-admin_project\eims_admin_backend\app\routes.py:110]
+2024-12-08 20:04:08,667 INFO: Supplier data inserted successfully [in E:\eims-admin_project\eims_admin_backend\app\routes.py:150]
+2024-12-08 20:04:08,667 INFO: User data validated and inserted into the database successfully [in E:\eims-admin_project\eims_admin_backend\app\routes.py:154]

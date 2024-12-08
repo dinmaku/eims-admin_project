@@ -64,13 +64,6 @@
       <h1 class="font-amaticBold font-medium">Completed</h1>
     </button>
   </div>
-
-  <button
-    class="w-40 h-[45px] bg-blue-600 border border-solid rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105 ml-auto"
-    @click="showTable = ''"
-  >
-    <h1 class="font-amaticBold font-semiBold text-white">Finished Events</h1>
-  </button>
 </div>
    
     
@@ -107,7 +100,7 @@
               <td class="px-1 py-3 hidden sm:table-cell">
                 <button
                     @click="openEventModal(event)"
-                    class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
+                    class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]">
                     View
                 </button>
               </td>
@@ -117,11 +110,11 @@
 
         <!-- Pagination Controls -->
         <div class="flex justify-center space-x-2 mt-4 mb-6">
-          <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
-          <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-blue-900': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+          <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+          <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-[#9B111E]': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
             {{ page }}
           </button>
-          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
         </div>
       </div>
     </div>

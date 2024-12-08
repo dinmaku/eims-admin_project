@@ -22,7 +22,7 @@
                 Venues
             </button>
             </div>
-            <button class = "mr-2 w-28 h-10 bg-blue-600 font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
+            <button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
             transition-transform duration-300 transform hover:scale-105" @click="addVenueBtn">
             + Add Venue
             </button>
@@ -52,7 +52,7 @@
                             <td class="px-1 py-3 hidden sm:table-cell">{{ venue.venue_price }}</td>
                             <td class="px-1 py-3 hidden sm:table-cell">
                                 <button
-                                    class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600"
+                                    class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45] "
                                     @click="editVenueBtn(index)">
                                     Edit
                                 </button>
@@ -64,14 +64,14 @@
                 <!-- Pagination Controls -->
                 <div class="flex justify-center space-x-2 mt-4 mb-6">
                     <button @click="prevVenuesPage" :disabled="currentVenuesPage === 1"
-                        class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
+                        class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
                     <button v-for="page in totalVenuesPages" :key="page" @click="changeVenuesPage(page)"
-                        :class="{'bg-blue-900': currentVenuesPage === page, 'bg-gray-300': currentVenuesPage !== page}"
-                        class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+                        :class="{'bg-[#9B111E]': currentVenuesPage === page, 'bg-gray-300 ': currentVenuesPage !== page}"
+                        class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
                         {{ page }}
                     </button>
                     <button @click="nextVenuesPage" :disabled="currentVenuesPage === totalVenuesPages"
-                        class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+                        class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45]  disabled:opacity-50 text-xs">Next</button>
                 </div>
             </div>
         </div>

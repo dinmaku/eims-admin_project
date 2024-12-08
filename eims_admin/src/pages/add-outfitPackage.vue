@@ -22,7 +22,7 @@
                     Venues
                 </button>
                 </div>
-                <button class = "mr-2 w-44 h-10 bg-blue-600 font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
+                <button class = "mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
                 transition-transform duration-300 transform hover:scale-105" @click="addOutfitsPackageBtn">
                 + Add Outfit Package
                 </button>
@@ -52,7 +52,7 @@
                                     <td class="px-1 py-3 hidden sm:table-cell">{{ gownPackage.gown_package_price }}</td>
                                     <td class="px-1 py-3 hidden sm:table-cell">
                                         <button
-                                            class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600"
+                                            class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
                                             @click="editGownPackageBtn(index)">
                                             Edit
                                         </button>
@@ -64,119 +64,200 @@
                         <!-- Pagination Controls -->
                         <div class="flex justify-center space-x-2 mt-4 mb-6">
                             <button @click="prevGownPackagePage" :disabled="currentGownPackagePage === 1"
-                                class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
+                                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
                             <button v-for="page in totalGownPackagePages" :key="page" @click="changeGownPackagePage(page)"
-                                :class="{'bg-blue-900': currentGownPackagePage === page, 'bg-gray-300': currentGownPackagePage !== page}"
+                                :class="{'bg-[#9B111E]': currentGownPackagePage === page, 'bg-gray-300': currentGownPackagePage !== page}"
                                 class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
                                 {{ page }}
                             </button>
                             <button @click="nextGownPackagePage" :disabled="currentGownPackagePage === totalGownPackagePages"
-                                class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+                                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
                         </div>
                     </div>
                 </div>
 
     
-           <!-- Add Gown Package Form -->
+         
       
- <!-- Add Gown Package Form -->
- <form @submit.prevent="addGownPackage" v-if="addOutfitsPackageForm" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
-      <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
-        <div class="flex justify-between items-center m-3">
-          <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Gown Package</h1>
-          <button @click="closeAddGownPackageForm" class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform transition duration-300 transform hover:scale-105">
-            Close
-          </button>
-        </div>
-
-        <div class="border border-gray-500 mt-5 items-center"></div>
-        <div class="m-5">
-          <span>{{ errorMessage }}</span>
-
-          <!-- Gown Package Name -->
-          <div class="mt-5">
-            <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newGownPackage.gown_package_name" placeholder="Gown Package Name" required>
-          </div>
-
-          <!-- Description -->
-          <div class="mt-5">
-            <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newGownPackage.description" placeholder="Description">
-          </div>
-
-         <!-- Gowns -->
-          <h2 class="font-semibold text-lg font-raleway text-gray-800 mt-8 mb-4">Gowns</h2>
-          <div class="mb-4 p-4 border border-gray-300 rounded-lg">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Select Gowns</label>
-            <select @change="addGownOutfits" multiple class="mt-2 p-2 w-full h-40 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" size="5">
-              <option v-for="outfit in gowns" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                {{ outfit.outfit_name }} - {{ outfit.rent_price }} php
-              </option>
-            </select>
-          </div>
-
-          <!-- Tuxedos -->
-          <h2 class="font-semibold text-lg font-raleway text-gray-800 mt-8 mb-4">Tuxedos</h2>
-          <div class="mb-4 p-4 border border-gray-300 rounded-lg">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Select Tuxedos</label>
-            <select @change="addTuxedoOutfits" multiple class="mt-2 p-2 w-full h-40 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" size="5">
-              <option v-for="outfit in tuxedos" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                {{ outfit.outfit_name }} - {{ outfit.rent_price }} php
-              </option>
-            </select>
-          </div>
-
-          <!-- Confirm Button -->
-          <div class="flex justify-center items-center mt-10 space-x-3">
-            <button type="submit" class="w-32 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105">
-              Add Gown Package
-            </button>
-          </div>
-        </div>
-      </div>
-    </form>
-    
-    
-            <!-- Edit Venue Form -->
-            <form v-if="editVenueForm" @submit.prevent="updateVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
-            <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
-                <div class="flex justify-between items-center m-3">
-                <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Venue</h1>
-                <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditVenueForm">
-                    Close
+       <!-- Add Gown Package Form -->
+            <form @submit.prevent="addGownPackage" v-if="addOutfitsPackageForm" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
+            <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform transition duration-300">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Add Gown Package</h2>
+                <button @click="closeAddGownPackageForm()" class="text-red-500 hover:text-red-700 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
                 </div>
-    
-                <div class="border border-gray-500 mt-5 items-center"></div>
-                <div class="m-5">
-                <span>{{ errorMessage }}</span>
-    
-                <!-- Venue Name -->
-                <div class="mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.venue_name" placeholder="Venue Name" required>
+
+                <!-- Error Message -->
+                <div v-if="errorMessage" class="text-sm text-red-500 mb-4">
+                {{ errorMessage }}
                 </div>
-    
-                <!-- Location -->
-                <div class="mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.location" placeholder="Location" required>
+
+                <!-- Gown Package Name -->
+                <div class="mb-4">
+                <input
+                    id="gown-package-name"
+                    type="text"
+                    v-model="newGownPackage.gown_package_name"
+                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    placeholder="Enter package name"
+                    required
+                />
                 </div>
-    
-                <!-- Price -->
-                <div class="mt-5">
-                    <input type="number" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.venue_price" placeholder="Price" required>
+
+                <!-- Description -->
+                <div class="mb-4">
+                <input
+                    id="description"
+                    type="text"
+                    v-model="newGownPackage.description"
+                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    placeholder="Enter description"
+                />
                 </div>
-    
-                <!-- Confirm Button -->
-                <div class="flex justify-center items-center mt-10 space-x-3">
-                    <button @click.prevent="deleteVenue(selectedVenue.venue_id)" class="w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                            Delete
-                    </button>
-                    <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                    Confirm
-                    </button>
+
+                <!-- Gowns -->
+                <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
+                <select
+                    @change="addGownOutfits"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                >
+                    <option value="" disabled selected>Select a Gown</option>
+                    <option v-for="outfit in gowns" :key="outfit.outfit_id" :value="outfit.outfit_id">
+                    {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
+                    </option>
+                </select>
                 </div>
+
+                <!-- Tuxedos -->
+                <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
+                <select
+                    @change="addTuxedoOutfits"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                >
+                    <option value="" disabled selected>Select a Tuxedo</option>
+                    <option v-for="outfit in tuxedos" :key="outfit.outfit_id" :value="outfit.outfit_id">
+                    {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
+                    </option>
+                </select>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end space-x-4">
+                <button
+                    @click="closeAddGownPackageForm"
+                    type="button"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition duration-300"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 transition duration-300"
+                >
+                    Add Package
+                </button>
                 </div>
             </div>
             </form>
+
+
+            
+            
+            <!-- Edit Gown Package Form -->
+                <form v-if="editGownPackageForm" @submit.prevent="updateGownPackage" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
+                <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform transition duration-300">
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Edit Gown Package</h2>
+                    <button @click="closeEditGownPackageForm" class="text-red-500 hover:text-red-700 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div v-if="errorMessage" class="text-sm text-red-500 mb-4">
+                    {{ errorMessage }}
+                    </div>
+
+                    <!-- Gown Package Name -->
+                    <div class="mb-4">
+                    <label for="gown-package-name" class="block text-sm font-medium text-gray-700">Gown Package Name</label>
+                    <input
+                        id="gown-package-name"
+                        type="text"
+                        v-model="selectedGownPackage.gown_package_name"
+                        class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                        placeholder="Enter package name"
+                        required
+                    />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <input
+                        id="description"
+                        type="text"
+                        v-model="selectedGownPackage.description"
+                        class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                        placeholder="Enter description"
+                    />
+                    </div>
+
+                    <!-- Gowns -->
+                    <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
+                    <select
+                        v-model="selectedGownPackage.gown_ids"
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    >
+                        <option v-for="outfit in gowns" :key="outfit.outfit_id" :value="outfit.outfit_id">
+                        {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
+                        </option>
+                    </select>
+                    </div>
+
+                    <!-- Tuxedos -->
+                    <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
+                    <select
+                        v-model="selectedGownPackage.tuxedo_ids"
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    >
+                        <option v-for="outfit in tuxedos" :key="outfit.outfit_id" :value="outfit.outfit_id">
+                        {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
+                        </option>
+                    </select>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end space-x-4">
+                    <button
+                        @click="closeEditGownPackageForm"
+                        type="button"
+                        class="px-4 py-2 bg-red-300 text-gray-700 rounded-lg shadow-sm hover:bg-red-500 transition duration-300"
+                    >
+                        Delete
+                    </button>
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 transition duration-300"
+                    >
+                        Save Changes
+                    </button>
+                    </div>
+                </div>
+            </form>
+
     
     
           
@@ -196,22 +277,23 @@
     export default {
         name: 'AddOutfitPackage',
         data() {
-    return {
-      showTable: 'GownPackages',
-      currentGownPackagePage: 1,
-      rowsPerGownPackagePage: 5,
-      newGownPackage: {
-        gown_package_name: '',
-        description: '',
-        outfits: []
-      },
-      gownPackages: [],
-      addOutfitsPackageForm: false,
-      gowns: [],
-      tuxedos: [],
-      errorMessage: ''
-    };
-  },
+            return {
+            showTable: 'GownPackages',
+            currentGownPackagePage: 1,
+            rowsPerGownPackagePage: 5,
+            editGownPackageForm: false,
+            newGownPackage: {
+                gown_package_name: '',
+                description: '',
+                outfits: []
+            },
+            gownPackages: [],
+            addOutfitsPackageForm: false,
+            gowns: [],
+            tuxedos: [],
+            errorMessage: ''
+            };
+        },
 
      computed: {
         totalOutfitPackages() {
@@ -401,35 +483,41 @@
         {
             this.addOutfitsPackageForm = true;
         },
-        closeAddVenueForm()
+        closeAddGownPackageForm()
         {
-            this.addVenueForm = false;
-            this.venue_name = '';
-            this.location = '';
-            this.venue_price = '';
-            this.errorMessage = '';
-          
+            this.addOutfitsPackageForm = false;
+            this.newGownPackage = {};
         },
-    
-        editVenueBtn(index) {
-                this.editVenueForm = true;
-                const selectedVenue = this.venues[index];
-                if (selectedVenue) {
-                    this.selectedVenue = { ...selectedVenue }; // Ensure selectedVenue is deeply copied
-                } else {
-                    console.error('Invalid venue selected:', index);
-                }
+
+        formatPrice(price) {
+            if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
+                return 'N/A'; // Return a fallback if price is invalid
+            }
+            // Ensure price is treated as a number, round to 2 decimal places, and format with commas
+            return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
             },
-    
-            closeEditVenueForm() {
-                this.editVenueForm = false;
-                this.selectedVenue = {
-                    venue_name: '',
-                    location: '',
-                    venue_price: '',
-                }; // Reset the form fields
-                this.errorMessage = '';
+            
+            editGownPackageBtn(index) {
+            this.editGownPackageForm = true;
+            const selectedGownPackage = this.gownPackages[index];
+            if (selectedGownPackage) {
+                this.selectedGownPackage = { ...selectedGownPackage }; // Ensure deep copy to avoid reference issues
+            } else {
+                console.error('Invalid gown package selected:', index);
+            }
             },
+
+            closeEditGownPackageForm() {
+            this.editGownPackageForm = false;
+            this.selectedGownPackage = {
+                gown_package_name: '',
+                description: '',
+                gown_ids: [],
+                tuxedo_ids: []
+            }; // Reset form fields to default
+            this.errorMessage = ''; // Clear error messages
+            },
+
     
     
     },
