@@ -2,7 +2,7 @@
     <div class="bg-gray-200 w-full h-full overflow-y-auto">
         <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
         <h1 class="font-amaticBold font-extraLight text-3xl">
-            Add Outfit Packages
+            Outfit Packages
         </h1>
         </div>
     
@@ -13,20 +13,14 @@
         </div>
     </div>
     
-                <div class="flex flex-row justify-between items-center m-5 my-5">
+                <div class="flex flex-row justify-between items-center m-5 my-7">
                 <div class = "flex">
-                <button :class="[ 
-                    'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-                    { 'bg-white text-teal-800': showTable === 'GownPackages', 'bg-gray-800 text-white': showTable !== 'GownPackages' } 
-                ]" @click="showTable = 'GownPackages'">
-                    Venues
-                </button>
-                </div>
                 <button class = "mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
                 transition-transform duration-300 transform hover:scale-105" @click="addOutfitsPackageBtn">
                 + Add Outfit Package
                 </button>
                 </div>
+              </div>
     
             <!-- Gown Packages Table -->
                 <div v-if="showTable === 'GownPackages'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
@@ -67,7 +61,7 @@
                                 class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
                             <button v-for="page in totalGownPackagePages" :key="page" @click="changeGownPackagePage(page)"
                                 :class="{'bg-[#9B111E]': currentGownPackagePage === page, 'bg-gray-300': currentGownPackagePage !== page}"
-                                class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+                                class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
                                 {{ page }}
                             </button>
                             <button @click="nextGownPackagePage" :disabled="currentGownPackagePage === totalGownPackagePages"
@@ -79,98 +73,148 @@
     
          
       
-       <!-- Add Gown Package Form -->
-            <form @submit.prevent="addGownPackage" v-if="addOutfitsPackageForm" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
-            <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform transition duration-300">
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Add Gown Package</h2>
-                <button @click="closeAddGownPackageForm()" class="text-red-500 hover:text-red-700 transition duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                </div>
+              
+                <!-- Add Outfit Package Form -->
+                <form @submit.prevent="addGownPackage" v-if="addOutfitsPackageForm" @click.self="closeAddGownPackageForm" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto z-50">
+                    <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-xl transform transition duration-300 relative">
+                    <!-- Close Button -->
+                    <button 
+                        @click="closeAddGownPackageForm()" 
+                        class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition duration-300"
+                        aria-label="Close form"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
 
-                <!-- Error Message -->
-                <div v-if="errorMessage" class="text-sm text-red-500 mb-4">
-                {{ errorMessage }}
-                </div>
+                    <!-- Header -->
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 text-center">Add Gown Package</h2>
+                    </div>
 
-                <!-- Gown Package Name -->
-                <div class="mb-4">
-                <input
-                    id="gown-package-name"
-                    type="text"
-                    v-model="newGownPackage.gown_package_name"
-                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                    placeholder="Enter package name"
-                    required
-                />
-                </div>
+                    <!-- Error Message -->
+                    <div v-if="errorMessage" class="text-sm text-red-500 mb-4 text-center">
+                        {{ errorMessage }}
+                    </div>
 
-                <!-- Description -->
-                <div class="mb-4">
-                <input
-                    id="description"
-                    type="text"
-                    v-model="newGownPackage.description"
-                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                    placeholder="Enter description"
-                />
-                </div>
+                    <!-- Gown Package Name -->
+                    <div class="mb-4">
+                        <input
+                        id="gown-package-name"
+                        type="text"
+                        v-model="newGownPackage.gown_package_name"
+                        class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                        placeholder="Enter package name"
+                        required
+                        />
+                    </div>
 
-                <!-- Gowns -->
-                <div class="mb-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
-                <select
-                    @change="addGownOutfits"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                >
-                    <option value="" disabled selected>Select a Gown</option>
-                    <option v-for="outfit in gowns" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                    {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
-                    </option>
-                </select>
-                </div>
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <input
+                        id="description"
+                        type="text"
+                        v-model="newGownPackage.description"
+                        class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                        placeholder="Enter description"
+                        />
+                    </div>
 
-                <!-- Tuxedos -->
-                <div class="mb-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
-                <select
-                    @change="addTuxedoOutfits"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                >
-                    <option value="" disabled selected>Select a Tuxedo</option>
-                    <option v-for="outfit in tuxedos" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                    {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
-                    </option>
-                </select>
-                </div>
+                    <!-- Gowns Section -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
+                        <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+                        <table class="w-full">
+                            <thead class="bg-gray-200">
+                            <tr>
+                                <th class="p-2 text-left">Select</th>
+                                <th class="p-2 text-left">Gown Name</th>
+                                <th class="p-2 text-left">Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr 
+                                v-for="outfit in gowns" 
+                                :key="outfit.outfit_id" 
+                                class="hover:bg-gray-100"
+                            >
+                                <td class="p-2 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        :value="outfit.outfit_id"
+                                        :checked="selectedGowns.includes(outfit.outfit_id)"
+                                        @change="toggleSelection(outfit.outfit_id, 'gown')"
+                                        class="form-checkbox h-5 w-5 text-blue-600"
+                                    >
+                                </td>
+                                <td class="p-2 text-sm">{{ outfit.outfit_name }}</td>
+                                <td class="p-2 text-sm">{{ formatPrice(outfit.rent_price) }} php</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
 
-                <!-- Actions -->
-                <div class="flex justify-end space-x-4">
-                <button
-                    @click="closeAddGownPackageForm"
-                    type="button"
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition duration-300"
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 transition duration-300"
-                >
-                    Add Package
-                </button>
-                </div>
-            </div>
-            </form>
+                    <!-- Tuxedos Section -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
+                        <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+                        <table class="w-full">
+                            <thead class="bg-gray-200">
+                            <tr>
+                                <th class="p-2 text-left">Select</th>
+                                <th class="p-2 text-left">Tuxedo Name</th>
+                                <th class="p-2 text-left">Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr 
+                                v-for="outfit in tuxedos" 
+                                :key="outfit.outfit_id" 
+                                class="hover:bg-gray-100"
+                            >
+                                <td class="p-2 text-center">
+                                <input 
+                                    type="checkbox" 
+                                    :value="outfit.outfit_id"
+                                    :checked="selectedTuxedos.includes(outfit.outfit_id)"
+                                    @change="toggleSelection(outfit.outfit_id, 'tuxedo')"
+                                    class="form-checkbox h-5 w-5 text-blue-600"
+                                >
+                                </td>
+                                <td class="p-2 text-sm">{{ outfit.outfit_name }}</td>
+                                <td class="p-2 text-sm">{{ formatPrice(outfit.rent_price) }} php</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end space-x-4">
+                        <button
+                        @click="closeAddGownPackageForm"
+                        type="button"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow-sm hover:bg-gray-400 transition duration-300"
+                        >
+                        Cancel
+                        </button>
+                        <button
+                        type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
+                        >
+                        Add Package
+                        </button>
+                    </div>
+                    </div>
+                </form>
+
 
 
             
             
-            <!-- Edit Gown Package Form -->
+            <!-- Edit Outfit Package Form -->
                 <form v-if="editGownPackageForm" @submit.prevent="updateGownPackage" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
                 <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform transition duration-300">
                     <!-- Header -->
@@ -190,7 +234,6 @@
 
                     <!-- Gown Package Name -->
                     <div class="mb-4">
-                    <label for="gown-package-name" class="block text-sm font-medium text-gray-700">Gown Package Name</label>
                     <input
                         id="gown-package-name"
                         type="text"
@@ -203,7 +246,6 @@
 
                     <!-- Description -->
                     <div class="mb-4">
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                     <input
                         id="description"
                         type="text"
@@ -213,30 +255,74 @@
                     />
                     </div>
 
-                    <!-- Gowns -->
-                    <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
-                    <select
-                        v-model="selectedGownPackage.gown_ids"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                    >
-                        <option v-for="outfit in gowns" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                        {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
-                        </option>
-                    </select>
+                   <!-- Gowns Section -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Gowns</h3>
+                        <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+                        <table class="w-full">
+                            <thead class="bg-gray-200">
+                            <tr>
+                                <th class="p-2 text-left">Select</th>
+                                <th class="p-2 text-left">Gown Name</th>
+                                <th class="p-2 text-left">Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr 
+                                v-for="outfit in gowns" 
+                                :key="outfit.outfit_id" 
+                                class="hover:bg-gray-100"
+                            >
+                                <td class="p-2 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        :value="outfit.outfit_id"
+                                        :checked="selectedGownPackage.selectedGowns.includes(outfit.outfit_id)"
+                                        @change="toggleSelection(outfit.outfit_id, 'gown')"
+                                        class="form-checkbox h-5 w-5 text-blue-600"
+                                    >
+                                </td>
+                                <td class="p-2 text-sm">{{ outfit.outfit_name }}</td>
+                                <td class="p-2 text-sm">{{ formatPrice(outfit.rent_price) }} php</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
 
-                    <!-- Tuxedos -->
-                    <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
-                    <select
-                        v-model="selectedGownPackage.tuxedo_ids"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                    >
-                        <option v-for="outfit in tuxedos" :key="outfit.outfit_id" :value="outfit.outfit_id">
-                        {{ outfit.outfit_name }} - {{ formatPrice(outfit.rent_price) }} php
-                        </option>
-                    </select>
+                    <!-- Tuxedos Section -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Select Tuxedos</h3>
+                        <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+                        <table class="w-full">
+                            <thead class="bg-gray-200">
+                            <tr>
+                                <th class="p-2 text-left">Select</th>
+                                <th class="p-2 text-left">Tuxedo Name</th>
+                                <th class="p-2 text-left">Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr 
+                                v-for="outfit in tuxedos" 
+                                :key="outfit.outfit_id" 
+                                class="hover:bg-gray-100"
+                            >
+                                <td class="p-2 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        :value="outfit.outfit_id"
+                                        :checked="selectedGownPackage.selectedTuxedos.includes(outfit.outfit_id)"
+                                        @change="toggleSelection(outfit.outfit_id, 'tuxedo')"
+                                        class="form-checkbox h-5 w-5 text-blue-600"
+                                    >
+                                </td>
+                                <td class="p-1 text-sm">{{ outfit.outfit_name }}</td>
+                                <td class="p-1 text-sm">{{ formatPrice(outfit.rent_price) }} php</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
 
                     <!-- Actions -->
@@ -291,9 +377,19 @@
             addOutfitsPackageForm: false,
             gowns: [],
             tuxedos: [],
-            errorMessage: ''
-            };
-        },
+            errorMessage: '',
+            selectedGowns: [],
+            selectedTuxedos: [],
+            selectedGownPackage: {
+                gown_package_id: null,
+                gown_package_name: '',
+                description: '',
+                selectedGowns: [],
+                selectedTuxedos: []
+            },
+
+        };
+    },
 
      computed: {
         totalOutfitPackages() {
@@ -389,38 +485,57 @@
         },
 
     
-            async addGownPackage() {
-                try {
+        async addGownPackage() {
+            try {
                 const token = localStorage.getItem('access_token');
                 if (!token) {
                     alert('You are not logged in. Please log in to add a gown package.');
                     return;
                 }
 
-                // Log the data to be sent to the server
-                console.log('Sending data:', this.newGownPackage);
+                // Check if at least one gown or tuxedo is selected
+                if (this.selectedGowns.length === 0 && this.selectedTuxedos.length === 0) {
+                    this.errorMessage = "Please select at least one gown or tuxedo";
+                    return;
+                }
 
-                const response = await axios.post('http://127.0.0.1:5000/add-gown-package', this.newGownPackage, {
+                // Combine gowns and tuxedos into a single outfits array
+                const outfits = [...this.selectedGowns, ...this.selectedTuxedos];
+
+                // Prepare the package data with combined outfits
+                const packageData = {
+                    gown_package_name: this.newGownPackage.gown_package_name,
+                    description: this.newGownPackage.description,
+                    outfits: outfits  // Send as a single array of outfit IDs
+                };
+
+                // Log the data to be sent to the server
+                console.log('Sending data:', packageData);
+
+                const response = await axios.post('http://127.0.0.1:5000/add-gown-package', packageData, {
                     headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                     },
                     withCredentials: true,
                 });
 
                 alert('Gown package added successfully');
-                // Optionally, reset the form or update the UI as needed
+                
+                // Reset selections and form after successful addition
                 this.newGownPackage = {
                     gown_package_name: '',
                     description: '',
-                    outfits: []
                 };
-                this.addOutfitsPackageForm = false;  // Close the form after successful addition
-                } catch (error) {
+                this.selectedGowns = [];
+                this.selectedTuxedos = [];
+                this.addOutfitsPackageForm = false; // Close the form
+            } catch (error) {
                 console.error('Error adding gown package:', error.response?.data || error.message);
-                this.errorMessage = 'An error occurred. Please try again.';
-                }
-            },
+                this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+            }
+        },
+
 
     
                 async deleteVenue(venue_id) {
@@ -488,6 +603,18 @@
             this.addOutfitsPackageForm = false;
             this.newGownPackage = {};
         },
+        toggleSelection(outfitId, type) {
+            const selectedArray = type === 'gown' ? this.selectedGowns : this.selectedTuxedos;
+            const index = selectedArray.indexOf(outfitId);
+            
+            if (index > -1) {
+                // If already selected, remove it
+                selectedArray.splice(index, 1);
+            } else {
+                // If not selected, add it
+                selectedArray.push(outfitId);
+            }
+        },
 
         formatPrice(price) {
             if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
@@ -498,14 +625,16 @@
             },
             
             editGownPackageBtn(index) {
+            const gownPackage = this.gownPackages[index];
+            this.selectedGownPackage = {
+                gown_package_id: gownPackage.gown_package_id,
+                gown_package_name: gownPackage.gown_package_name,
+                description: gownPackage.description,
+                selectedGowns: [], // You'll need to fetch the actual selected gowns from backend
+                selectedTuxedos: [] // You'll need to fetch the actual selected tuxedos from backend
+            };
             this.editGownPackageForm = true;
-            const selectedGownPackage = this.gownPackages[index];
-            if (selectedGownPackage) {
-                this.selectedGownPackage = { ...selectedGownPackage }; // Ensure deep copy to avoid reference issues
-            } else {
-                console.error('Invalid gown package selected:', index);
-            }
-            },
+        },
 
             closeEditGownPackageForm() {
             this.editGownPackageForm = false;

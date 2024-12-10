@@ -2,7 +2,7 @@
    <div class="bg-gray-200 w-full h-full">
     <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
     <h1 class="font-amaticBold font-extraLight text-3xl">
-    Manage Users
+    Accounts
   </h1>
   </div>
 
@@ -21,21 +21,21 @@
   <div class = "flex">
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'Suppliers', 'bg-gray-800 text-white': showTable !== 'Suppliers' } 
+    { 'bg-gray-800 text-white ': showTable === 'Suppliers', 'bg-white text-teal-800': showTable !== 'Suppliers' } 
   ]" @click="showTable = 'Suppliers'">
     Suppliers
   </button>
   
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'Staffs', 'bg-gray-800 text-white': showTable !== 'Staffs' } 
+    { 'bg-gray-800 text-white': showTable === 'Staffs', 'bg-white text-teal-800': showTable !== 'Staffs' } 
   ]" @click="showTable = 'Staffs'">
     Crews
   </button>
 </div>
-<button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
+<button class = "mr-2 w-32 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
 transition-transform duration-300 transform hover:scale-105" @click="addUserBtn">
- + Add User
+ + Add Account
 </button>
 </div>
 
@@ -97,50 +97,50 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
   <div v-if="showTable === 'Staffs'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" class="px-2 py-3">#</th>
-            <th scope="col" class="px-2 py-3">FullName</th>
-            <th scope="col" class="px-2 py-3">Email</th>
-            <th scope="col" class="px-2 py-3">Contact</th>
-            <th scope="col" class="px-2 py-3">Position</th>
-            <th scope="col" class="px-2 py-3">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-              v-for="(staff, index) in paginatedStaffs"
-              :key="staff.no"
-              class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-            <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ staff.no }}</th>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ staff.fullName }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ staff.email }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ staff.contact }}</td>
-            <td class="px-1 py-3 hidden sm:table-cell">{{ staff.position }}</td>
-  
-            <td class="px-1 py-3 hidden sm:table-cell">
-              <button class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600"
-              @click="editStaffBtn(index)">
-                  Edit
-                </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-2 py-3">#</th>
+          <th scope="col" class="px-2 py-3">FullName</th>
+          <th scope="col" class="px-2 py-3">Email</th>
+          <th scope="col" class="px-2 py-3">Contact</th>
+          <th scope="col" class="px-2 py-3">Position</th>
+          <th scope="col" class="px-2 py-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+            v-for="(staff, index) in paginatedStaffs"
+            :key="staff.no"
+            class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
+          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ staff.dummyIndex }}</th>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.fullName }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.email }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.contact }}</td>
+          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.position }}</td>
+
+          <td class="px-1 py-3 hidden sm:table-cell">
+            <button class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
+            @click="editStaffBtn(index)">
+                Edit
+              </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
       <!-- Pagination Controls -->
       <div class="flex justify-center space-x-2 mt-4 mb-6">
-        <button @click="prevStaffsPage" :disabled="currentStaffsPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
-        <button v-for="page in totalStaffsPages" :key="page" @click="changeStaffsPage(page)" :class="{'bg-blue-900': currentStaffsPage === page, 'bg-gray-300': currentStaffsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+        <button @click="prevStaffsPage" :disabled="currentStaffsPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+        <button v-for="page in totalStaffsPages" :key="page" @click="changeStaffsPage(page)" :class="{'bg-[#9B111E]': currentStaffsPage === page, 'bg-gray-300': currentStaffsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
           {{ page }}
         </button>
-        <button @click="nextStaffsPage" :disabled="currentStaffsPage === totalStaffsPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+        <button @click="nextStaffsPage" :disabled="currentStaffsPage === totalStaffsPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
       </div>
     </div>
   </div>
 
  <!-- Add User Form -->
- <form v-if="addUserForm" @submit.prevent="handleRegister" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+ <form v-if="addUserForm" @submit.prevent="handleRegister" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddUserForm">
   <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
     <div class="flex justify-between items-center m-3">
       <h1 class="font-semibold text-xl font-raleway text-gray-800">Add User</h1>
@@ -227,7 +227,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
 
 <!--Edit Supplier Form-->
-<form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+<form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditSupplierBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
               <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Vendor</h1>
@@ -312,7 +312,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </form> 
 
 <!--Edit Staff Form-->
-<form v-if="editStaffForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+<form v-if="editStaffForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditStaffBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
               <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Staff</h1>
@@ -436,9 +436,8 @@ export default {
     },
 
     totalStaff() {
-       return this.staffs.length;
+      return this.staffs.length;
     },
-
     totalStaffsPages() {
       return Math.ceil(this.staffs.length / this.rowsPerStaffsPage);
     },
@@ -447,7 +446,6 @@ export default {
       const end = start + this.rowsPerStaffsPage;
       return this.staffs.slice(start, end);
     },
-
     
   },
   methods: {
@@ -523,36 +521,62 @@ export default {
         },
 
 
-      async fetchStaffs() {
+        async fetchStaffs() {
             try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    alert('You are not logged in. Please log in to view staff users.');
-                    return;
-                }
+              const token = localStorage.getItem('access_token');
+              if (!token) {
+                console.error('No access token found');
+                this.$router.push('/login'); // Redirect to login if no token
+                return;
+              }
 
-                const response = await axios.get('http://127.0.0.1:5000/created-users', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    withCredentials: true,
-                });
+              const response = await axios.get('http://127.0.0.1:5000/created-users', {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`, // Corrected syntax error
+                },
+                withCredentials: true,
+              });
 
-                // Update position to be uppercase in the first letter
-                this.staffs = response.data.map((user) => ({
-                    no: user.userid,
-                    fullName: `${user.firstname} ${user.lastname}`,
-                    email: user.email,
-                    contact: user.contactnumber,
-                    // Capitalizing the first letter of the position
-                    position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
-                }));
+              // Log the response to inspect its structure and content
+              console.log('Fetched users response:', response.data);
+
+              // Validate response data
+              if (!response.data || !Array.isArray(response.data)) {
+                console.error('Invalid response format', response.data);
+                return;
+              }
+
+              // Process staff data with more robust mapping
+              this.staffs = response.data.map((user, index) => {
+                // Add null checks and default values
+                return {
+                  no: user.userid || 'N/A',
+                  fullName: user.firstname && user.lastname 
+                    ? `${user.firstname} ${user.lastname}` 
+                    : 'Unknown Name',
+                  email: user.email || 'No email',
+                  contact: user.contactnumber || 'No contact',
+                  position: user.user_type === 'assistant' ? 'Assistant' : 'Staff',
+                  dummyIndex: index + 1,
+                };
+              });
+
+              // Convert Proxy to plain array for logging purposes
+              const plainStaffsArray = JSON.parse(JSON.stringify(this.staffs));
+              console.log('Processed Staff Data:', plainStaffsArray);
 
             } catch (error) {
-                console.error('Error fetching staff users:', error.response?.data || error.message);
+              console.error('Error fetching staffs:', error.response?.data || error.message);
+
+              // Handle specific error scenarios
+              if (error.response?.status === 401) {
+                // Token might be expired
+                localStorage.removeItem('access_token');
+                this.$router.push('/login');
+              }
             }
-        },
+          },
 
         async fetchSuppliers() {
           try {
@@ -870,10 +894,10 @@ export default {
     
   },
   mounted() {
-    if (this.showTable === 'Staffs') {
-        this.fetchStaffs(); // Fetch staff data on component mount
-    } else if (this.showTable === 'Suppliers') {
-        this.fetchSuppliers(); // Fetch vendor data on component mount
+    if (this.showTable === 'Suppliers') {
+        this.fetchSuppliers(); // Fetch staff data on component mount
+    } else if (this.showTable === 'Staffs') {
+        this.fetchStaffs();  // Fetch vendor data on component mount
     }
 },
 watch: {
@@ -884,6 +908,13 @@ watch: {
             this.fetchSuppliers();
         }
     },
+
+    staffs(newStaffs) {
+    console.log('Staffs updated:', newStaffs);
+    console.log('Number of staffs:', newStaffs.length);
+    console.log('Current staffs page:', this.currentStaffsPage);
+    console.log('Total staffs pages:', this.totalStaffsPages);
+  }
 },
 };
 </script>

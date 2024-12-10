@@ -1,34 +1,30 @@
 <template>
-<div class="bg-gray-200 w-full h-full overflow-y-auto">
-    <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
-    <h1 class="font-amaticBold font-extraLight text-3xl">
-        Add Venue
-    </h1>
+    <div class="bg-gray-200 w-full h-full overflow-y-auto">
+        <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
+        <h1 class="font-amaticBold font-extraLight text-3xl">
+            Venues
+        </h1>
+        </div>
+
+        <div class="flex flex-row items-center m-5 space-x-5">
+        <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
+            <img class="w-auto h-12" src="/img/venues.png" alt="Vendor Image">
+            <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalVenues }} <span class = "text-sm antialiased text-gray-600">venues</span></h2>
+        </div>
     </div>
 
-    <div class="flex flex-row items-center m-5 space-x-5">
-    <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-        <img class="w-auto h-12" src="/img/venues.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalVenues }} <span class = "text-sm antialiased text-gray-600">venues</span></h2>
-    </div>
-</div>
-
-            <div class="flex flex-row justify-between items-center m-5 my-5">
+            <div class="flex flex-row justify-between items-center m-5 my-7">
             <div class = "flex">
-            <button :class="[ 
-                'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-                { 'bg-white text-teal-800': showTable === 'Venues', 'bg-gray-800 text-white': showTable !== 'Venues' } 
-            ]" @click="showTable = 'Venues'">
-                Venues
-            </button>
-            </div>
+            
             <button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
             transition-transform duration-300 transform hover:scale-105" @click="addVenueBtn">
             + Add Venue
             </button>
             </div>
+            </div> 
 
         <!--- Venues Table --->
+
         <div v-if="showTable === 'Venues'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
@@ -77,7 +73,7 @@
         </div>
 
         <!-- Add Venue Form -->
-            <form v-if="addVenueForm" @submit.prevent="addVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+            <form v-if="addVenueForm" @submit.prevent="addVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddVenueForm">
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
                 <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Venue</h1>
@@ -115,9 +111,8 @@
             </div>
         </form>
 
-
         <!-- Edit Venue Form -->
-        <form v-if="editVenueForm" @submit.prevent="updateVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+        <form v-if="editVenueForm" @submit.prevent="updateVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditVenueForm">
         <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
             <div class="flex justify-between items-center m-3">
             <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Venue</h1>
@@ -147,20 +142,15 @@
 
             <!-- Confirm Button -->
             <div class="flex justify-center items-center mt-10 space-x-3">
-                <button @click.prevent="deleteVenue(selectedVenue.venue_id)" class="w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                        Delete
-                </button>
-                <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                Confirm
+                <button type="submit" class="w-32 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
+                Save Changes
                 </button>
             </div>
             </div>
         </div>
         </form>
 
-
       
-
 
 
 
@@ -170,7 +160,7 @@
 <script>
 import axios from 'axios';
 
-
+// axios.defaults.baseURL = 'http://127.0.0.1:5000';
 axios.defaults.withCredentials = true;
 
 export default {
@@ -323,41 +313,6 @@ methods: {
                 }
             },
 
-            async deleteVenue(venue_id) {
-                try {
-                    if (!confirm('Are you sure you want to delete this venue? This action cannot be undone.')) {
-                    return;
-                    }
-
-                    const token = localStorage.getItem('access_token');
-                    if (!token) {
-                    alert('You are not logged in. Please log in to delete venues.');
-                    return;
-                    }
-
-                    const response = await axios.delete(`http://127.0.0.1:5000/delete-venue/${venue_id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    });
-
-                    if (response.status === 200) {
-                    alert('Venue deleted successfully!');
-                    // Remove the deleted venue from the venues array
-                    this.venues = this.venues.filter(venue => venue.venue_id !== venue_id);
-                    this.closeEditVenueForm(); // Optionally close the form
-                    } else {
-                    alert('Failed to delete venue.');
-                    }
-                } catch (error) {
-                    console.error('Error deleting venue:', error);
-                    if (error.response) {
-                    alert(`Error deleting venue: ${error.response.data.message}`);
-                    } else {
-                    alert('Error deleting venue. Please try again.');
-                    }
-                }
-            },
 
         
     prevVenuesPage() {

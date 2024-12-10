@@ -30,19 +30,19 @@
   <div class = "flex">
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'gowns', 'bg-gray-800 text-white': showTable !== 'gowns' } 
+    { 'bg-gray-800 text-white ': showTable === 'gowns', 'bg-white text-teal-800': showTable !== 'gowns' } 
   ]" @click="showTable = 'gowns'">
     Gowns
   </button>
   
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-white text-teal-800': showTable === 'tuxedos', 'bg-gray-800 text-white': showTable !== 'tuxedos' } 
+    { 'bg-gray-800 text-white ': showTable === 'tuxedos', 'bg-white text-teal-800': showTable !== 'tuxedos' } 
   ]" @click="showTable = 'tuxedos'">
     Tuxedo
   </button>
 </div>
-<button class = "mr-2 w-28 h-10 bg-blue-600 font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
+<button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
 transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
  + Add Outfit
 </button>
@@ -83,7 +83,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
             <td class="px-1 py-3 hidden sm:table-cell">{{ gown.additionalCharges }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">
               <button
-                  class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600" @click="editGownBtn(index)">
+                  class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editGownBtn(index)">
                   Edit
                 </button>
             </td>
@@ -93,11 +93,11 @@ transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
 
        <!-- Pagination Controls -->
        <div class="flex justify-center space-x-2 mt-4 mb-6">
-        <button @click="prevGownsPage" :disabled="currentGownsPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
-        <button v-for="page in totalGownsPages" :key="page" @click="changeGownsPage(page)" :class="{'bg-blue-900': currentGownsPage === page, 'bg-gray-300': currentGownsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+        <button @click="prevGownsPage" :disabled="currentGownsPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+        <button v-for="page in totalGownsPages" :key="page" @click="changeGownsPage(page)" :class="{'bg-[#9B111E]': currentGownsPage === page, 'bg-gray-300': currentGownsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
           {{ page }}
         </button>
-        <button @click="nextGownsPage" :disabled="currentGownsPage === totalGownsPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+        <button @click="nextGownsPage" :disabled="currentGownsPage === totalGownsPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
       </div>
     </div>
   </div>
@@ -136,7 +136,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
             <td class="px-1 py-3 hidden sm:table-cell">{{ tuxedo.additionalCharges }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">
               <button
-                  class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600" @click="editTuxedoBtn(index)">
+                  class="h-8 w-12 bg-[#9B111E]font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editTuxedoBtn(index)">
                   Edit
                 </button>
             </td>
@@ -146,11 +146,11 @@ transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
 
       <!-- Pagination Controls -->
       <div class="flex justify-center space-x-2 mt-4 mb-6">
-        <button @click="prevTuxedosPage" :disabled="currentTuxedosPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button>
-        <button v-for="page in totalTuxedosPages" :key="page" @click="changeTuxedosPage(page)" :class="{'bg-blue-900': currentTuxedosPage === page, 'bg-gray-300': currentTuxedosPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+        <button @click="prevTuxedosPage" :disabled="currentTuxedosPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+        <button v-for="page in totalTuxedosPages" :key="page" @click="changeTuxedosPage(page)" :class="{'bg-[#9B111E]': currentTuxedosPage === page, 'bg-gray-300': currentTuxedosPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
           {{ page }}
         </button>
-        <button @click="nextTuxedosPage" :disabled="currentTuxedosPage === totalTuxedosPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button>
+        <button @click="nextTuxedosPage" :disabled="currentTuxedosPage === totalTuxedosPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
       </div>
     </div>
   </div>

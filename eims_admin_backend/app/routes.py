@@ -17,7 +17,7 @@ def init_routes(app):
     def login():
         try:
             # Get the login data
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             email = data.get('email')
             password = data.get('password')
 
@@ -106,7 +106,7 @@ def init_routes(app):
     @app.route('/add-user', methods=['POST'])
     def add_user():
         try:
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             app.logger.info(f"Received data: {data}")
 
             required_fields = [
@@ -216,7 +216,7 @@ def init_routes(app):
     @jwt_required()  # Authentication required
     def edit_supplier(supplier_id):
         try:
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             app.logger.info(f"Received data: {data}")  # Log incoming data
             print(data)
 
@@ -269,11 +269,11 @@ def init_routes(app):
             if not userid:
                 return jsonify({"message": "Invalid user ID"}), 400
 
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             firstname = data.get('firstname')
             lastname = data.get('lastname')
             email = data.get('email')
-            contact = data.get('contactnumber')  # Changed from 'contactnumber' to 'contact'
+            contact = data.get('contactnumber') 
             user_type = data.get('user_type')
 
             # Validate that all required fields are provided
@@ -375,7 +375,7 @@ def init_routes(app):
             if not package_id:
                 return jsonify({"message": "Invalid package ID"}), 400
 
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             required_fields = ["package_name", "package_type", "venue", "price", "capacity", "description"]
 
             # Ensure all required fields are present
@@ -398,27 +398,8 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error in edit_package route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
-        
+    
 
-
-
-    @app.route('/created-package/<int:package_id>', methods=['DELETE'])
-    @jwt_required()
-    def delete_package_route(package_id):
-        """
-        Deletes a package based on the package ID.
-        """
-        try:
-            result = delete_package(package_id)
-            if result:
-                return jsonify({"message": "Package deleted successfully"}), 200
-            else:
-                return jsonify({"message": "Failed to delete package. Package not found."}), 404
-        except Exception as e:
-            app.logger.error(f"Error in delete_package_route: {e}")
-            return jsonify({"message": "An error occurred while deleting the package"}), 500
-
-        
 
 #manage events routes
     @app.route('/booked-wishlist', methods=['GET'])
@@ -439,7 +420,7 @@ def init_routes(app):
             if not events_id:
                 return jsonify({"message": "Invalid event ID"}), 400
 
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             required_fields = ["event_name", "event_type", "event_theme", "event_color", "venue"]
 
             # Ensure all required fields are present
@@ -499,7 +480,7 @@ def init_routes(app):
     def create_venue_route():
         try:
             # Extract data from the incoming request
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             venue_name = data.get('venue_name')
             location = data.get('location')
             venue_price = data.get('venue_price')
@@ -545,7 +526,7 @@ def init_routes(app):
             required_fields = ["venue_name", "location", "venue_price"]
 
             # Ensure all required fields are present
-            if not all(field in data and data[field] for field in required_fields):
+            if data is None or not all(field in data and data.get(field) for field in required_fields):
                 return jsonify({"message": "All fields are required"}), 400
 
             # Extract data
@@ -562,22 +543,6 @@ def init_routes(app):
             app.logger.error(f"Error in update_venue_details route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
         
-
-    @app.route('/delete-venue/<int:venue_id>', methods=['DELETE'])
-    @jwt_required()
-    def delete_venue_route(venue_id):
-        """
-        Deletes a venue based on the venue ID.
-        """
-        try:
-            result = delete_venue(venue_id)
-            if result:
-                return jsonify({"message": "Venue deleted successfully"}), 200
-            else:
-                return jsonify({"message": "Failed to delete venue. Venue not found."}), 404
-        except Exception as e:
-            app.logger.error(f"Error in delete_venue_route: {e}")
-            return jsonify({"message": "An error occurred while deleting the venue"}), 500
 
 
 #routes for outfit packages
@@ -611,7 +576,7 @@ def init_routes(app):
     @jwt_required()
     def add_gown_package_route():
         try:
-            data = request.json
+            data = request.get_json(force=True, silent=True) or {}
             gown_package_name = data.get('gown_package_name')
             description = data.get('description')
             outfits = data.get('outfits')  # List of outfit IDs

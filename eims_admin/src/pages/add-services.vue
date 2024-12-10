@@ -2,7 +2,7 @@
         <div class="bg-gray-200 w-full h-full">
         <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
         <h1 class="font-amaticBold font-extraLight text-3xl">
-        Add Services
+        Events Packages
     </h1>
     </div>
     
@@ -13,19 +13,13 @@
         </div>
     </div>
     
-    <div class="flex flex-row justify-between items-center m-5 my-5">
+    <div class="flex flex-row justify-between items-center m-5 my-7">
     <div class = "flex">
-    <button :class="[ 
-        'flex justify-center items-center w-32 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-        { 'bg-white text-teal-800': showTable === 'packages', 'bg-gray-800 text-white': showTable !== 'packages' } 
-    ]" @click="showTable = 'packages'">
-        Package Deals
-    </button>
-    </div>
     <button class = "mr-2 w-36 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
     transition-transform duration-300 transform hover:scale-105" @click="addPackagesBtn">
-    + Add Services
+    + Add Package
     </button>
+    </div>
     </div>
     
     <div v-if="showTable === 'packages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-auto ml-5 mt-2 font-amaticBold mb-10">
@@ -93,7 +87,7 @@
 
     
     <!-- Add Packages Form -->
-    <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+    <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
     <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
       <div class="flex justify-between items-center m-3">
         <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Package</h1>
@@ -228,7 +222,7 @@
   </form>
 
  <!-- Edit Packages Form -->
-<form v-if="editPackagesForm" @submit.prevent="confirmEditPackage" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto">
+ <form v-if="editPackagesForm" @submit.prevent="confirmEditPackage" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditPackagesBtn">
   <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
     <div class="flex justify-between items-center m-3">
       <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Package</h1>
