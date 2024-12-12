@@ -88,138 +88,154 @@
     
     <!-- Add Packages Form -->
     <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
-    <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-      <div class="flex justify-between items-center m-3">
-        <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Package</h1>
-        <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closePackagesForm">
-          Close
-        </button>
-      </div>
-      <div class="border border-gray-500 mt-5 items-center"></div>
-      <div class="m-5">
-        <span class="text-red-500">{{ errorMessage }}</span>
-
-        <h1 class="font-semibold text-xl font-raleway text-gray-800 mb-4">Package Details</h1>   
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="packageData.package_name" placeholder="Package Name" required>
-          </div>
-          <div>
-            <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="packageData.package_type" placeholder="Package Type (Ex. Wedding)" required>
-          </div>
-        </div>
-
-        <div class="mt-5">
-        <select 
-            v-model="packageData.venue_id" 
-            class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            required>
-            <option value="" disabled selected>Select a venue</option>
-            <option v-for="venue in venues" :key="venue.selectVenueId" :value="venue.selectVenueId">
-            {{ venue.selectVenue_name }} - {{ venue.selectVenue_price }} php
-            </option>
-            <option value="">N/A</option>
-        </select>
-        </div>
-
-
-        <div class="grid grid-cols-2 gap-4 mt-5">
-          <div>
-            <input type="number" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="packageData.capacity" placeholder="Set Capacity" required>
-          </div>
-          <div>
-            <input type="number" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="packageData.additional_capacity_charges" placeholder="Additional Capacity Charges" required>
-          </div>
-        </div>
-
-        <div class="mt-5">
-          <label for="charge_unit" class="block text-sm font-medium text-blue-700">Set unit for additional charges</label>
-          <input type="number" id="charge_unit" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="packageData.charge_unit" placeholder="Set person unit" required>
-        </div>
-
-        <div class="mt-5">
-          <textarea
-            class="mt-2 p-2 w-full h-24 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 align-top resize-none"
-            v-model="packageData.description"
-            placeholder="Description"
-            required
-          ></textarea>
-        </div>
-
-        <h2 class="font-semibold text-lg font-raleway text-gray-800 mt-8 mb-4">Gown Package</h2>
-      <div class="mb-4 p-4 border border-gray-300 rounded-lg">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Select Gown Package</label>
-        <select v-model="packageData.gown_package_id" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="" disabled selected>Select a gown package</option>
-          <option v-for="gp in gownPackages" :key="gp.gown_package_id" :value="gp.gown_package_id">
-            {{ gp.gown_package_name }} - {{ gp.gown_package_price }} php
-          </option>
-        </select>
-      </div>
-
-        <h2 class="font-semibold text-lg font-raleway text-gray-800 mt-8 mb-4">Suppliers</h2>
-        <div v-for="(supplier, index) in packageData.suppliers" :key="index" class="mb-4 p-4 border border-gray-300 rounded-lg">
-            <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Supplier Type</label>
-                <select v-model="supplier.type" @change="resetSupplierFields(supplier)" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                <option value="internal">Internal Supplier</option>
-                <option value="external">External Supplier</option>
-                </select>
-            </div>
-            </div>
-
-            
-
-            <div v-if="supplier.type === 'internal'" class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Internal Supplier</label>
-                <select v-model="supplier.supplier_id" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                <option value="" disabled selected>Select a supplier</option>
-                <option v-for="s in availableSuppliers" :key="s.supplier_id" :value="s.supplier_id">
-                  {{ s.firstname }} {{ s.lastname }} - {{ s.service }} - {{ s.price }} php
-                </option>
-              </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
-                <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="supplier.remarks" placeholder="Remarks">
-            </div>
-            </div>
-
-            <div v-if="supplier.type === 'external'" class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">External Supplier Name</label>
-                <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="supplier.external_supplier_name" placeholder="External Supplier Name" required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">External Supplier Contact</label>
-                <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="supplier.external_supplier_contact" placeholder="External Supplier Contact" required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">External Supplier Price</label>
-                <input type="number" step="0.01" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="supplier.external_supplier_price" placeholder="External Supplier Price" required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
-                <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="supplier.remarks" placeholder="Remarks">
-            </div>
-            </div>
-
-            <button @click.prevent="removeSupplier(index)" class="mt-4 bg-red-500 text-white px-3 py-1 rounded">Remove Supplier</button>
-        </div>
-        <button @click.prevent="addSupplier" class="mt-4 bg-green-500 text-white px-3 py-1 rounded">Add Supplier</button>
-
-
-        <div class="flex justify-center items-center mt-10">
-          <button type="submit" class="w-32 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-            Create Package
+      <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+        <div class="flex justify-between items-center mb-5">
+          <h1 class="font-semibold text-xl text-gray-800">Add Package</h1>
+          <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closePackagesForm">
+            Close
           </button>
         </div>
+
+        <div class="border-b border-gray-300 mb-5"></div>
+
+        <!-- Package Details -->
+        <div>
+          <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+            <input type="text" v-model="packageData.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Type (Ex. Wedding)" required />
+            <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+            <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+          </div>
+
+          <div class="mt-5">
+            <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
+            <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
+          </div>
+
+          <div class="mt-5">
+            <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
+          </div>
+        </div>
+
+        <!-- Inclusion Buttons -->
+        <h2 class="font-semibold text-lg text-gray-800 mt-8 mb-4">Add Inclusions</h2>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <button @click.prevent="openInclusionModal('supplier')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">Suppliers</button>
+          <button @click.prevent="addEmptyInclusion('venue')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">Venue</button>
+          <button @click.prevent="addEmptyInclusion('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">Outfit Package</button>
+        </div>
+
+    <!-- Inclusion Modal -->
+      <div v-if="showInclusionModal" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Service Type</h2>
+            <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 gap-2">
+            <button 
+              v-for="serviceType in supplierTypes" 
+              :key="serviceType"
+              @click="addEmptySupplierInclusion(serviceType)"
+              class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150"
+            >
+              {{ serviceType }}
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </form>
+            
+
+
+        <!-- Inclusion Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto border-collapse border border-gray-300">
+            <thead class="bg-gray-200">
+                <tr>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Details</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(inclusion, index) in inclusions" :key="index" class="border border-gray-300">
+                <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
+                <td class="border border-gray-300 px-4 py-2">
+                  <!-- Supplier select -->
+                  <span v-if="inclusion.type === 'supplier'">
+                    <select 
+                      v-model="inclusion.data" 
+                      class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+                    >
+                      <option value="">Select {{ inclusion.serviceType }}</option>
+                      <option 
+                        v-for="supplier in filteredSuppliers(inclusion.serviceType)" 
+                        :key="supplier.supplier_id" 
+                        :value="supplier"
+                      >
+                        {{ supplier.firstname }} {{ supplier.lastname }}
+                      </option>
+                    </select>
+                  </span>
+                  <!-- Venue select -->
+                  <select v-if="inclusion.type === 'venue'" 
+                          v-model="inclusion.data" 
+                          class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                    <option value="">Select Venue</option>
+                    <option v-for="venue in venues" :key="venue.selectVenueId" :value="venue">
+                      {{ venue.selectVenue_name }}
+                    </option>
+                  </select>
+                  <!-- Outfit select -->
+                  <select v-if="inclusion.type === 'outfit'" 
+                          v-model="inclusion.data" 
+                          class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                    <option value="">Select Outfit Package</option>
+                    <option v-for="gp in gownPackages" :key="gp.gown_package_id" :value="gp">
+                      {{ gp.gown_package_name }}
+                    </option>
+                  </select>
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                <!-- Price based on type -->
+                <span v-if="inclusion.type === 'supplier' && inclusion.data">
+                  {{ formatPrice(inclusion.data.price) }} php
+                </span>
+                <span v-else-if="inclusion.type === 'venue' && inclusion.data">
+                  {{ formatPrice(inclusion.data.selectVenue_price) }} php
+                </span>
+                <span v-else-if="inclusion.type === 'outfit' && inclusion.data">
+                  {{ formatPrice(inclusion.data.gown_package_price) }} php
+                </span>
+                <span v-else>-</span>
+              </td>
+                <td class="border border-gray-300 px-4 py-2">
+                  <button 
+                    @click="removeInclusion(index)" 
+                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            </table>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-center mt-8">
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Create Package</button>
+        </div>
+      </div>
+    </form>
+
 
  <!-- Edit Packages Form -->
  <form v-if="editPackagesForm" @submit.prevent="confirmEditPackage" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditPackagesBtn">
@@ -377,43 +393,45 @@ export default {
       currentPackagesPage: 1,
       rowsPerPackagesPage: 5,
       errorMessage: '',
-
-
       addPackagesForm: false,
+      editPackagesForm: false,
       addPackagesDetails: false,
       addStaffDetails: false,
-      selectedOption: '',
 
-      editPackagesForm: false,
-      selectedPackages: null, 
-      editPackagesForm: false,
-
-      editStaffForm: false,
-      selectedStaff: null, 
-      editStaffForm: false,
-
-      chargeUnit: '', // Default value
-
+      inclusionType: '',
+      selectedInclusion: '',
+      showInclusionModal: false,
+      inclusions: [],
+      selectedInclusionType: '',
+      supplierTypes: [
+        'Catering',
+        'Photography',
+        'Videography',
+        'Entertainment',
+        'Sound and Lighting',
+        'Transportation',
+        'Host',
+        'Invitation and Stationery',
+        'Favors and Gifts',
+        'Hair Stylist',
+        'Makeup Artist',
+      ],
       availableSuppliers: [],
+      venues: [],
+      gownPackages: [],
       packageData: {
         package_name: '',
         package_type: '',
-        venue_id: '',
+        venue_id: null,
         capacity: null,
         additional_capacity_charges: null,
         charge_unit: 1,
         description: '',
-        suppliers: []
+        suppliers: [],
       },
-
-      selectedPackage: null,
-      packageDetails: true,
-   
-
-
-
       packages: [],
-      venues: [],
+      selectedVenue: null,
+      selectedOutfit: null,
   
       
 
@@ -423,73 +441,143 @@ export default {
   },
  
   methods: {
-   
-    async addPackages() {
-      try {
-        const formattedPackageData = {
-          ...this.packageData,
-          suppliers: this.packageData.suppliers.map(supplier => {
-            const commonFields = {
-              type: supplier.type,
-              remarks: supplier.remarks
-            };
-            if (supplier.type === 'internal') {
-              return {
-                ...commonFields,
-                supplier_id: supplier.supplier_id
-              };
-            } else {
-              return {
-                ...commonFields,
-                external_supplier_name: supplier.external_supplier_name,
-                external_supplier_contact: supplier.external_supplier_contact,
-                external_supplier_price: parseFloat(supplier.external_supplier_price)
-              };
-            }
-          }),
-          gown_package_id: this.packageData.gown_package_id,
-          venue_id: parseInt(this.packageData.venue_id),
-          capacity: parseInt(this.packageData.capacity),
-          additional_capacity_charges: parseFloat(this.packageData.additional_capacity_charges),
-          charge_unit: parseInt(this.packageData.charge_unit)
-        };
+    openInclusionModal(type) {
+        this.showInclusionModal = true;
+      },
 
-        console.log('Sending package data:', formattedPackageData);
+      closeInclusionModal() {
+        this.showInclusionModal = false;
+      },
 
-        const response = await axios.post('http://127.0.0.1:5000/create-package', formattedPackageData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          }
+      addEmptySupplierInclusion(serviceType) {
+        console.log('Adding supplier inclusion for service type:', serviceType);
+        this.inclusions.push({
+          type: 'supplier',
+          serviceType: serviceType,
+          data: null
         });
+        this.closeInclusionModal();
+      },
 
-        if (response.status === 201) {
-          alert('Package created successfully!');
-          this.resetPackageForm();
-          this.fetchPackages(); // Refresh the packages list
-        }
-      } catch (error) {
-        console.error('Error creating package:', error);
-        this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
-      }
-    },
+      addEmptyInclusion(type) {
+        this.inclusions.push({
+          type: type,
+          data: null
+        });
+      },
 
+      removeInclusion(index) {
+        this.inclusions.splice(index, 1);
+      },
+
+      filteredSuppliers(serviceType) {
+        return this.availableSuppliers.filter(supplier => supplier.service === serviceType);
+      },
+
+      async addPackages() {
+          try {
+            // Validate that all inclusions have data selected
+            const hasEmptyInclusions = this.inclusions.some(inclusion => !inclusion.data);
+            if (hasEmptyInclusions) {
+              alert('Please select all inclusion details before submitting.');
+              return;
+            }
+
+            // Prepare package data with explicit conversion and validation
+            const packageData = {
+              package_name: this.packageData.package_name,
+              package_type: this.packageData.package_type,
+              venue_id: this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.selectVenueId || null,
+              capacity: Number(this.packageData.capacity),
+              additional_capacity_charges: Number(this.packageData.additional_capacity_charges),
+              charge_unit: Number(this.packageData.charge_unit),
+              description: this.packageData.description,
+              suppliers: this.inclusions
+                .filter(inclusion => inclusion.type === 'supplier' && inclusion.data)
+                .map(inclusion => ({
+                  supplier_id: Number(inclusion.data.supplier_id),
+                  type: 'internal',
+                  remarks: `${inclusion.data.service} service`
+                })),
+              gown_package_id: this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_id || null,
+            };
+
+            // Additional validation
+            if (!packageData.package_name || !packageData.package_type) {
+              alert('Package name and type are required.');
+              return;
+            }
+
+            if (packageData.suppliers.length === 0) {
+              alert('At least one supplier is required.');
+              return;
+            }
+
+            console.log('Sending package data:', packageData);  // Debug log
+
+            const response = await axios.post('http://127.0.0.1:5000/create-package', packageData, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+              },
+            });
+
+            if (response.status === 201) {
+              alert('Package created successfully!');
+              this.resetPackageForm();
+              this.fetchPackages(); // Refresh the packages list
+            }
+          } catch (error) {
+            console.error('Error creating package:', error);
+            let errorMessage = 'Failed to create package. Please try again.';
+            
+            if (error.response) {
+              console.error('Error response:', error.response.data);
+              errorMessage = error.response.data.message || 
+                            error.response.data.error || 
+                            'Failed to create package. Please check your input.';
+            }
+            
+            alert(errorMessage);
+            this.errorMessage = errorMessage;
+          }
+        },
     resetPackageForm() {
       this.packageData = {
         package_name: '',
         package_type: '',
-        venue_id: '',
+        venue_id: null,
         capacity: null,
         additional_capacity_charges: null,
-        charge_unit: null,
+        charge_unit: 1,
         description: '',
-        suppliers: []
+        suppliers: [],
       };
+      this.inclusions = [];
       this.addPackagesForm = false;
     },
     closePackagesForm() {
       this.resetPackageForm();
     },
+
+    addVenue() {
+    if (this.selectedVenue) {
+      this.inclusions.push({
+        type: 'venue',
+        data: this.selectedVenue
+      });
+      this.selectedVenue = null;
+    }
+  },
+  addOutfit() {
+    if (this.selectedOutfit) {
+      this.inclusions.push({
+        type: 'outfit',
+        data: this.selectedOutfit
+      });
+      this.selectedOutfit = null;
+    }
+  },
 
 
 
@@ -586,42 +674,49 @@ export default {
         },
 
         async fetchSuppliersAndPackageServices() {
-          try {
+            try {
               const token = localStorage.getItem('access_token');
               if (!token) {
-                  alert('You are not logged in. Please log in to fetch suppliers and package services.');
-                  return;
+                alert('You are not logged in. Please log in to fetch data.');
+                return;
               }
 
-              // Fetch suppliers
-              const suppliersResponse = await axios.get('http://127.0.0.1:5000/suppliers', {
-                  headers: {
-                      'Authorization': `Bearer ${token}`,
-                  },
-              });
+              const [suppliersResponse, venuesResponse, gownPackagesResponse] = await Promise.all([
+                axios.get('http://127.0.0.1:5000/suppliers', {
+                  headers: { Authorization: `Bearer ${token}` },
+                }),
+                axios.get('http://127.0.0.1:5000/created-venues', {
+                  headers: { Authorization: `Bearer ${token}` },
+                }),
+                axios.get('http://127.0.0.1:5000/gown-packages', {
+                  headers: { Authorization: `Bearer ${token}` },
+                }),
+              ]);
 
-              // Fetch package services
-              const packageServicesResponse = await axios.get('http://127.0.0.1:5000/package-service-suppliers', {
-                  headers: {
-                      'Authorization': `Bearer ${token}`,
-                  },
-              });
-
-              // Fetch gown packages
-              const gownPackagesResponse = await axios.get('http://127.0.0.1:5000/gown-packages', {
-                  headers: {
-                      'Authorization': `Bearer ${token}`,
-                  },
-              });
-
-              // Set the data
               this.availableSuppliers = suppliersResponse.data;
-              this.packageServices = packageServicesResponse.data;
+              this.venues = venuesResponse.data.map(venue => ({
+                ...venue,
+                selectVenueId: venue.venue_id,
+                selectVenue_name: venue.venue_name,
+                selectVenue_price: venue.venue_price,
+              }));
               this.gownPackages = gownPackagesResponse.data;
-          } catch (error) {
+            } catch (error) {
               console.error('Error fetching data:', error.response?.data || error.message);
-          }
-      },
+            }
+          },
+    formatInclusionDetails(inclusion) {
+      if (this.inclusionType === 'supplier') {
+        return `${inclusion.firstname} ${inclusion.lastname} - ${inclusion.service}`;
+      }
+      if (this.inclusionType === 'venue') {
+        return `${inclusion.selectVenue_name} - ${this.formatPrice(inclusion.selectVenue_price)}`;
+      }
+      if (this.inclusionType === 'outfit') {
+        return `${inclusion.gown_package_name} - ${this.formatPrice(inclusion.gown_package_price)}`;
+      }
+      return '';
+    },
 
 
     addSupplier() {
@@ -647,11 +742,6 @@ export default {
     removeSupplier(index) {
       this.packageData.suppliers.splice(index, 1);
     },
-
-
-
-
-
 
         async confirmEditPackage() {
               try {
@@ -864,7 +954,9 @@ export default {
     mounted() {
       this.fetchPackages();
       this.fetchVenues();
+      console.log('Component mounted');
       this.fetchSuppliersAndPackageServices();
+      console.log('Fetch completed');
   },
     watch: {
         showTable(newTable) {
