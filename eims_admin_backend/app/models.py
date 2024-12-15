@@ -44,7 +44,7 @@ def create_user(first_name, last_name, username, email, contact_number, password
 
         # Use the hashed password in the query
         cursor.execute(
-            "INSERT INTO users (firstname, lastname, username, email, contactnumber, password, user_type, address) "
+            "INSERT INTO users (first_name, last_name, username, email, contact_number, password, user_type, address) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING userid", 
             (first_name, last_name, username, email, contact_number, hashed_password, user_type, address)
         )
@@ -90,7 +90,7 @@ def get_users_by_type():
     try:
         cursor.execute(
             """
-            SELECT userid, firstname, lastname, email, contactnumber, user_type
+            SELECT userid, first_name, last_name, email, contact_number, user_type
             FROM users
             WHERE user_type IN ('Assistant', 'Staff')
             """
@@ -100,10 +100,10 @@ def get_users_by_type():
         return [
             {
                 'userid': item[0],
-                'firstname': item[1],
-                'lastname': item[2],
+                'first_name': item[1],
+                'last_name': item[2],
                 'email': item[3],
-                'contactnumber': item[4],
+                'contact_number': item[4],
                 'user_type': item[5],
             }
             for item in users
@@ -243,7 +243,7 @@ def update_suppliers_and_user(
 
 
 
-def update_staff(userid, firstname, lastname, email, contactnumber, user_type):
+def update_staff(userid, first_name, last_name, email, contact_number, user_type):
     if not userid:
         logger.error("Invalid userid provided")
         return False
@@ -254,10 +254,10 @@ def update_staff(userid, firstname, lastname, email, contactnumber, user_type):
         cursor.execute(
             """
             UPDATE users 
-            SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, user_type = %s 
+            SET first_name = %s, last_name = %s, email = %s, contact_number = %s, user_type = %s 
             WHERE userid = %s
             """,
-            (firstname, lastname, email, contactnumber, user_type, userid),
+            (first_name, last_name, email, contact_number, user_type, userid),
         )
         if cursor.rowcount == 0:
             logger.warning(f"No user found with userid {userid}")
@@ -302,74 +302,118 @@ def get_packages():
     cursor = conn.cursor()
 
     try:
-        cursor.execute(
-            """
-            SELECT ep.package_id, ep.package_name, ep.package_type, ep.capacity, ep.description,
-                   ep.gown_package_id, gp.gown_package_name, gp.gown_package_price,
-                   ep.additional_capacity_charges, ep.charge_unit, ep.total_price,
-                   v.venue_id, v.venue_name, v.location, v.venue_price,
-                   array_agg(ps.package_service_id) as service_ids,
-                   array_agg(s.supplier_id) as supplier_ids,
-                   array_agg(s.service) as services,
-                   array_agg(s.price) as service_prices,
-                   array_agg(u.firstname) as supplier_firstnames,
-                   array_agg(u.lastname) as supplier_lastnames,
-                   array_agg(u.email) as supplier_emails,
-                   array_agg(u.contactnumber) as supplier_contacts,
-                   array_agg(ps.external_supplier_name) as external_supplier_names,
-                   array_agg(ps.external_supplier_contact) as external_supplier_contacts,
-                   array_agg(ps.external_supplier_price) as external_supplier_prices,
-                   array_agg(ps.remarks) as remarks
-
-            FROM event_packages ep
-            LEFT JOIN gown_package gp ON ep.gown_package_id = gp.gown_package_id
-            LEFT JOIN venues v ON ep.venue_id = v.venue_id
-            LEFT JOIN event_package_services eps ON ep.package_id = eps.package_id
-            LEFT JOIN package_service ps ON eps.package_service_id = ps.package_service_id
-            LEFT JOIN suppliers s ON ps.supplier_id = s.supplier_id
-            LEFT JOIN users u ON s.userid = u.userid
-            GROUP BY ep.package_id, gp.gown_package_id, v.venue_id
-            """
-        )
-        packages = cursor.fetchall()
-        return [
-            {
-                'package_id': item[0],
-                'package_name': item[1],
-                'package_type': item[2],
-                'capacity': item[3],
-                'description': item[4],
-                'gown_package_id': item[5],
-                'gown_package_name': item[6],
-                'gown_package_price': item[7],
-                'additional_capacity_charges': item[8],
-                'charge_unit': item[9],
-                'total_price': item[10],
-                'venue_id': item[11],
-                'venue_name': item[12],
-                'venue_location': item[13],
-                'venue_price': item[14],
-                'package_service_ids': item[15],
-                'supplier_ids': item[16],
-                'services': item[17],
-                'service_prices': item[18],
-                'supplier_firstnames': item[19],
-                'supplier_lastnames': item[20],
-                'supplier_emails': item[21],
-                'supplier_contacts': item[22],
-                'external_supplier_names': item[23],
-                'external_supplier_contacts': item[24],
-                'external_supplier_prices': item[25],
-                'remarks': item[26],
+        # Get basic package information
+        cursor.execute("""
+            SELECT 
+                p.package_id,
+                p.package_name,
+                p.package_type,
+                p.capacity,
+                p.description,
+                p.total_price,
+                p.venue_id,
+                v.venue_name,
+                v.venue_price,
+                p.gown_package_id,
+                gp.gown_package_name,
+                gp.gown_package_price
+            FROM event_packages p
+            LEFT JOIN venues v ON p.venue_id = v.venue_id
+            LEFT JOIN gown_package gp ON p.gown_package_id = gp.gown_package_id
+        """)
+        packages = []
+        for row in cursor.fetchall():
+            package = {
+                'package_id': row[0],
+                'package_name': row[1],
+                'package_type': row[2],
+                'capacity': row[3],
+                'description': row[4],
+                'total_price': float(row[5]) if row[5] else 0,
+                'suppliers': [],
+                'outfit_packages': [],
+                'additional_services': []
             }
-            for item in packages
-        ]
+
+            # Add venue information if exists
+            if row[6]:  # venue_id exists
+                package['venue_id'] = row[6]
+                package['venue_name'] = row[7]
+                package['venue_price'] = float(row[8]) if row[8] else 0
+
+            # Add outfit package if exists
+            if row[9]:  # gown_package_id exists
+                package['outfit_packages'].append({
+                    'gown_package_id': row[9],
+                    'gown_package_name': row[10],
+                    'price': float(row[11]) if row[11] else 0
+                })
+
+            # Get suppliers for this package
+            cursor.execute("""
+                SELECT 
+                    ps.package_service_id,
+                    ps.supplier_id,
+                    u.firstname,
+                    u.lastname,
+                    s.service,
+                    s.price,
+                    ps.external_supplier_name,
+                    ps.external_supplier_contact,
+                    ps.external_supplier_price,
+                    ps.remarks
+                FROM event_package_services eps
+                JOIN package_service ps ON eps.package_service_id = ps.package_service_id
+                LEFT JOIN suppliers s ON ps.supplier_id = s.supplier_id
+                LEFT JOIN users u ON s.userid = u.userid
+                WHERE eps.package_id = %s
+            """, (package['package_id'],))
+
+            for supplier_row in cursor.fetchall():
+                if supplier_row[1]:  # Internal supplier
+                    package['suppliers'].append({
+                        'supplier_id': supplier_row[1],
+                        'firstname': supplier_row[2],
+                        'lastname': supplier_row[3],
+                        'service_type': supplier_row[4],
+                        'price': float(supplier_row[5]) if supplier_row[5] else 0,
+                        'remarks': supplier_row[9]
+                    })
+                else:  # External supplier
+                    package['suppliers'].append({
+                        'external_supplier_name': supplier_row[6],
+                        'external_supplier_contact': supplier_row[7],
+                        'price': float(supplier_row[8]) if supplier_row[8] else 0,
+                        'remarks': supplier_row[9]
+                    })
+
+            # Get additional services for this package
+            cursor.execute("""
+                SELECT 
+                    a.add_service_id,
+                    a.add_service_name,
+                    a.add_service_price
+                FROM event_package_additional_services epas
+                JOIN additional_services a ON epas.add_service_id = a.add_service_id
+                WHERE epas.package_id = %s
+            """, (package['package_id'],))
+
+            for service_row in cursor.fetchall():
+                package['additional_services'].append({
+                    'add_service_id': service_row[0],
+                    'add_service_name': service_row[1],
+                    'price': float(service_row[2]) if service_row[2] else 0
+                })
+
+            packages.append(package)
+
+        return packages
+    except Exception as e:
+        print(f"Error fetching packages: {e}")
+        raise e
     finally:
         cursor.close()
         conn.close()
-
-
-
 
 def create_package(package_data):
     conn = get_db_connection()
@@ -428,9 +472,28 @@ def create_package(package_data):
                 (package_id, package_service_id)
             )
 
-        # Calculate and update gown package price
-        if package_data['gown_package_id']:
-            update_gown_package_price(package_data['gown_package_id'], cursor)
+        # Add additional services prices
+        if 'additional_services' in package_data:
+            cursor.execute(
+                """
+                SELECT COALESCE(SUM(add_service_price), 0)
+                FROM additional_services
+                WHERE add_service_id = ANY(%s)
+                """,
+                ([service['add_service_id'] for service in package_data['additional_services']],)
+            )
+            additional_services_price = cursor.fetchone()[0]
+            total_price = additional_services_price
+
+            # Insert additional services
+            for service in package_data['additional_services']:
+                cursor.execute(
+                    """
+                    INSERT INTO event_package_additional_services (package_id, add_service_id)
+                    VALUES (%s, %s)
+                    """,
+                    (package_id, service['add_service_id'])
+                )
 
         # Calculate total price after inserting package and services
         total_price = calculate_total_price(package_id, cursor)
@@ -481,24 +544,50 @@ def create_package(package_data):
         conn.close()
 
 def calculate_total_price(package_id, cursor):
+    """Calculate the total price of a package including all services."""
+    total_price = 0
+
+    # Get supplier prices
     cursor.execute(
         """
-        SELECT SUM(
-            CASE
-                WHEN ps.supplier_id IS NOT NULL THEN 
-                    COALESCE(s.price, 0)  -- Use price from suppliers table for internal suppliers
-                ELSE 
-                    COALESCE(ps.external_supplier_price, 0)  -- Use price from package_service for external suppliers
-            END
-        )
+        SELECT COALESCE(SUM(s.price), 0)
         FROM event_package_services eps
         JOIN package_service ps ON eps.package_service_id = ps.package_service_id
-        LEFT JOIN suppliers s ON ps.supplier_id = s.supplier_id  -- Join suppliers table for internal supplier price
+        JOIN suppliers s ON ps.supplier_id = s.supplier_id
         WHERE eps.package_id = %s
-        """, (package_id,)
+        """,
+        (package_id,)
     )
-    result = cursor.fetchone()
-    return result[0] if result[0] is not None else 0.00  # Return 0.00 if no price found
+    supplier_price = cursor.fetchone()[0]
+    total_price += supplier_price
+
+    # Get external supplier prices
+    cursor.execute(
+        """
+        SELECT COALESCE(SUM(ps.external_supplier_price), 0)
+        FROM event_package_services eps
+        JOIN package_service ps ON eps.package_service_id = ps.package_service_id
+        WHERE eps.package_id = %s AND ps.external_supplier_price IS NOT NULL
+        """,
+        (package_id,)
+    )
+    external_price = cursor.fetchone()[0]
+    total_price += external_price
+
+    # Get additional services prices
+    cursor.execute(
+        """
+        SELECT COALESCE(SUM(ads.add_service_price), 0)
+        FROM event_package_additional_services pas
+        JOIN additional_services ads ON pas.add_service_id = ads.add_service_id
+        WHERE pas.package_id = %s
+        """,
+        (package_id,)
+    )
+    additional_services_price = cursor.fetchone()[0]
+    total_price += additional_services_price
+
+    return total_price
 
 def calculate_gown_package_price(gown_package_id, cursor):
     cursor.execute(
@@ -528,29 +617,118 @@ def update_gown_package_price(gown_package_id, cursor):
 
 
 
-def update_package(package_id, package_name, package_type, venue, price, capacity, description):
-    if not package_id:
-        logger.error("Invalid package_id provided")
-        return False
-
+def update_package(package_id, package_data):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        query = """
-            UPDATE event_packages
-            SET package_name = %s, package_type = %s, venue = %s, price = %s, capacity = %s, description = %s
+        cursor.execute("BEGIN")
+
+        # Update basic package information
+        cursor.execute("""
+            UPDATE event_packages 
+            SET package_name = %s,
+                package_type = %s,
+                capacity = %s,
+                description = %s
             WHERE package_id = %s
-        """
-        cursor.execute(query, (package_name, package_type, venue, price, capacity, description, package_id))
+            RETURNING package_id
+        """, (
+            package_data['package_name'],
+            package_data['package_type'],
+            package_data['capacity'],
+            package_data['description'],
+            package_id
+        ))
+
         if cursor.rowcount == 0:
-            logger.warning(f"No package found with package_id {package_id}")
+            cursor.execute("ROLLBACK")
             return False
-        conn.commit()
-        logger.info(f"Package {package_id} updated successfully.")
+
+        # Clear existing inclusions
+        cursor.execute("DELETE FROM event_package_services WHERE package_id = %s", (package_id,))
+        cursor.execute("DELETE FROM event_package_additional_services WHERE package_id = %s", (package_id,))
+
+        total_price = 0
+
+        # Process new inclusions
+        for inclusion in package_data['inclusions']:
+            if inclusion['type'] == 'supplier':
+                # Add supplier
+                if 'supplier_id' in inclusion['data']:
+                    # Internal supplier
+                    cursor.execute("""
+                        INSERT INTO package_service (supplier_id, remarks)
+                        VALUES (%s, %s)
+                        RETURNING package_service_id
+                    """, (inclusion['data']['supplier_id'], inclusion.get('remarks', '')))
+                else:
+                    # External supplier
+                    cursor.execute("""
+                        INSERT INTO package_service (
+                            external_supplier_name,
+                            external_supplier_contact,
+                            external_supplier_price,
+                            remarks
+                        )
+                        VALUES (%s, %s, %s, %s)
+                        RETURNING package_service_id
+                    """, (
+                        inclusion['data']['external_supplier_name'],
+                        inclusion['data']['external_supplier_contact'],
+                        inclusion['data']['external_supplier_price'],
+                        inclusion.get('remarks', '')
+                    ))
+                
+                package_service_id = cursor.fetchone()[0]
+                cursor.execute("""
+                    INSERT INTO event_package_services (package_id, package_service_id)
+                    VALUES (%s, %s)
+                """, (package_id, package_service_id))
+                
+                total_price += float(inclusion['data'].get('price', 0))
+
+            elif inclusion['type'] == 'venue':
+                # Update venue
+                cursor.execute("""
+                    UPDATE event_packages
+                    SET venue_id = %s
+                    WHERE package_id = %s
+                """, (inclusion['data']['selectVenueId'], package_id))
+                
+                total_price += float(inclusion['data'].get('price', 0))
+
+            elif inclusion['type'] == 'outfit':
+                # Update outfit package
+                cursor.execute("""
+                    UPDATE event_packages
+                    SET gown_package_id = %s
+                    WHERE package_id = %s
+                """, (inclusion['data']['gown_package_id'], package_id))
+                
+                total_price += float(inclusion['data'].get('price', 0))
+
+            elif inclusion['type'] == 'service':
+                # Add additional service
+                cursor.execute("""
+                    INSERT INTO event_package_additional_services (package_id, add_service_id)
+                    VALUES (%s, %s)
+                """, (package_id, inclusion['data']['add_service_id']))
+                
+                total_price += float(inclusion['data'].get('price', 0))
+
+        # Update total price
+        cursor.execute("""
+            UPDATE event_packages
+            SET total_price = %s
+            WHERE package_id = %s
+        """, (total_price, package_id))
+
+        cursor.execute("COMMIT")
         return True
+
     except Exception as e:
-        logger.error(f"Error updating package {package_id}: {e}")
-        conn.rollback()
+        cursor.execute("ROLLBACK")
+        print(f"Error updating package: {e}")
         return False
     finally:
         cursor.close()
@@ -992,4 +1170,73 @@ def get_all_outfits():
         cursor.close()
         conn.close()
 
+#additional services models
+def create_additional_service(add_service_name, add_service_description, add_service_price):
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
+    try:
+        cursor.execute(
+            "INSERT INTO additional_services (add_service_name, add_service_description, add_service_price) "
+            "VALUES (%s, %s, %s)",
+            (add_service_name, add_service_description, add_service_price)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error inserting additional service: {e}")  # Log the error message
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+# Function to fetch all additional services from the additional_services table
+def get_all_additional_services():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT add_service_id, add_service_name, add_service_description, add_service_price FROM additional_services")
+        services = cursor.fetchall()
+
+        # Transform the result into a list of dictionaries
+        return [
+            {
+                'add_service_id': item[0],
+                'add_service_name': item[1],
+                'add_service_description': item[2],
+                'add_service_price': item[3]
+            }
+            for item in services
+        ]
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_additional_service(add_service_id, add_service_name, add_service_description, add_service_price):
+    if not add_service_id:
+        logger.error("Invalid add_service_id provided")
+        return False
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        query = """
+            UPDATE additional_services
+            SET add_service_name = %s, add_service_description = %s, add_service_price = %s
+            WHERE add_service_id = %s
+        """
+        cursor.execute(query, (add_service_name, add_service_description, add_service_price, add_service_id))
+        if cursor.rowcount == 0:
+            logger.warning(f"No additional service found with add_service_id {add_service_id}")
+            return False
+        conn.commit()
+        logger.info(f"Additional service {add_service_id} updated successfully.")
+        return True
+    except Exception as e:
+        logger.error(f"Error updating additional service {add_service_id}: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()

@@ -16,7 +16,8 @@ import EventCalendar from '../pages/event-calendar.vue';
 import Invoice from '../pages/invoice.vue';
 import AddServices from '../pages/add-services.vue'
 import AddVenue from '../pages/add-venue.vue';
-import AddOutfitPackage from '../pages/add-outfitPackage.vue'
+import AddOutfitPackage from '../pages/add-outfitPackage.vue';
+import AdditionalServices from '../pages/additional_services.vue';
 
 const routes = [
   {
@@ -117,23 +118,25 @@ const routes = [
         props: true,     
       
       },
+      {
+        name: 'AdditionalServices',
+        path: '/additional-services',
+        component: AdditionalServices,
+        props: true,     
+      },
     ],
   }
   // You can add additional routes here if needed
 ];
 
-
-const router = Router();
-export default router;
-function Router() {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes,
-  });
-  return router;
-}
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'RedCarpet Admin';
   next();
 });
+
+export default router;

@@ -64,3 +64,34 @@ LINE 2: ...   SELECT package_id, package_name, package_type, venue, pri...
 2024-12-11 00:21:52,087 INFO: User data validated and inserted into the database successfully [in E:\eims-admin_project\eims_admin_backend\app\routes.py:154]
 2024-12-12 20:24:41,521 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
 2024-12-12 20:24:42,271 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 14:29:51,068 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 14:29:52,093 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 15:10:29,662 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 15:11:09,124 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 15:11:55,686 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 16:29:57,570 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 16:32:05,034 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-14 16:33:09,298 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 18:33:06,327 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 18:33:07,177 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 18:34:06,752 INFO: Additional service 3 updated successfully. [in E:\eims-admin_project\eims_admin_backend\app\models.py:1101]
+2024-12-15 18:34:26,341 INFO: Additional service 4 updated successfully. [in E:\eims-admin_project\eims_admin_backend\app\models.py:1101]
+2024-12-15 19:39:36,234 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 19:41:45,785 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 19:42:56,701 ERROR: Error fetching packages: column s.firstname does not exist
+LINE 5:                     s.firstname,
+                            ^
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-15 19:44:02,411 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 19:44:23,863 ERROR: Error fetching suppliers: column u.first_name does not exist
+LINE 3:             u.first_name, u.last_name, u.username, u.email, ...
+                    ^
+HINT:  Perhaps you meant to reference the column "u.firstname".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:189]
+2024-12-15 19:44:23,867 ERROR: Error fetching packages: column u.first_name does not exist
+LINE 5:                     u.first_name,
+                            ^
+HINT:  Perhaps you meant to reference the column "u.firstname".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-15 19:47:47,170 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-15 19:49:37,225 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]

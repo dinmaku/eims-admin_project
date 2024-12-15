@@ -1,7 +1,7 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user,create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits
+from .models import check_user,create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service
 import logging
 import jwt
 from functools import wraps
@@ -376,22 +376,14 @@ def init_routes(app):
                 return jsonify({"message": "Invalid package ID"}), 400
 
             data = request.get_json(force=True, silent=True) or {}
-            required_fields = ["package_name", "package_type", "venue", "price", "capacity", "description"]
+            required_fields = ["package_name", "package_type", "capacity", "price", "description", "inclusions"]
 
             # Ensure all required fields are present
-            if not all(field in data and data[field] for field in required_fields):
-                return jsonify({"message": "All fields are required"}), 400
-
-            # Extract data
-            package_name = data["package_name"]
-            package_type = data["package_type"]
-            venue = data["venue"]
-            price = data["price"]
-            capacity = data["capacity"]
-            description = data["description"]
+            if not all(field in data for field in required_fields):
+                return jsonify({"message": "Missing required fields"}), 400
 
             # Update the package data
-            if update_package(package_id, package_name, package_type, venue, price, capacity, description):
+            if update_package(package_id, data):
                 return jsonify({"message": "Package updated successfully"}), 200
             else:
                 return jsonify({"message": "Failed to update package. Package not found or database error occurred."}), 404
@@ -591,3 +583,64 @@ def init_routes(app):
             return jsonify({'message': 'An error occurred while adding the gown package'}), 500
 
 
+#additional services routes
+
+    @app.route('/created-services', methods=['GET'])
+    @jwt_required()
+    def get_services_route():
+        try:
+            services = get_all_additional_services()
+            return jsonify(services), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching services: {e}")
+            return jsonify({'message': 'An error occurred while fetching services'}), 500
+
+    @app.route('/create-service', methods=['POST'])
+    @jwt_required()
+    def create_service_route():
+        try:
+            data = request.get_json(force=True, silent=True) or {}
+            add_service_name = data.get('add_service_name')
+            add_service_description = data.get('add_service_description')
+            add_service_price = data.get('add_service_price')
+
+            if not all([add_service_name, add_service_description, add_service_price]):
+                return jsonify({"error": "All fields are required: add_service_name, add_service_description, add_service_price"}), 400
+
+            if not isinstance(add_service_price, (int, float)) or add_service_price <= 0:
+                return jsonify({"error": "Service price must be a positive number"}), 400
+
+            success = create_additional_service(add_service_name, add_service_description, add_service_price)
+
+            if success:
+                return jsonify({"message": "Service created successfully"}), 201
+            else:
+                return jsonify({"error": "Failed to create service"}), 500
+        except Exception as e:
+            app.logger.error(f"Error in /create-service route: {e}")
+            return jsonify({"error": "An internal server error occurred"}), 500
+
+    @app.route('/update-service/<int:add_service_id>', methods=['PUT'])
+    @jwt_required()
+    def update_service_details(add_service_id):
+        try:
+            if not add_service_id:
+                return jsonify({"message": "Invalid service ID"}), 400
+
+            data = request.json
+            required_fields = ["add_service_name", "add_service_description", "add_service_price"]
+
+            if data is None or not all(field in data and data.get(field) for field in required_fields):
+                return jsonify({"message": "All fields are required"}), 400
+
+            add_service_name = data["add_service_name"]
+            add_service_description = data["add_service_description"]
+            add_service_price = data["add_service_price"]
+
+            if update_additional_service(add_service_id, add_service_name, add_service_description, add_service_price):
+                return jsonify({"message": "Service updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update service. Service not found or database error occurred."}), 404
+        except Exception as e:
+            app.logger.error(f"Error in update_service_details route: {e}")
+            return jsonify({"message": f"Error: {str(e)}"}), 500
