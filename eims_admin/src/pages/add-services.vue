@@ -86,139 +86,202 @@
 
 
     
-    <!-- Add Packages Form -->
-      <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
-        <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-          <div class="flex justify-between items-center mb-5">
-            <h1 class="font-semibold text-xl text-gray-800">Add Package</h1>
-            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closePackagesForm">Close</button>
-          </div>
+  <!-- Add Packages Form -->
+  <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
+    <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-center mb-5">
+        <h1 class="font-semibold text-xl text-gray-800">Add Package</h1>
+        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closePackagesForm">Close</button>
+      </div>
 
-          <div class="border-b border-gray-300 mb-5"></div>
+      <div class="border-b border-gray-300 mb-5"></div>
 
-          <!-- Package Details -->
-          <div>
-            <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
-            <div class="grid grid-cols-2 gap-4">
-              <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-              <input type="text" v-model="packageData.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Type (Ex. Wedding)" required />
-              <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
-              <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
-            </div>
+      <!-- Package Details -->
+      <div>
+        <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+          <input type="text" v-model="packageData.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Type (Ex. Wedding)" required />
+          <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+          <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+        </div>
 
-            <div class="mt-5">
-              <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
-              <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
-            </div>
+        <div class="mt-5">
+          <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
+          <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
+        </div>
 
-            <div class="mt-5">
-              <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
-            </div>
-          </div>
-
-          <!-- Inclusion Buttons -->
-          <h2 class="font-semibold text-lg text-gray-800 mt-8 mb-4">Add Inclusions</h2>
-          <div class="grid grid-cols-4 gap-4 mb-4">
-            <button @click.prevent="openInclusionModal('supplier')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Suppliers</button>
-            <button @click.prevent="addEmptyInclusion('venue')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Venue</button>
-            <button @click.prevent="addEmptyInclusion('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Outfit Package</button>
-            <button @click.prevent="addEmptyInclusion('service')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Additional Services</button>
-          </div>
-
-          <!-- Inclusion Modal -->
-          <div v-if="showInclusionModal" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold">Select Service Type</h2>
-                <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div class="grid grid-cols-1 gap-2">
-                <button v-for="serviceType in supplierTypes" :key="serviceType" @click="addEmptySupplierInclusion(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
-                  {{ serviceType }}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Inclusion Table -->
-          <div class="overflow-x-auto">
-            <table class="w-full table-auto border-collapse border border-gray-300">
-              <thead class="bg-gray-200">
-                <tr>
-                  <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
-                  <th class="border border-gray-300 px-4 py-2 text-left">Details</th>
-                  <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
-                  <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(inclusion, index) in inclusions" :key="index" class="border border-gray-300">
-                  <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
-                  <td class="border border-gray-300 px-4 py-2">
-                    <!-- Supplier select -->
-                    <span v-if="inclusion.type === 'supplier'">
-                      <select v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                        <option selected disabled :value="null">Select {{ inclusion.serviceType }}</option>
-                        <option v-for="supplier in filteredSuppliers(inclusion.serviceType)" :key="supplier.supplier_id" :value="supplier">
-                          {{ supplier.firstname }} {{ supplier.lastname }}
-                        </option>
-                      </select>
-                    </span>
-                    <!-- Venue select -->
-                    <select v-if="inclusion.type === 'venue'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                      <option selected disabled :value="null">Select Venue</option>
-                      <option v-for="venue in venues" :key="venue.selectVenueId" :value="venue">
-                        {{ venue.selectVenue_name }}
-                      </option>
-                    </select>
-                    <!-- Outfit select -->
-                    <select v-if="inclusion.type === 'outfit'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                      <option selected disabled :value="null">Select Outfit Package</option>
-                      <option v-for="gp in gownPackages" :key="gp.gown_package_id" :value="gp">
-                        {{ gp.gown_package_name }}
-                      </option>
-                    </select>
-                    <!-- Additional Service select -->
-                    <select v-if="inclusion.type === 'service'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                      <option selected disabled :value="null">Select Additional Service</option>
-                      <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
-                        {{ service.add_service_name }}
-                      </option>
-                    </select>
-                  </td>
-                  <td class="border border-gray-300 px-4 py-2">
-                    <!-- Price based on type -->
-                    <span v-if="inclusion.type === 'supplier' && inclusion.data">
-                      {{ formatPrice(inclusion.data.price) }} php
-                    </span>
-                    <span v-else-if="inclusion.type === 'venue' && inclusion.data">
-                      {{ formatPrice(inclusion.data.selectVenue_price) }} php
-                    </span>
-                    <span v-else-if="inclusion.type === 'outfit' && inclusion.data">
-                      {{ formatPrice(inclusion.data.gown_package_price) }} php
-                    </span>
-                    <span v-else-if="inclusion.type === 'service' && inclusion.data">
-                      {{ formatPrice(inclusion.data.add_service_price) }} php
-                    </span>
-                    <span v-else>-</span>
-                  </td>
-                  <td class="border border-gray-300 px-4 py-2">
-                    <button @click="removeInclusion(index)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Remove</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        <!-- Submit Button -->
-        <div class="flex justify-center mt-8">
-          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Create Package</button>
+        <div class="mt-5">
+          <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
         </div>
       </div>
-    </form>
+
+      <!-- Inclusion Buttons -->
+      <div class="grid grid-cols-4 gap-4 mb-4">
+        <button @click.prevent="openInclusionModal('supplier')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Suppliers</button>
+        <button @click.prevent="openInclusionModal('venue')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Venue</button>
+        <button @click.prevent="openInclusionModal('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Outfit Package</button>
+        <button @click.prevent="openInclusionModal('service')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Additional Services</button>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Supplier Type -->
+      <div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Supplier Type</h2>
+            <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <button v-for="serviceType in supplierTypes" :key="serviceType" @click="selectSupplierType(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
+              {{ serviceType }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Specific Supplier -->
+      <div v-if="showSupplierModal" @click.self="closeSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Supplier</h2>
+            <button @click="closeSupplierModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
+            <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select {{ selectedSupplierType }}</option>
+              <option v-for="supplier in filteredSuppliers(selectedSupplierType)" :key="supplier.supplier_id" :value="supplier">
+                {{ supplier.firstname }} {{ supplier.lastname }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Venue -->
+      <div v-if="showVenueModal" @click.self="closeVenueModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Venue</h2>
+            <button @click="closeVenueModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
+            <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select Venue</option>
+              <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
+                {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Outfit Package -->
+      <div v-if="showOutfitModal" @click.self="closeOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Outfit Package</h2>
+            <button @click="closeOutfitModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="outfit" class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
+            <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select Outfit Package</option>
+              <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
+                {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedOutfit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Additional Services -->
+        <div v-if="showServiceModal" @click.self="closeServiceModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Select Additional Service</h2>
+              <button @click="closeServiceModal" class="text-red-500 hover:text-red-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div>
+              <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
+              <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <option selected disabled value="">Select Additional Service</option>
+                <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
+                  {{ service.add_service_name }}
+                </option>
+              </select>
+            </div>
+            <div class="flex justify-center mt-4">
+              <button type="button" @click="addSelectedService" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      <!-- Inclusion Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border-collapse border border-gray-300">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Details</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(inclusion, index) in inclusions" :key="index" class="border border-gray-300">
+              <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
+              <td class="border border-gray-300 px-4 py-2">{{ getInclusionName(inclusion) }}</td>
+              <td class="border border-gray-300 px-4 py-2">{{ getInclusionPrice(inclusion) }}</td>
+              <td class="border border-gray-300 px-4 py-2">
+                <button @click="removeInclusion(index)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center mt-8">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Create Package</button>
+      </div>
+    </div>
+  </form>
+
+
 
 
 <!-- Edit Packages Form -->
@@ -354,7 +417,16 @@ export default {
 
       inclusionType: '',
       selectedInclusion: '',
+      selectedSupplierType: '',
+      selectedSupplier: null,
+      selectedVenue: null,
+      selectedOutfit: null,
+      selectedService: null,
       showInclusionModal: false,
+      showSupplierModal: false,
+      showVenueModal: false,
+      showOutfitModal: false,
+      showServiceModal: false,
       inclusions: [],
       selectedInclusionType: '',
       supplierTypes: [
@@ -373,7 +445,7 @@ export default {
       availableSuppliers: [],
       venues: [],
       gownPackages: [],
-      additionalServices: [], // Added for additional services
+      additionalServices: [],
       packageData: {
         package_name: '',
         package_type: '',
@@ -383,89 +455,177 @@ export default {
         charge_unit: 1,
         description: '',
         suppliers: [],
-        additional_services: [], // Added for additional services
+        additional_services: [],
       },
       packages: [],
-      selectedVenue: null,
-      selectedOutfit: null,
-
       selectedPackage: {
         packageId: null,
         package_name: '',
-        package_type: '',  // Changed from null to empty string
+        package_type: '',
         capacity: 0,
-        total_price: 0,    // Changed from price to total_price
+        total_price: 0,
         description: '',
         inclusions: [],
-        // Add these fields to track selected items
         selectedSuppliers: [],
         selectedVenue: null,
         selectedOutfitPackage: null,
         selectedAdditionalServices: []
-    },
+      },
       
     };
   },
  
   methods: {
     openInclusionModal(type) {
-        this.showInclusionModal = true;
+        this.selectedInclusionType = type;  // Add this line
+        switch (type) {
+          case 'supplier':
+            this.showInclusionModal = true;
+            break;
+          case 'venue':
+            this.openVenueModal();
+            break;
+          case 'outfit':
+            this.openOutfitModal();
+            break;
+          case 'service':
+            this.openServiceModal();
+            break;
+        }
       },
-
-      closeInclusionModal() {
-        this.showInclusionModal = false;
-      },
-
-      addEmptySupplierInclusion(serviceType) {
-        console.log('Adding supplier inclusion for service type:', serviceType);
+    closeInclusionModal() {
+      this.showInclusionModal = false;
+    },
+    openSupplierModal() {
+      this.showSupplierModal = true;
+    },
+    closeSupplierModal() {
+      this.showSupplierModal = false;
+    },
+    openVenueModal() {
+      this.showVenueModal = true;
+    },
+    closeVenueModal() {
+      this.showVenueModal = false;
+    },
+    openOutfitModal() {
+      this.showOutfitModal = true;
+    },
+    closeOutfitModal() {
+      this.showOutfitModal = false;
+    },
+    openServiceModal() {
+      this.showServiceModal = true;
+    },
+    closeServiceModal() {
+      this.showServiceModal = false;
+    },
+    selectSupplierType(serviceType) {
+      this.selectedSupplierType = serviceType;
+      this.closeInclusionModal();
+      this.openSupplierModal();
+    },
+    addSelectedSupplier() {
+      if (this.selectedSupplier && this.selectedSupplierType) {
         this.inclusions.push({
           type: 'supplier',
-          serviceType: serviceType,
-          data: null
+          serviceType: this.selectedSupplierType,
+          data: {
+            ...this.selectedSupplier,
+            service: this.selectedSupplierType
+          }
         });
-        this.closeInclusionModal();
-      },
-
-      addEmptyInclusion(type) {
-        this.inclusions.push({
-          type: type,
-          data: null
-        });
-      },
-
-      addInclusionToPackage(type) {
-          this.selectedPackage.inclusions.push({
-              type: type,
-              data: '',
-              serviceType: type === 'supplier' ? 'Catering' : ''
-          });
-      },
-
-      addSupplierToPackage(serviceType) {
-          this.selectedPackage.inclusions.push({
-              type: 'supplier',
-              serviceType: serviceType,
-              data: ''
-          });
-          this.closeInclusionModal();
-      },
-
-      openInclusionModal(type) {
-        this.inclusionType = type;
-        this.showInclusionModal = true;
-        this.selectedInclusionType = type === 'supplier' ? 'Catering' : '';
+        this.selectedSupplier = null;
+        this.closeSupplierModal();
+      }
     },
-
-      removeInclusion(index) {
-        this.inclusions.splice(index, 1);
+    addSelectedVenue() {
+      this.inclusions.push({
+        type: 'venue',
+        data: this.selectedVenue
+      });
+      this.selectedVenue = null;
+      this.closeVenueModal();
+    },
+    addSelectedOutfit() {
+      this.inclusions.push({
+        type: 'outfit',
+        data: this.selectedOutfit
+      });
+      this.selectedOutfit = null;
+      this.closeOutfitModal();
+    },
+    addSelectedService() {
+      this.inclusions.push({
+        type: 'service',
+        data: this.selectedService
+      });
+      this.selectedService = null;
+      this.closeServiceModal();
+    },
+    removeInclusion(index) {
+      this.inclusions.splice(index, 1);
+    },
+    filteredSuppliers(serviceType) {
+      return this.availableSuppliers.filter(supplier => supplier.service === serviceType && !this.inclusions.find(inclusion => inclusion.type === 'supplier' && inclusion.data && inclusion.data.supplier_id === supplier.supplier_id));
+    },
+    filteredVenues() {
+      const selectedVenueIds = this.inclusions.filter(inc => inc.type === 'venue' && inc.data).map(inc => inc.data.venue_id);
+      return this.venues.filter(venue => !selectedVenueIds.includes(venue.venue_id));
+    },
+    filteredGownPackages() {
+      const selectedGownPackageIds = this.inclusions.filter(inc => inc.type === 'outfit' && inc.data).map(inc => inc.data.gown_package_id);
+      return this.gownPackages.filter(pkg => !selectedGownPackageIds.includes(pkg.gown_package_id));
+    },
+    getInclusionName(inclusion) {
+      if (inclusion.type === 'supplier' && inclusion.data) {
+        return `${inclusion.data.firstname} ${inclusion.data.lastname}`;
+      }
+      if (inclusion.type === 'venue' && inclusion.data) {
+        return inclusion.data.venue_name;
+      }
+      if (inclusion.type === 'outfit' && inclusion.data) {
+        return inclusion.data.gown_package_name;
+      }
+      if (inclusion.type === 'service' && inclusion.data) {
+        return inclusion.data.add_service_name;
+      }
+      return '';
+    },
+    getInclusionName(inclusion) {
+      if (!inclusion || !inclusion.data) return '';
+      
+      switch (inclusion.type) {
+        case 'supplier':
+          return `${inclusion.data.firstname} ${inclusion.data.lastname}`;
+        case 'venue':
+          return inclusion.data.venue_name;
+        case 'outfit':
+          return inclusion.data.gown_package_name;
+        case 'service':
+          return inclusion.data.add_service_name;
+        default:
+          return '';
+      }
+    },
+    getInclusionPrice(inclusion) {
+        if (!inclusion || !inclusion.data) return '-';
+        
+        switch (inclusion.type) {
+          case 'supplier':
+            return `${this.formatPrice(inclusion.data.price)} php`;
+          case 'venue':
+            return `${this.formatPrice(inclusion.data.venue_price)} php`;
+          case 'outfit':
+            return `${this.formatPrice(inclusion.data.gown_package_price)} php`;
+          case 'service':
+            return `${this.formatPrice(inclusion.data.add_service_price)} php`;
+          default:
+            return '-';
+        }
       },
 
-      filteredSuppliers(serviceType) { 
-        return this.availableSuppliers.filter(supplier => supplier.service === serviceType);    
-      },
-
-
-        async addPackages() {
+      async addPackages() {
           try {
             // Validate that all inclusions have data selected
             const hasEmptyInclusions = this.inclusions.some(inclusion => !inclusion.data);
@@ -478,18 +638,19 @@ export default {
             const packageData = {
               package_name: this.packageData.package_name,
               package_type: this.packageData.package_type,
-              venue_id: this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.selectVenueId || null,
+              venue_id: this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_id || null,
               capacity: Number(this.packageData.capacity),
               additional_capacity_charges: Number(this.packageData.additional_capacity_charges),
               charge_unit: Number(this.packageData.charge_unit),
               description: this.packageData.description,
               suppliers: this.inclusions
-                .filter(inclusion => inclusion.type === 'supplier' && inclusion.data)
-                .map(inclusion => ({
-                  supplier_id: Number(inclusion.data.supplier_id),
-                  type: 'internal',
-                  remarks: `${inclusion.data.service} service`
-                })),
+              .filter(inclusion => inclusion.type === 'supplier' && inclusion.data)
+              .map(inclusion => ({
+                supplier_id: Number(inclusion.data.supplier_id),
+                type: 'internal',  // All suppliers are internal
+                price: Number(inclusion.data.price || 0),
+                remarks: `${inclusion.serviceType} service`
+              })),
               gown_package_id: this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_id || null,
               additional_services: this.inclusions
                 .filter(inclusion => inclusion.type === 'service' && inclusion.data)
@@ -501,10 +662,15 @@ export default {
             };
 
             // Calculate total price
-            packageData.total_price = packageData.suppliers.reduce((acc, supplier) => acc + Number(supplier.price || 0), 0) +
-                        packageData.additional_services.reduce((acc, service) => acc + Number(service.add_service_price || 0), 0) +
-                         (this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.selectVenue_price || 0) +
-                         (this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0);
+            packageData.total_price = 
+              // Supplier prices - use supplier_price from the suppliers array
+              packageData.suppliers.reduce((acc, supplier) => acc + (supplier.supplier_price || 0), 0) +
+              // Additional service prices
+              packageData.additional_services.reduce((acc, service) => acc + (service.add_service_price || 0), 0) +
+              // Venue price
+              Number(this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_price || 0) +
+              // Outfit package price
+              Number(this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0);
 
             // Additional validation
             if (!packageData.package_name || !packageData.package_type) {
@@ -546,6 +712,7 @@ export default {
             this.errorMessage = errorMessage;
           }
         },
+
 
     resetPackageForm() {
       this.packageData = {
@@ -642,37 +809,36 @@ export default {
         console.error('Error fetching packages:', error.response?.data || error.message);
       }
     },
-        async fetchVenues() {
-            try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    alert('You are not logged in. Please log in to view venues.');
-                    return;
-                }
+       async fetchVenues() {
+          try {
+              const token = localStorage.getItem('access_token');
+              if (!token) {
+                  alert('You are not logged in. Please log in to view venues.');
+                  return;
+              }
 
-                const response = await axios.get('http://127.0.0.1:5000/created-venues', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    withCredentials: true,
-                });
+              const response = await axios.get('http://127.0.0.1:5000/created-venues', {
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`,
+                  },
+                  withCredentials: true,
+              });
 
-                // Populate venues array with data from API
-                this.venues = response.data.map((venue, index) => ({
-                    selectVenueId: venue.venue_id,
-                    selectVenue_name: venue.venue_name,
-                    selectVenue_location: venue.location,
-                    selectVenue_price: venue.venue_price,  // Include any other fields you want to show
-                    dummyIndex: index + 1,
-                }));
+              // Ensure the response data is consistent with template expectations
+              this.venues = response.data.map(venue => ({
+                  venue_id: venue.venue_id,  // Matches v-for and filteredVenues
+                  venue_name: venue.venue_name,
+                  location: venue.location,
+                  venue_price: venue.venue_price,  // Include any other fields needed
+              }));
+          } catch (error) {
+              console.error('Error fetching venues:', error.response?.data || error.message);
+          }
+      },
 
-            } catch (error) {
-                console.error('Error fetching venues:', error.response?.data || error.message);
-            }
-        },
 
-        async fetchSuppliersAndPackageServices() {
+      async fetchSuppliersAndPackageServices() {
             try {
               const token = localStorage.getItem('access_token');
               if (!token) {
@@ -695,28 +861,21 @@ export default {
               this.availableSuppliers = suppliersResponse.data;
               this.venues = venuesResponse.data.map(venue => ({
                 ...venue,
-                selectVenueId: venue.venue_id,
-                selectVenue_name: venue.venue_name,
-                selectVenue_price: venue.venue_price,
+                venue_id: venue.venue_id,
+                venue_name: venue.venue_name,
+                venue_price: venue.venue_price,
               }));
-              this.gownPackages = gownPackagesResponse.data;
+              console.log('Venues fetched:', this.venues); // Add this line
+              this.gownPackages = gownPackagesResponse.data.map(gp => ({
+                ...gp,
+                gown_package_id: gp.gown_package_id,
+                gown_package_name: gp.gown_package_name,
+                gown_package_price: gp.gown_package_price,
+              }));
             } catch (error) {
               console.error('Error fetching data:', error.response?.data || error.message);
             }
-          },
-          formatInclusionDetails(inclusion) {
-            if (this.inclusionType === 'supplier') {
-              return `${inclusion.firstname} ${inclusion.lastname} - ${inclusion.service}`;
-            }
-            if (this.inclusionType === 'venue') {
-              return `${inclusion.selectVenue_name} - ${this.formatPrice(inclusion.selectVenue_price)}`;
-            }
-            if (this.inclusionType === 'outfit') {
-              return `${inclusion.gown_package_name} - ${this.formatPrice(inclusion.gown_package_price)}`;
-            }
-            return '';
-          },
-
+        },
 
     addSupplier() {
         this.packageData.suppliers.push({
@@ -1046,7 +1205,6 @@ export default {
 
     mounted() {
       this.fetchPackages();
-      this.fetchVenues();
       console.log('Component mounted');
       this.fetchSuppliersAndPackageServices();
       console.log('Fetch completed');
