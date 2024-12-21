@@ -4,3 +4,104 @@
 2024-12-17 01:39:42,147 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
 2024-12-18 12:46:30,612 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
 2024-12-18 12:46:31,205 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 14:31:38,334 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 14:31:39,954 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 14:52:23,501 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 14:52:35,233 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 14:54:13,526 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:55:51,837 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:56:03,940 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:56:30,880 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:56:33,426 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:56:48,694 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:57:34,907 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:57:39,611 ERROR: Error fetching packages: column p.package_type does not exist
+LINE 5:                 p.package_type,
+                        ^
+HINT:  Perhaps you meant to reference the column "p.package_name".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 14:58:04,605 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:00:22,901 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:00:44,353 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:00:51,802 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:01:03,213 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:02:03,135 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:02:20,458 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:02:47,042 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:03:46,820 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:04:02,447 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:04:19,662 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:04:59,401 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:05:11,775 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:06:21,855 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:06:32,172 ERROR: Error fetching packages: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:07:01,017 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:07:06,701 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:07:16,438 ERROR: Error fetching packages: tuple indices must be integers or slices, not str [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:08:26,998 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:08:34,494 ERROR: Error fetching packages: column eps.supplier_id does not exist
+LINE 10:                 JOIN suppliers s ON eps.supplier_id = s.supp...
+                                             ^
+HINT:  Perhaps you meant to reference the column "s.supplier_id".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:11:21,370 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:11:27,083 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:11:39,891 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:11:44,323 ERROR: Error fetching packages: column ps.supplier_id does not exist
+LINE 10:                 JOIN suppliers s ON ps.supplier_id = s.suppl...
+                                             ^
+HINT:  Perhaps you meant to reference the column "s.supplier_id".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:11:55,235 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:11:55,466 ERROR: Error fetching packages: column ps.supplier_id does not exist
+LINE 10:                 JOIN suppliers s ON ps.supplier_id = s.suppl...
+                                             ^
+HINT:  Perhaps you meant to reference the column "s.supplier_id".
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:325]
+2024-12-21 15:13:24,821 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:15:31,412 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:17:48,558 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:17:58,725 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:27:18,815 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 15:40:02,506 ERROR: Error in create_package_route: column "supplier_id" of relation "event_package_services" does not exist
+LINE 3:                         package_id, supplier_id, type, price...
+                                            ^
+ [in E:\eims-admin_project\eims_admin_backend\app\routes.py:316]
+2024-12-21 15:41:20,848 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:40:44,382 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:55:35,817 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:55:36,369 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:56:06,859 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:57:24,542 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 16:57:25,957 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 17:00:22,116 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 17:02:43,476 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2024-12-21 17:02:44,525 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]

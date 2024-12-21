@@ -3,9 +3,8 @@
       <!-- Side bar -->
       <div class="w-[250px] h-full bg-gray-200 text-center text-white top-0 left-0 overflow-y-auto">
        <div class ="h-[50px] bg-gray-200 flex justify-start items-center">
-          <div class="flex items-center px-[20px]">
-            <img aria-hidden="true" class="mr-2 w-[40px] h-[40px] fill-current" fill="currentColor" viewBox="0 0 20 20" src="/img/logo.png">
-        <h3 class="font-bold text-xl text-gray-800">EIMS</h3>
+          <div class="flex text-center items-center px-[20px]">
+        <h3 class="font-bold text-2xl text-gray-800">EIMS</h3>
       </div>
 
        </div>

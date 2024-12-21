@@ -1,7 +1,7 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user,create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service
+from .models import check_user, create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service, get_event_types, initialize_event_types, create_event_type
 import logging
 import jwt
 from functools import wraps
@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.DEBUG)
 SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
 
 def init_routes(app):
-
+    
     @app.route('/login', methods=['POST'])
     def login():
         try:
@@ -331,8 +331,9 @@ def init_routes(app):
         data = request.get_json()
         print("Received data:", data)
 
-        required_fields = ['package_name', 'package_type', 'venue_id', 'capacity', 
-                            'additional_capacity_charges', 'charge_unit', 'description', 'suppliers', 'gown_package_id']
+        required_fields = ['package_name', 'event_type_id', 'venue_id', 'capacity', 
+                         'additional_capacity_charges', 'charge_unit', 'description', 
+                         'suppliers', 'gown_package_id', 'total_price']
 
         if not all(field in data for field in required_fields):
             return jsonify({"error": "All fields are required"}), 400
@@ -342,29 +343,27 @@ def init_routes(app):
             data['additional_capacity_charges'] = Decimal(str(data['additional_capacity_charges']))
             data['charge_unit'] = int(data['charge_unit'])
             data['gown_package_id'] = int(data['gown_package_id']) if data['gown_package_id'] else None
+            data['event_type_id'] = int(data['event_type_id'])
+            data['total_price'] = Decimal(str(data['total_price']))
 
-            if not isinstance(data['suppliers'], list) or len(data['suppliers']) == 0:
-                return jsonify({"error": "At least one supplier is required"}), 400
+            if not isinstance(data['suppliers'], list):
+                return jsonify({"error": "Suppliers must be a list"}), 400
 
             for supplier in data['suppliers']:
-                if supplier['type'] == 'internal':
-                    if not supplier['supplier_id']:
-                        return jsonify({"error": "Invalid internal supplier data"}), 400
-                elif supplier['type'] == 'external':
-                    if not all(key in supplier for key in ['external_supplier_name', 'external_supplier_contact', 'external_supplier_price']):
-                        return jsonify({"error": "Invalid external supplier data"}), 400
-                    supplier['external_supplier_price'] = Decimal(str(supplier['external_supplier_price']))
-                else:
+                if 'type' not in supplier or supplier['type'] not in ['internal', 'external']:
                     return jsonify({"error": "Invalid supplier type"}), 400
 
-            if create_package(data):
-                return jsonify({"status": "success", "message": "Package created successfully"}), 201
+            package_id = create_package(data)
+            if package_id:
+                return jsonify({"message": "Package created successfully", "package_id": package_id}), 201
             else:
-                return jsonify({"status": "error", "message": "Failed to create package"}), 500
-        except ValueError:
-            return jsonify({"error": "Invalid numeric value provided"}), 400
+                return jsonify({"error": "Failed to create package"}), 500
+
+        except ValueError as e:
+            return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
         except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
+            app.logger.error(f"Error in create_package_route: {e}")
+            return jsonify({"error": str(e)}), 500
 
         
 
@@ -644,3 +643,34 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error in update_service_details route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
+
+    @app.route('/event-types', methods=['GET'])
+    def get_event_types_route():
+        try:
+            event_types = get_event_types()
+            return jsonify(event_types), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching event types: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/create-event-type', methods=['POST'])
+    @jwt_required()
+    def create_event_type_route():
+        try:
+            data = request.get_json()
+            if not data or 'event_type_name' not in data:
+                return jsonify({'error': 'Event type name is required'}), 400
+
+            try:
+                new_event_type = create_event_type(data['event_type_name'])
+                return jsonify({
+                    'message': 'Event type created successfully',
+                    'event_type': new_event_type
+                }), 201
+            except ValueError as ve:
+                return jsonify({'error': str(ve)}), 400
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500

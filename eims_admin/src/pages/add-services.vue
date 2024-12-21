@@ -43,7 +43,7 @@
                     class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ packageItem.dummyIndex }}</th>
                     <td class="px-4 py-3">{{ packageItem.package_name }}</td>
-                    <td class="px-4 py-3">{{ packageItem.package_type }}</td>
+                    <td class="px-4 py-3">{{ getEventTypeName(packageItem.event_type_id) }}</td>
                     <td class="px-4 py-3">{{ packageItem.venue_name }}</td>
                     <td class="px-4 py-3">{{ formatPrice(packageItem.total_price) }}</td>
                     <td class="px-4 py-3">{{ packageItem.capacity }}</td>
@@ -101,7 +101,14 @@
         <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
         <div class="grid grid-cols-2 gap-4">
           <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-          <input type="text" v-model="packageData.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Type (Ex. Wedding)" required />
+          <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <option disabled value="">Select Event Type</option>
+            <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
+              {{ type.event_type_name }}
+            </option>
+            <option value="add-new">+ Add New Event Type</option>
+          </select>
+
           <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
           <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
         </div>
@@ -115,14 +122,69 @@
           <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
         </div>
       </div>
+      <!-- Add New Event Type Modal -->
+      <div
+          v-if="showAddEventTypeModal"
+          @click.self="closeAddEventTypeModal"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        >
+          <div class="bg-white rounded-lg shadow-lg w-[400px] p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Add New Event Type</h2>
+            <input
+              v-model="newEventTypeName"
+              type="text"
+              class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+              placeholder="Enter Event Type Name"
+            />
+            <div class="flex justify-end mt-4 space-x-2">
+              <button
+                @click="saveNewEventType"
+                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+              >
+                Save
+              </button>
+              <button
+                @click="closeAddEventTypeModal"
+                class="px-4 py-2 text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 mr-2"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
 
       <!-- Inclusion Buttons -->
-      <div class="grid grid-cols-4 gap-4 mb-4">
-        <button @click.prevent="openInclusionModal('supplier')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Suppliers</button>
-        <button @click.prevent="openInclusionModal('venue')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Venue</button>
-        <button @click.prevent="openInclusionModal('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Outfit Package</button>
-        <button @click.prevent="openInclusionModal('service')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Additional Services</button>
-      </div>
+          <div class="grid grid-cols-4 gap-4 mb-4">
+            <button 
+              @click.prevent="openInclusionModal('supplier')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Supplier Icon" class="mr-2 w-[20px] h-[20px]" src="/img/supplier.png">
+              Suppliers
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('venue')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Venue Icon" class="mr-2 w-[20px] h-[20px]" src="/img/venues1.png">
+             Venue
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('outfit')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
+             Outfit Package
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('service')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
+              Additionals
+            </button>
+          </div>
+
 
       <!-- Inclusion Modal for Selecting Supplier Type -->
       <div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -266,12 +328,35 @@
               <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
               <td class="border border-gray-300 px-4 py-2">{{ getInclusionName(inclusion) }}</td>
               <td class="border border-gray-300 px-4 py-2">{{ getInclusionPrice(inclusion) }}</td>
-              <td class="border border-gray-300 px-4 py-2">
-                <button @click="removeInclusion(index)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Remove</button>
+              <td class="border border-gray-300 py-2">
+                <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                  <img 
+                    alt="Delete Icon" 
+                    class="w-[20px] h-[20px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                    src="/img/delete.png" 
+                  >
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+          <div class="flex justify-between items-center">
+            <div class="text-lg font-semibold text-gray-700">Total Package Price:</div>
+            <div class="text-xl font-bold text-blue-600">₱{{ formatPrice(
+              inclusions.reduce((total, inc) => {
+                if (inc.type === 'supplier' && inc.data) total += Number(inc.data.price || 0);
+                if (inc.type === 'venue' && inc.data) total += Number(inc.data.venue_price || 0);
+                if (inc.type === 'outfit' && inc.data) total += Number(inc.data.gown_package_price || 0);
+                if (inc.type === 'service' && inc.data) total += Number(inc.data.add_service_price || 0);
+                return total;
+              }, 0)
+            ) }}</div>
+          </div>
+          <div class="mt-2 text-sm text-gray-500">
+            * Price includes all selected inclusions (suppliers, services, venue, and outfit package)
+          </div>
+        </div>
       </div>
 
       <!-- Submit Button -->
@@ -317,8 +402,26 @@
    <!-- Inclusion Buttons -->
     <h2 class="font-semibold text-lg text-gray-800 mt-8 mb-4">Add Inclusions</h2>
     <div class="grid grid-cols-4 gap-4 mb-4">
-        <button @click.prevent="openInclusionModal('supplier')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Suppliers</button>
-        <button @click.prevent="addInclusionToPackage('venue')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Venue</button>
+      <button 
+        @click.prevent="openInclusionModal('supplier')" 
+        class="flex items-center bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600"
+      >
+        <img 
+          alt="Supplier Icon"
+          class="mr-2 w-[20px] h-[20px]" 
+          src="/img/supplier.png"
+        >
+        Suppliers
+      </button>
+        <button 
+        @click.prevent="addInclusionToPackage('venue')" 
+        class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
+        <img 
+          alt="Supplier Icon"
+          class="mr-2 w-[20px] h-[20px]" 
+          src="/img/venues1.png"
+        >
+        Venue</button>
         <button @click.prevent="addInclusionToPackage('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Outfit Package</button>
         <button @click.prevent="addInclusionToPackage('service')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Additional Services</button>
     </div>
@@ -414,6 +517,8 @@ export default {
       editPackagesForm: false,
       addPackagesDetails: false,
       addStaffDetails: false,
+      showAddEventTypeModal: false,
+      newEventTypeName: "",
 
       inclusionType: '',
       selectedInclusion: '',
@@ -442,13 +547,14 @@ export default {
         'Hair Stylist',
         'Makeup Artist',
       ],
+      eventTypes: [],
       availableSuppliers: [],
       venues: [],
       gownPackages: [],
       additionalServices: [],
       packageData: {
         package_name: '',
-        package_type: '',
+        event_type_id: '',
         venue_id: null,
         capacity: null,
         additional_capacity_charges: null,
@@ -461,7 +567,7 @@ export default {
       selectedPackage: {
         packageId: null,
         package_name: '',
-        package_type: '',
+        event_type_id: '',
         capacity: 0,
         total_price: 0,
         description: '',
@@ -476,6 +582,41 @@ export default {
   },
  
   methods: {
+    addNewEventType() {
+      this.showAddEventTypeModal = true; // Show modal
+      this.packageData.event_type_id = ""; // Reset selection
+    },
+    closeAddEventTypeModal() {
+      this.showAddEventTypeModal = false; // Hide modal
+      this.newEventTypeName = ""; // Reset input
+    },
+    
+    async saveNewEventType() {
+        if (!this.newEventTypeName.trim()) {
+          alert("Event type name cannot be empty.");
+          return;
+        }
+
+        try {
+          const response = await axios.post('http://127.0.0.1:5000/create-event-type', 
+            { event_type_name: this.newEventTypeName.trim() },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+              },
+            }
+          );
+
+          const newEventType = response.data.event_type;
+          this.eventTypes.push(newEventType);
+          this.packageData.event_type_id = newEventType.event_type_id;
+          this.closeAddEventTypeModal();
+          alert('Event type added successfully!');
+        } catch (error) {
+          console.error('Error creating event type:', error);
+          alert(error.response?.data?.error || 'Failed to create event type');
+        }
+      },
     openInclusionModal(type) {
         this.selectedInclusionType = type;  // Add this line
         switch (type) {
@@ -563,6 +704,10 @@ export default {
       this.selectedService = null;
       this.closeServiceModal();
     },
+    getEventTypeName(eventTypeId) {
+      const eventType = this.eventTypes.find(type => type.event_type_id === eventTypeId);
+      return eventType ? eventType.event_type_name : 'N/A';
+    },
     removeInclusion(index) {
       this.inclusions.splice(index, 1);
     },
@@ -637,7 +782,7 @@ export default {
             // Prepare package data with explicit conversion and validation
             const packageData = {
               package_name: this.packageData.package_name,
-              package_type: this.packageData.package_type,
+              event_type_id: this.packageData.event_type_id,
               venue_id: this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_id || null,
               capacity: Number(this.packageData.capacity),
               additional_capacity_charges: Number(this.packageData.additional_capacity_charges),
@@ -661,22 +806,30 @@ export default {
               total_price: 0, // Initialize total price
             };
 
-            // Calculate total price
+           // Calculate total price
             packageData.total_price = 
-              // Supplier prices - use supplier_price from the suppliers array
-              packageData.suppliers.reduce((acc, supplier) => acc + (supplier.supplier_price || 0), 0) +
+              // Supplier prices
+              packageData.suppliers.reduce((acc, supplier) => acc + (supplier.price || 0), 0) +
               // Additional service prices
               packageData.additional_services.reduce((acc, service) => acc + (service.add_service_price || 0), 0) +
               // Venue price
               Number(this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_price || 0) +
               // Outfit package price
               Number(this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0);
+                
+              // Add this for debugging
+              console.log('Price breakdown:', {
+                suppliers: packageData.suppliers.reduce((acc, supplier) => acc + (supplier.price || 0), 0),
+                additionalServices: packageData.additional_services.reduce((acc, service) => acc + (service.add_service_price || 0), 0),
+                venue: Number(this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_price || 0),
+                outfit: Number(this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0),
+                total: packageData.total_price
+              });
 
-            // Additional validation
-            if (!packageData.package_name || !packageData.package_type) {
-              alert('Package name and type are required.');
-              return;
-            }
+              if (!packageData.package_name || !packageData.event_type_id) {
+                  alert('Package name and event type are required.');
+                  return;
+                }
 
             if (packageData.suppliers.length === 0) {
               alert('At least one supplier is required.');
@@ -717,7 +870,7 @@ export default {
     resetPackageForm() {
       this.packageData = {
         package_name: '',
-        package_type: '',
+        event_type_id: '',
         venue_id: null,
         capacity: null,
         additional_capacity_charges: null,
@@ -795,7 +948,7 @@ export default {
           return {
             packageId: pkg.package_id,
             package_name: pkg.package_name,
-            package_type: pkg.package_type,
+            event_type_id: pkg.event_type_id,
             capacity: pkg.capacity,
             total_price: pkg.total_price,
             description: pkg.description,
@@ -876,6 +1029,20 @@ export default {
               console.error('Error fetching data:', error.response?.data || error.message);
             }
         },
+
+        async fetchEventTypes() {
+          try {
+              console.log('Fetching event types...');
+              console.log('Using URL:', 'http://127.0.0.1:5000/event-types');
+              const response = await axios.get('http://127.0.0.1:5000/event-types');
+              console.log('Event types response:', response.data);
+              this.eventTypes = response.data;
+              console.log('Event types stored:', this.eventTypes);
+          } catch (error) {
+              console.error('Error fetching event types:', error);
+              console.error('Error details:', error.response ? error.response.data : error.message);
+          }
+      },
 
     addSupplier() {
         this.packageData.suppliers.push({
@@ -1200,7 +1367,25 @@ export default {
           .filter(inclusion => inclusion.type === 'service' && inclusion.data)
           .map(inclusion => inclusion.data.add_service_id);
       return this.additionalServices.filter(service => !selectedServiceIds.includes(service.add_service_id));
-  }
+  },
+
+  dynamicTotalPrice() {
+      return (
+        // Supplier prices
+        this.inclusions
+          .filter(inc => inc.type === 'supplier' && inc.data)
+          .reduce((acc, inc) => acc + (Number(inc.data.price) || 0), 0) +
+        // Additional service prices
+        this.inclusions
+          .filter(inc => inc.type === 'service' && inc.data)
+          .reduce((acc, inc) => acc + (Number(inc.data.add_service_price) || 0), 0) +
+        // Venue price
+        Number(this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_price || 0) +
+        // Outfit package price
+        Number(this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0)
+      );
+    }
+  
 },
 
     mounted() {
@@ -1209,6 +1394,7 @@ export default {
       this.fetchSuppliersAndPackageServices();
       console.log('Fetch completed');
       this.fetchAdditionalServices();
+      this.fetchEventTypes();
   },
     watch: {
         showTable(newTable) {
@@ -1217,6 +1403,14 @@ export default {
             } else if (newTable === 'vendors') {
                 this.fetchVendors();
             }
+        },
+        packageData: {
+          handler(newVal) {
+            if (newVal.event_type_id === "add-new") {
+              this.addNewEventType();
+            }
+          },
+          deep: true,
         },
     },
 };
