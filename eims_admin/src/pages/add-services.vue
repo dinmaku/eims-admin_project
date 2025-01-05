@@ -1,159 +1,130 @@
     <template>
-        <div class="bg-gray-200 w-full h-full">
+    <div class="bg-gray-200 w-full h-full">
         <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
-        <h1 class="font-amaticBold font-extraLight text-3xl">
-        Events Packages
-    </h1>
-    </div>
-    
-    <div class="flex flex-row items-center m-5 space-x-5">
-        <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-            <img class="w-auto h-12" src="/img/box.png" alt="Vendor Image">
-            <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalPackages }} <span class = "text-sm antialiased text-gray-600">packages</span></h2>
+            <h1 class="font-amaticBold font-extraLight text-3xl">
+                Events Packages
+            </h1>
+            <button class="bg-[#9B111E] text-white px-3 py-1 rounded shadow-lg 
+              transition-transform duration-300 transform hover:scale-105" @click="displayEventTypeBtn">+ Event Type</button>
         </div>
-    </div>
-    
-    <div class="flex flex-row justify-between items-center m-5 my-7">
-    <div class = "flex">
-    <button class = "mr-2 w-36 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
-    transition-transform duration-300 transform hover:scale-105" @click="addPackagesBtn">
-    + Add Package
-    </button>
-    </div>
-    </div>
-    
-    <div v-if="showTable === 'packages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-auto ml-5 mt-2 font-amaticBold mb-10">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-4 py-3">#</th>
-                    <th scope="col" class="px-4 py-3">Package Name</th>
-                    <th scope="col" class="px-4 py-3">Package Type</th>
-                    <th scope="col" class="px-4 py-3">Venue</th>
-                    <th scope="col" class="px-4 py-3">Price</th>
-                    <th scope="col" class="px-4 py-3">Capacity</th>
-                    <th scope="col" class="px-4 py-3">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="(packageItem, index) in paginatedPackages"
-                    :key="packageItem.packageId"
-                    class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ packageItem.dummyIndex }}</th>
-                    <td class="px-4 py-3">{{ packageItem.package_name }}</td>
-                    <td class="px-4 py-3">{{ getEventTypeName(packageItem.event_type_id) }}</td>
-                    <td class="px-4 py-3">{{ packageItem.venue_name }}</td>
-                    <td class="px-4 py-3">{{ formatPrice(packageItem.total_price) }}</td>
-                    <td class="px-4 py-3">{{ packageItem.capacity }}</td>
-                    <td class="px-4 py-3">
-                        <button
-                            class="h-8 w-20 bg-[#9B111E] font-amaticBold text-sm rounded-md text-white hover:bg-[#B73A45]"
-                            @click="editPackageBtn(index)">
-                            View
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         
-        <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6">
-            <button 
-                @click="prevPackagesPage" 
-                :disabled="currentPackagesPage === 1" 
-                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">
-                Previous
-            </button>
-            <button 
-                v-for="page in totalPackagesPages" 
-                :key="page" 
-                @click="changePackagesPage(page)" 
-                :class="{'bg-[#9B111E]': currentPackagesPage === page, 'bg-gray-300': currentPackagesPage !== page}" 
-                class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
-                {{ page }}
-            </button>
-            <button 
-                @click="nextPackagesPage" 
-                :disabled="currentPackagesPage === totalPackagesPages" 
-                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">
-                Next
-            </button>
+        <div class="flex flex-row items-center m-5 space-x-5">
+            <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
+                <img class="w-auto h-12" src="/img/box.png" alt="Vendor Image">
+                <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalPackages }} <span class = "text-sm antialiased text-gray-600">packages</span></h2>
             </div>
         </div>
-    </div>
-
-
-    
-  <!-- Add Packages Form -->
-  <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
-    <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-      <div class="flex justify-between items-center mb-5">
-        <h1 class="font-semibold text-xl text-gray-800">Add Package</h1>
-        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closePackagesForm">Close</button>
-      </div>
-
-      <div class="border-b border-gray-300 mb-5"></div>
-
-      <!-- Package Details -->
-      <div>
-        <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-          <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-            <option disabled value="">Select Event Type</option>
-            <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
-              {{ type.event_type_name }}
-            </option>
-            <option value="add-new">+ Add New Event Type</option>
-          </select>
-
-          <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
-          <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+        
+        <div class="flex flex-row justify-end items-center m-5 my-7">
+        <div class = "flex">
+        <button class = "mr-2 w-36 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
+        transition-transform duration-300 transform hover:scale-105" @click="addPackagesBtn">
+        + Add Package
+        </button>
+        </div>
+        </div>
+        
+        <div v-if="showTable === 'packages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-auto ml-5 mt-2 font-amaticBold mb-10">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">#</th>
+                        <th scope="col" class="px-4 py-3">Package Name</th>
+                        <th scope="col" class="px-4 py-3">Package Type</th>
+                        <th scope="col" class="px-4 py-3">Venue</th>
+                        <th scope="col" class="px-4 py-3">Price</th>
+                        <th scope="col" class="px-4 py-3">Capacity</th>
+                        <th scope="col" class="px-4 py-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        v-for="(packageItem, index) in paginatedPackages"
+                        :key="packageItem.packageId"
+                        class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
+                        <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ packageItem.dummyIndex }}</th>
+                        <td class="px-4 py-3">{{ packageItem.package_name }}</td>
+                        <td class="px-4 py-3">{{ getEventTypeName(packageItem.event_type_id) }}</td>
+                        <td class="px-4 py-3">{{ packageItem.venue_name }}</td>
+                        <td class="px-4 py-3">{{ formatPrice(packageItem.total_price) }} php</td>
+                        <td class="px-4 py-3">{{ packageItem.capacity }}</td>
+                        <td class="px-4 py-3">
+                            <button
+                                class="h-8 w-20 bg-[#9B111E] font-amaticBold text-sm rounded-md text-white hover:bg-[#B73A45]"
+                                @click="editPackageBtn(index)">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Pagination Controls -->
+            <div class="flex justify-center space-x-2 mt-4 mb-6">
+                <button 
+                    @click="prevPackagesPage" 
+                    :disabled="currentPackagesPage === 1" 
+                    class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">
+                    Previous
+                </button>
+                <button 
+                    v-for="page in totalPackagesPages" 
+                    :key="page" 
+                    @click="changePackagesPage(page)" 
+                    :class="{'bg-[#9B111E]': currentPackagesPage === page, 'bg-gray-300': currentPackagesPage !== page}" 
+                    class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+                    {{ page }}
+                </button>
+                <button 
+                    @click="nextPackagesPage" 
+                    :disabled="currentPackagesPage === totalPackagesPages" 
+                    class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">
+                    Next
+                </button>
+                </div>
+            </div>
         </div>
 
-        <div class="mt-5">
-          <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
-          <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
-        </div>
 
-        <div class="mt-5">
-          <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
-        </div>
-      </div>
-      <!-- Add New Event Type Modal -->
-      <div
-          v-if="showAddEventTypeModal"
-          @click.self="closeAddEventTypeModal"
-          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-        >
-          <div class="bg-white rounded-lg shadow-lg w-[400px] p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Add New Event Type</h2>
-            <input
-              v-model="newEventTypeName"
-              type="text"
-              class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-              placeholder="Enter Event Type Name"
-            />
-            <div class="flex justify-end mt-4 space-x-2">
-              <button
-                @click="saveNewEventType"
-                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-              >
-                Save
-              </button>
-              <button
-                @click="closeAddEventTypeModal"
-                class="px-4 py-2 text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 mr-2"
-              >
-                Cancel
-              </button>
+        
+      <!-- Add Packages Form -->
+      <form v-if="addPackagesForm" @submit.prevent="addPackages" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closePackagesForm">
+        <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+          <div class="flex justify-between items-center mb-5">
+            <h1 class="font-semibold text-xl text-gray-800">Add Package</h1>
+          </div>
+
+          <div class="border-b border-gray-300 mb-5"></div>
+
+          <!-- Package Details -->
+          <div>
+            <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
+            <div class="grid grid-cols-2 gap-4">
+              <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+              <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <option disabled value="">Select Event Type</option>
+                <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
+                  {{ type.event_type_name }}
+                </option>
+                <option value="add-new">+ Add New Event Type</option>
+              </select>
+
+              <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+              <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+            </div>
+
+            <div class="mt-5">
+              <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
+              <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
+            </div>
+
+            <div class="mt-5">
+              <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
             </div>
           </div>
-        </div>
-
-      <!-- Inclusion Buttons -->
+          <!-- Add New Event Type Modal -->
+          <!-- Inclusion Buttons -->
           <div class="grid grid-cols-4 gap-4 mb-4">
             <button 
               @click.prevent="openInclusionModal('supplier')" 
@@ -184,7 +155,6 @@
               Additionals
             </button>
           </div>
-
 
       <!-- Inclusion Modal for Selecting Supplier Type -->
       <div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -273,7 +243,7 @@
             <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
               <option selected disabled value="">Select Outfit Package</option>
               <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
-                {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
+                {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }} php
               </option>
             </select>
           </div>
@@ -325,7 +295,9 @@
           </thead>
           <tbody>
             <tr v-for="(inclusion, index) in inclusions" :key="index" class="border border-gray-300">
-              <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
+              <td class="border border-gray-300 px-4 py-2 capitalize">
+                {{ inclusion.type === 'supplier' ? `Supplier(${inclusion.serviceType})` : inclusion.type }}
+              </td>
               <td class="border border-gray-300 px-4 py-2">{{ getInclusionName(inclusion) }}</td>
               <td class="border border-gray-300 px-4 py-2">{{ getInclusionPrice(inclusion) }}</td>
               <td class="border border-gray-300 py-2">
@@ -360,88 +332,124 @@
       </div>
 
       <!-- Submit Button -->
-      <div class="flex justify-center mt-8">
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Create Package</button>
+      <div class="flex justify-center mt-8 space-x-3">
+        <button class="bg-gray-300 text-white px-3 py-1 rounded hover:bg-gray-400" @click="closePackagesForm">Cancel</button>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save</button>
       </div>
     </div>
   </form>
 
-
-
-
-<!-- Edit Packages Form -->
-<form v-if="editPackagesForm" @submit.prevent="confirmEditPackage" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditPackagesBtn">
-  <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-    <div class="flex justify-between items-center mb-5">
-      <h1 class="font-semibold text-xl text-gray-800">Edit Package</h1>
-      <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closeEditPackagesBtn">Close</button>
-    </div>
-
-    <div class="border-b border-gray-300 mb-5"></div>
-
-    <!-- Package Details -->
-    <div>
-      <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <input type="text" v-model="selectedPackage.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-        <select v-model="selectedPackage.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" required>
-          <option value="">Select Package Type</option>
-          <option value="Wedding">Wedding</option>
-          <option value="Birthday">Birthday</option>
-          <option value="Debut">Debut</option>
-        </select>
-        <input type="number" v-model="selectedPackage.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
-        <input type="number" v-model="selectedPackage.total_price" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Total Price" required />
-      </div>
-
-      <div class="mt-5">
-        <textarea v-model="selectedPackage.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
-      </div>
-    </div>
-
-   <!-- Inclusion Buttons -->
-    <h2 class="font-semibold text-lg text-gray-800 mt-8 mb-4">Add Inclusions</h2>
-    <div class="grid grid-cols-4 gap-4 mb-4">
-      <button 
-        @click.prevent="openInclusionModal('supplier')" 
-        class="flex items-center bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600"
-      >
-        <img 
-          alt="Supplier Icon"
-          class="mr-2 w-[20px] h-[20px]" 
-          src="/img/supplier.png"
+  <!-- Add New Event Type Modal -->
+  <div
+    v-if="showAddEventTypeModal"
+    @click.self="closeAddEventTypeModal"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
+    <div class="bg-white rounded-lg shadow-lg w-[400px] p-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Add New Event Type</h2>
+      <input
+        v-model="newEventTypeName"
+        type="text"
+        class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+        placeholder="Enter Event Type Name"
+      />
+      <div class="flex justify-end mt-4 space-x-2">
+        <button
+          @click="saveNewEventType"
+          class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
         >
-        Suppliers
-      </button>
+          Save
+        </button>
+        <button
+          @click="closeAddEventTypeModal"
+          class="px-4 py-2 text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 mr-2"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Packages Form -->
+  <form v-if="editPackagesForm" @submit.prevent="confirmEditPackage" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditPackagesBtn">
+    <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-center mb-5">
+        <h1 class="font-semibold text-xl text-gray-800">Edit Package</h1>
+        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closeEditPackagesBtn">Close</button>
+      </div>
+
+      <div class="border-b border-gray-300 mb-5"></div>
+
+      <!-- Package Details -->
+      <div>
+        <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <input type="text" v-model="selectedPackage.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+          <select v-model="selectedPackage.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" required>
+            <option value="">Select Package Type</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Debut">Debut</option>
+          </select>
+          <input type="number" v-model="selectedPackage.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+          <input type="number" v-model="selectedPackage.total_price" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Total Price" required />
+        </div>
+
+        <div class="mt-5">
+          <textarea v-model="selectedPackage.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
+        </div>
+      </div>
+
+      <!-- Inclusion Buttons -->
+      <div class="grid grid-cols-4 gap-4 mb-4">
         <button 
-        @click.prevent="addInclusionToPackage('venue')" 
-        class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
-        <img 
-          alt="Supplier Icon"
-          class="mr-2 w-[20px] h-[20px]" 
-          src="/img/venues1.png"
+          @click.prevent="openInclusionModal('supplier')" 
+          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
         >
-        Venue</button>
-        <button @click.prevent="addInclusionToPackage('outfit')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Outfit Package</button>
-        <button @click.prevent="addInclusionToPackage('service')" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">+ Additional Services</button>
-    </div>
+          <img alt="Supplier Icon" class="mr-2 w-[20px] h-[20px]" src="/img/supplier.png">
+          Suppliers
+        </button>
+        <button 
+          @click.prevent="openInclusionModal('venue')" 
+          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+        >
+          <img alt="Venue Icon" class="mr-2 w-[20px] h-[20px]" src="/img/venues1.png">
+         Venue
+        </button>
+        <button 
+          @click.prevent="openInclusionModal('outfit')" 
+          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+        >
+          <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
+         Outfit Package
+        </button>
+        <button 
+          @click.prevent="openInclusionModal('service')" 
+          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+        >
+          <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
+          Additionals
+        </button>
+      </div>
 
-    <!-- Inclusions Table -->
-    <div class="overflow-x-auto">
-      <table class="w-full table-auto border-collapse border border-gray-300">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Details</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(inclusion, index) in selectedPackage.inclusions" :key="index" class="border border-gray-300">
-            <td class="border border-gray-300 px-4 py-2 capitalize">{{ inclusion.type }}</td>
-            <td class="border border-gray-300 px-4 py-2">
-              <!-- Supplier select -->
+      <!-- Inclusions Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border-collapse border border-gray-300">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Details</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Price</th>
+              <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(inclusion, index) in selectedPackage.inclusions" :key="index" class="border border-gray-300">
+              <td class="border border-gray-300 px-4 py-2 capitalize">
+                {{ inclusion.type === 'supplier' ? `Supplier(${inclusion.serviceType})` : inclusion.type }}
+              </td>
+              <td class="border border-gray-300 px-4 py-2">
+                <!-- Supplier select -->
                 <span v-if="inclusion.type === 'supplier'">
                   <select v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
                     <option value="">Select {{ inclusion.serviceType }}</option>
@@ -474,25 +482,20 @@
                     {{ service.add_service_name }}
                   </option>
                 </select>
-            </td>
-            <td class="border border-gray-300 px-4 py-2">{{ formatPrice(inclusion.data?.price || 0) }}</td>
-            <td class="border border-gray-300 px-4 py-2">
-              <button type="button" @click="removeInclusion(index)" class="text-red-500 hover:text-red-700">
-                <i class="fas fa-trash"></i> Remove
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              </td>
+              <td class="border border-gray-300 px-4 py-2">{{ formatPrice(inclusion.data?.price || 0) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Submit and Delete Buttons -->
-    <div class="flex justify-center space-x-4 mt-8">
-      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Update Package</button>
-      <button type="button" @click="deletePackage(selectedPackage.packageId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete Package</button>
+      <!-- Submit and Delete Buttons -->
+      <div class="flex justify-center space-x-4 mt-8">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Update Package</button>
+        <button type="button" @click="deletePackage(selectedPackage.packageId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete Package</button>
+      </div>
     </div>
-  </div>
-</form>
+  </form>
 
 
     
@@ -509,6 +512,8 @@ export default {
   name: 'AddServices',
   data() {
     return {
+      showAddEventTypeModal: false,
+      newEventTypeName: "",
       showTable: 'packages',
       currentPackagesPage: 1,
       rowsPerPackagesPage: 5,
@@ -517,9 +522,6 @@ export default {
       editPackagesForm: false,
       addPackagesDetails: false,
       addStaffDetails: false,
-      showAddEventTypeModal: false,
-      newEventTypeName: "",
-
       inclusionType: '',
       selectedInclusion: '',
       selectedSupplierType: '',
@@ -1320,6 +1322,7 @@ export default {
           this.selectedPackage = this.paginatedPackages[index]; 
           this.editPackagesForm = true;
       },
+
     closeEditPackagesBtn() {
         this.editPackagesForm = false;
         this.selectedPackage = null; 
@@ -1335,6 +1338,11 @@ export default {
       }
       // Ensure price is treated as a number, round to 2 decimal places, and format with commas
       return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    },
+
+    displayEventTypeBtn() {
+      this.showAddEventTypeModal = true;
+      this.newEventTypeName = '';  // Reset the input field
     },
     
         
@@ -1385,6 +1393,7 @@ export default {
         Number(this.inclusions.find(inc => inc.type === 'outfit' && inc.data)?.data?.gown_package_price || 0)
       );
     }
+
   
 },
 

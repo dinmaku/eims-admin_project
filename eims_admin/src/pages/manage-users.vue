@@ -13,8 +13,27 @@
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
         <img class="w-auto h-12" src="/img/staff.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600">crews</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600">staff</span></h2>
     </div>
+    <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
+        <img class="w-auto h-12" src="/img/admin.png" alt="Vendor Image">
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalAdmin }} <span class = "text-sm antialiased text-gray-600">admin</span></h2>
+    </div>
+    <form class="flex items-center w-[300px] mt-9">
+              <label for="voice-search" class="sr-only">Search</label>
+              <div class="relative w-full">
+                <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                  <svg aria-hidden="true" class="w-5 h-auto text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <input type="text" id="search-bar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Account..." required v-model="searchTerm">
+                <router-link to="/" class="flex absolute inset-y-0 right-0 items-center pr-3">
+                  <svg aria-hidden="true" class="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  </svg>
+                </router-link>
+              </div>
+        </form>
 </div>
 
 <div class="flex flex-row justify-between items-center m-5 my-5">
@@ -30,10 +49,16 @@
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
     { 'bg-gray-800 text-white': showTable === 'Staffs', 'bg-white text-teal-800': showTable !== 'Staffs' } 
   ]" @click="showTable = 'Staffs'">
-    Crews
+    Staff
+  </button>
+  <button :class="[ 
+    'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
+    { 'bg-gray-800 text-white': showTable === 'Admin', 'bg-white text-teal-800': showTable !== 'Admin' } 
+  ]" @click="showTable = 'Admin'">
+    Admin
   </button>
 </div>
-<button class = "mr-2 w-32 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
+<button class = "mr-2 w-32 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
 transition-transform duration-300 transform hover:scale-105" @click="addUserBtn">
  + Add Account
 </button>
@@ -51,7 +76,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <th scope="col" class="px-2 py-3">Email</th>
                     <th scope="col" class="px-2 py-3">Contact</th>
                     <th scope="col" class="px-2 py-3">Service</th>
-                    <th scope="col" class="px-2 py-3">Price</th>
+                    <th scope="col" class="px-2 py-3">Rate</th>
                     <th scope="col" class="px-2 py-3">Action</th>
                 </tr>
             </thead>
@@ -65,10 +90,10 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.email }}</td>
                     <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.contact }}</td>
                     <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.service }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.price }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(supplier.price) }} php</td>
                     <td class="px-1 py-3 hidden sm:table-cell">
                         <button
-                            class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600" 
+                            class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" 
                             @click="editSupplierBtn(index)">
                             Edit
                         </button>
@@ -80,7 +105,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         <!-- Pagination Controls -->
         <div class="flex justify-center space-x-2 mt-4 mb-6">
             <button @click="prevSuppliersPage" :disabled="currentSuppliersPage === 1" 
-                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+                class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
             <button v-for="page in totalSuppliersPages" :key="page" @click="changeSuppliersPage(page)" 
                 :class="{'bg-[#9B111E]': currentSuppliersPage === page, 'bg-gray-300': currentSuppliersPage !== page}" 
                 class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
@@ -130,27 +155,63 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
       <!-- Pagination Controls -->
       <div class="flex justify-center space-x-2 mt-4 mb-6">
-        <button @click="prevStaffsPage" :disabled="currentStaffsPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
-        <button v-for="page in totalStaffsPages" :key="page" @click="changeStaffsPage(page)" :class="{'bg-[#9B111E]': currentStaffsPage === page, 'bg-gray-300': currentStaffsPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+        <button @click="prevStaffsPage" :disabled="currentStaffsPage === 1" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+        <button v-for="page in totalStaffsPages" :key="page" @click="changeStaffsPage(page)" 
+            :class="{'bg-[#9B111E]': currentStaffsPage === page, 'bg-gray-300': currentStaffsPage !== page}" 
+            class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
           {{ page }}
         </button>
-        <button @click="nextStaffsPage" :disabled="currentStaffsPage === totalStaffsPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
+        <button @click="nextStaffsPage" :disabled="currentStaffsPage === totalStaffsPages" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
       </div>
     </div>
   </div>
+
+  <!-- Admin Table -->
+<div v-if="showTable === 'Admin'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-2 py-3">#</th>
+                    <th scope="col" class="px-2 py-3">Name</th>
+                    <th scope="col" class="px-2 py-3">Email</th>
+                    <th scope="col" class="px-2 py-3">Contact</th>
+                    <th scope="col" class="px-2 py-3">User Type</th>
+                    <th scope="col" class="px-2 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(admin, index) in paginatedAdmins" :key="admin.userid" class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
+                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ admin.dummyIndex }}</th>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.fullName }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.email }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.contactnumber }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.user_type }}</td>
+                    <td class="px-1 py-3 hidden sm:table-cell">
+                        <button class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editAdminBtn(index)">Edit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="flex justify-center space-x-2 mt-4 mb-6">
+            <button @click="prevAdminPage" :disabled="currentAdminPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+            <button v-for="page in totalAdminPages" :key="page" @click="changeAdminPage(page)" :class="{'bg-[#9B111E]': currentAdminPage === page, 'bg-gray-300': currentAdminPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">{{ page }}</button>
+            <button @click="nextAdminPage" :disabled="currentAdminPage === totalAdminPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
+        </div>
+    </div>
+</div>
 
  <!-- Add User Form -->
  <form v-if="addUserForm" @submit.prevent="handleRegister" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddUserForm">
   <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
     <div class="flex justify-between items-center m-3">
-      <h1 class="font-semibold text-xl font-raleway text-gray-800">Add User</h1>
-      <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeAddUserForm">
-        Close
-      </button>
+      <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Account</h1>
     </div>
     <div class="border border-gray-500 mt-5 items-center"></div>
     <div class="m-5">
-      <span>{{ errorMessage }}</span>
+      <span class = "text-red-500">* {{ errorMessage }}</span>
       <!-- First Name and Last Name -->
       <div class="flex flex-row">
         <div class="flex items-center space-x-2">
@@ -163,12 +224,12 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
       <!-- Username -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" placeholder="Username" required>
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" @click="deriveUsername" placeholder="Username" required>
       </div>
 
       <!-- Email -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" placeholder="Email" required>
+        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" @click="deriveEmail" placeholder="Email" required>
       </div>
 
       <!-- Contact Number -->
@@ -187,8 +248,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         <select class="flex mt-4 ml-2 p-2 w-52 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
           <option value="" class="text-gray-700" disabled selected>Select a Type of User</option>
           <option value="Suppliers">Supplier</option>
-          <option value="Assistant">Assistant</option>
           <option value="Staff">Staff</option>
+          <option value="Admin">Admin</option>
         </select>
       </div>
 
@@ -210,15 +271,18 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         </select>
 
         <div class="flex items-center mt-4">
-          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="price" placeholder="Supplier Price" required>
+          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="price" placeholder="Supplier Rate" required>
     
         </div>
       </div>
 
       <!-- Confirm Button -->
-      <div class="flex justify-center items-center mt-10">
+      <div class="flex justify-center items-center mt-10 space-x-2">
+          <button class="bg-gray-300 text-white w-20 h-10 rounded-lg transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddUserForm">
+          Cancel
+        </button>
         <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-          Confirm
+          Save
         </button>
       </div>
     </div>
@@ -230,10 +294,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 <form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditSupplierBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
-              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Vendor</h1>
-               <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditSupplierBtn">
-                  Close
-                </button>
+              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Supplier</h1>
         </div>
         <div class = "border border-gray-500 mt-5 items-center"></div>
                <div class = "m-5">
@@ -259,12 +320,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                   <input type="text"  v-model="selectedSupplier.contact" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
                 </div>
               </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="password"  v-model="selectedSupplier.password" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
-                </div>
-              </div>
-
+  
               <div class = "mt-5">
                 <div class = "flex items-center">
                   <select v-model="selectedSupplier.service" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
@@ -290,7 +346,6 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 <div class = "flex items-center">
                   <select class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="Assistant">Assistant</option>
                     <option value="Staff">Staff</option>
                   </select>
                 </div>
@@ -298,11 +353,11 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
               </div>
 
               <div class = "flex  justify-center items-center mt-10 space-x-3">
-                   <button class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
-                     Delete
-                   </button>
+                <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditSupplierBtn">
+                  Cancel
+                </button>
                    <button @click.prevent ="confirmEditSupplier" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
-                     Confirm
+                     Save
                    </button>
               </div>
 
@@ -345,7 +400,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                   <select v-model="selectedStaff.position" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
                     <option value="Assistant">Assistant</option>
-                    <option value="Staff">Staff</option>       
+                    <option value="Staff">Staff</option>
+                    <option value="Admin">Admin</option>     
                   </select>
                 </div>   
              </div>
@@ -384,6 +440,9 @@ export default {
 
       currentStaffsPage: 1,
       rowsPerStaffsPage: 6,
+      
+      currentAdminPage: 1,
+      adminPerPage: 6,
 
       addUserForm: false,
       addSupplierDetails: false,
@@ -404,7 +463,6 @@ export default {
       username: '',
       firstName: '',
       lastName: '',
-      username: '',
       contactNumber: '',
       address: '',
       registerPassword: '',
@@ -412,10 +470,11 @@ export default {
       price: '',
       errorMessage: '',
 
-
       staffs: [],
       suppliers: [],
-  
+      admins: [],
+      searchTerm: '',
+
       
 
 
@@ -424,12 +483,15 @@ export default {
   },
   computed: {
     totalSuppliersPages() {
-        return Math.ceil(this.suppliers.length / this.rowsPerSuppliersPage);
+        return Math.ceil(this.filteredSuppliers.length / this.rowsPerSuppliersPage);
     },
     paginatedSuppliers() {
         const start = (this.currentSuppliersPage - 1) * this.rowsPerSuppliersPage;
         const end = start + this.rowsPerSuppliersPage;
-        return this.suppliers.slice(start, end);
+        return this.filteredSuppliers.map((supplier, index) => ({
+        ...supplier,
+        dummyIndex: start + index + 1
+      })).slice(start, end);
     },
     totalSuppliers() {
         return this.suppliers.length;
@@ -439,14 +501,67 @@ export default {
       return this.staffs.length;
     },
     totalStaffsPages() {
-      return Math.ceil(this.staffs.length / this.rowsPerStaffsPage);
+      return Math.ceil(this.filteredStaffs.length / this.rowsPerStaffsPage);
     },
     paginatedStaffs() {
       const start = (this.currentStaffsPage - 1) * this.rowsPerStaffsPage;
       const end = start + this.rowsPerStaffsPage;
-      return this.staffs.slice(start, end);
+      return this.filteredStaffs.map((staff, index) => ({
+        ...staff,
+        dummyIndex: start + index + 1
+      })).slice(start, end);
     },
+
+    totalAdmin() {
+      return this.admins.length;
+    },
+
+    totalAdminPages() {
+        return Math.ceil(this.filteredAdmins.length / this.adminPerPage);
+      },
+
+      paginatedAdmins() {
+        const start = (this.currentAdminPage - 1) * this.adminPerPage;
+        const end = start + this.adminPerPage;
+        return this.filteredAdmins.map((admin, index) => ({
+          ...admin,
+          dummyIndex: start + index + 1,
+          fullName: `${admin.firstname} ${admin.lastname}`
+        })).slice(start, end);
+      },
     
+    filteredSuppliers() {
+      if (!this.searchTerm) return this.suppliers;
+      const searchLower = this.searchTerm.toLowerCase();
+      return this.suppliers.filter(supplier => 
+        supplier.fullName.toLowerCase().includes(searchLower) ||
+        supplier.email.toLowerCase().includes(searchLower) ||
+        supplier.contact.toLowerCase().includes(searchLower) ||
+        supplier.service.toLowerCase().includes(searchLower)
+      );
+    },
+
+    filteredStaffs() {
+      if (!this.searchTerm) return this.staffs;
+      const searchLower = this.searchTerm.toLowerCase();
+      return this.staffs.filter(staff => 
+        staff.fullName.toLowerCase().includes(searchLower) ||
+        staff.email.toLowerCase().includes(searchLower) ||
+        staff.contact.toLowerCase().includes(searchLower) ||
+        staff.position.toLowerCase().includes(searchLower)
+      );
+    },
+
+    filteredAdmins() {
+      if (!this.searchTerm) return this.admins;
+      const searchLower = this.searchTerm.toLowerCase();
+      return this.admins.filter(admin => 
+        admin.firstname.toLowerCase().includes(searchLower) ||
+        admin.lastname.toLowerCase().includes(searchLower) ||
+        admin.email.toLowerCase().includes(searchLower) ||
+        admin.contactnumber.toLowerCase().includes(searchLower)
+      );
+    },
   },
   methods: {
     async handleRegister() {
@@ -499,6 +614,7 @@ export default {
                 if (response.status === 201) {
                     alert('User added successfully!');
                     this.resetRegisterForm(); // Reset the form after success
+                    this.closeAddUserForm();
                 }
             } catch (error) {
                 // Handle error feedback
@@ -613,6 +729,30 @@ export default {
               console.error('Error fetching suppliers:', error.response?.data || error.message);
           }
       },
+
+      async fetchAdmins() {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+            const response = await axios.get('http://127.0.0.1:5000/get_admin', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.data) {
+                this.admins = response.data;
+            }
+        } catch (error) {
+            console.error('Error fetching admins:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
+        }
+    },
 
 
    
@@ -847,6 +987,9 @@ export default {
           } else if (this.selectedUserType === 'Assistant' || this.selectedUserType === 'Staff') {
               this.addStaffDetails = true;
               this.addSupplierDetails = false;
+          } else if (this.selectedUserType === 'Admin') {
+              this.addStaffDetails = true;
+              this.addSupplierDetails = false;    
           } else {
               this.addSupplierDetails = false;
               this.addStaffDetails = false;
@@ -891,6 +1034,42 @@ export default {
         this.editStaffForm = false;
         this.selectedStaff = null; 
     },
+    formatPrice(price) {
+      if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
+        return 'N/A'; // Return a fallback if price is invalid
+      }
+      // Ensure price is treated as a number, round to 2 decimal places, and format with commas
+      return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    },
+
+    deriveUsername() {
+      if (this.firstName && this.lastName) {
+        const randomNum = Math.floor(Math.random() * 1000);
+        this.username = `${this.firstName.toLowerCase()}${this.lastName.toLowerCase()}${randomNum}`;
+      }
+    },
+
+    deriveEmail() {
+      if (this.firstName && this.lastName) {
+        this.email = `${this.firstName.toLowerCase()}.${this.lastName.toLowerCase()}@gmail.com`;
+      }
+    },
+
+    prevAdminPage() {
+      if (this.currentAdminPage > 1) {
+        this.currentAdminPage--;
+      }
+    },
+    nextAdminPage() {
+      if (this.currentAdminPage < this.totalAdminPages) {
+        this.currentAdminPage++;
+      }
+    },
+    changeAdminPage(page) {
+      this.currentAdminPage = page;
+    },
+
+    
     
   },
   mounted() {
@@ -898,14 +1077,19 @@ export default {
         this.fetchSuppliers(); // Fetch staff data on component mount
     } else if (this.showTable === 'Staffs') {
         this.fetchStaffs();  // Fetch vendor data on component mount
+    } else if (this.showTable === 'Admin') {
+      this.fetchAdmins();
     }
 },
+
 watch: {
     showTable(newTable) {
         if (newTable === 'Staffs') {
             this.fetchStaffs();
         } else if (newTable === 'Suppliers') {
             this.fetchSuppliers();
+        } else if (newTable === 'Admin') {
+            this.fetchAdmins();
         }
     },
 

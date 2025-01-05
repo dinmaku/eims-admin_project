@@ -1,7 +1,7 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user, create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service, get_event_types, initialize_event_types, create_event_type
+from .models import check_user, create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service, get_event_types, initialize_event_types, create_event_type, get_admin_users, create_outfit, add_event_item, get_available_suppliers, get_available_venues, get_available_gown_packages, get_all_additional_services, get_event_types, get_package_details_by_id, get_user_id_by_email
 import logging
 import jwt
 from functools import wraps
@@ -106,28 +106,10 @@ def init_routes(app):
     @app.route('/add-user', methods=['POST'])
     def add_user():
         try:
-            data = request.get_json(force=True, silent=True) or {}
-            app.logger.info(f"Received data: {data}")
-
-            required_fields = [
-                'username', 'firstName', 'lastName', 'email', 'contactNumber', 
-                'address', 'password', 'user_type'
-            ]
+            data = request.get_json()
             
-            for field in required_fields:
-                if field not in data or not data[field]:
-                    app.logger.error(f"Missing field: {field}")
-                    return jsonify({"message": f"Missing required field: {field}"}), 400
-
-            if data['user_type'] == 'Suppliers':
-                supplier_fields = ['service', 'price']
-                for field in supplier_fields:
-                    if field not in data or not data[field]:
-                        app.logger.error(f"Missing supplier-specific field: {field}")
-                        return jsonify({"message": f"Missing supplier-specific field: {field}"}), 400
-
-            # Insert the user into the database
-            user_created, user_id = create_user(
+            # Create the user
+            user_created, user_id, error_message = create_user(
                 first_name=data['firstName'],
                 last_name=data['lastName'],
                 username=data['username'],
@@ -154,8 +136,8 @@ def init_routes(app):
                 app.logger.info("User data validated and inserted into the database successfully")
                 return jsonify({"message": "User registered successfully"}), 201
             else:
-                app.logger.error("User creation failed due to duplicate email")
-                return jsonify({"message": "Email already exists"}), 400
+                app.logger.error(f"User creation failed: {error_message}")
+                return jsonify({"message": error_message}), 400
 
         except Exception as e:
             app.logger.error(f"Error processing request: {str(e)}")
@@ -175,6 +157,18 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching users: {e}")
             return jsonify({'message': 'An error occurred while fetching users'}), 500
+
+
+    @app.route('/get_admin', methods=['GET'])
+    @jwt_required()
+    def get_admin_list():
+        try:
+            # Fetch users with user_type 'Admin'
+            users = get_admin_users()
+            return jsonify(users), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching admin users: {e}")
+            return jsonify({'message': 'An error occurred while fetching admin users'}), 500
 
 
 
@@ -389,19 +383,35 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error in edit_package route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
+            
+            
+    @app.route('/created-package/<int:package_id>', methods=['DELETE'])
+    @jwt_required()
+    def delete_package_route(package_id):
+        try:
+            if delete_package(package_id):
+                return jsonify({"message": "Package deleted successfully"}), 200
+            else:
+                return jsonify({"message": "Package not found or could not be deleted"}), 404
+        except Exception as e:
+            app.logger.error(f"Error deleting package: {e}")
+            return jsonify({"message": "An error occurred while deleting the package"}), 500
+
+            
     
 
 
 #manage events routes
     @app.route('/booked-wishlist', methods=['GET'])
-    def get_all_booked_wishlist_for_admin():
+    @jwt_required()
+    def get_booked_wishlist_route():
         try:
-            # Fetch all events with status 'Wishlist'
-            all_wishlist_events = get_all_booked_wishlist()
-            return jsonify(all_wishlist_events), 200
+            # Fetch booked wishlist with additional services
+            wishlist_with_services = get_all_booked_wishlist()
+            return jsonify(wishlist_with_services), 200
         except Exception as e:
-            logging.error(f"Error fetching all 'Wishlist' events for admin: {e}")
-            return jsonify({'message': f'Error fetching wishlist events: {str(e)}'}), 500
+            app.logger.error(f"Error fetching booked wishlist with services: {e}")
+            return jsonify({'message': 'An error occurred while fetching booked wishlist'}), 500
 
 
     @app.route('/booked-wishlist/<int:events_id>', methods=['PUT'])
@@ -455,7 +465,48 @@ def init_routes(app):
 
 #venues routes
 
-    @app.route('/created-venues', methods=['GET'])
+    @app.route('/venues', methods=['POST'])
+    @jwt_required()
+    def add_venue():
+        data = request.get_json()
+        venue_name = data.get('venue_name')
+        location = data.get('location')
+        venue_price = data.get('venue_price')
+        venue_capacity = data.get('venue_capacity')
+        description = data.get('description')
+
+        if not all([venue_name, location, venue_price, venue_capacity]):
+            return jsonify({'message': 'Missing required fields'}), 400
+
+        try:
+            create_venue(venue_name, location, venue_price, venue_capacity, description)
+            return jsonify({'message': 'Venue added successfully'}), 201
+        except Exception as e:
+            return jsonify({'message': str(e)}), 500
+
+    @app.route('/venues/<int:venue_id>', methods=['PUT'])
+    @jwt_required()
+    def update_venue_route(venue_id):
+        data = request.get_json()
+        venue_name = data.get('venue_name')
+        location = data.get('location')
+        venue_price = data.get('venue_price')
+        venue_capacity = data.get('venue_capacity')
+        description = data.get('description')
+
+        if not all([venue_name, location, venue_price, venue_capacity]):
+            return jsonify({'message': 'Missing required fields'}), 400
+
+        try:
+            success = update_venue(venue_id, venue_name, location, venue_price, venue_capacity, description)
+            if success:
+                return jsonify({'message': 'Venue updated successfully'}), 200
+            else:
+                return jsonify({'message': 'Venue not found'}), 404
+        except Exception as e:
+            return jsonify({'message': str(e)}), 500
+
+    @app.route('/venues', methods=['GET'])
     @jwt_required()
     def get_venues_route():
         try:
@@ -465,75 +516,6 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching packages: {e}")
             return jsonify({'message': 'An error occurred while fetching packages'}), 500
-
-
-    @app.route('/create-venue', methods=['POST'])
-    def create_venue_route():
-        try:
-            # Extract data from the incoming request
-            data = request.get_json(force=True, silent=True) or {}
-            venue_name = data.get('venue_name')
-            location = data.get('location')
-            venue_price = data.get('venue_price')
-
-            # Validate input data
-            if not all([venue_name, location, venue_price]):
-                return jsonify({"error": "All fields are required: venue_name, location, venue_price"}), 400
-
-            if not isinstance(venue_price, (int, float)) or venue_price <= 0:
-                return jsonify({"error": "Venue price must be a positive number"}), 400
-
-            # Call the function to create the venue
-            success = create_venue(venue_name, location, venue_price)
-
-            if success:
-                return jsonify({"message": "Venue created successfully"}), 201
-            else:
-                return jsonify({"error": "Failed to create venue"}), 500
-
-        except Exception as e:
-            print(f"Error in /create-venue route: {e}")
-            return jsonify({"error": "An internal server error occurred"}), 500
-
-
-
-    @app.route('/update-venue/<int:venue_id>', methods=['PUT'])
-    @jwt_required()  # Authentication required
-    def update_venue_details(venue_id):
-        """
-        Updates the details of a specific venue.
-
-        Args:
-            venue_id (int): The ID of the venue to update.
-
-        Returns:
-            JSON response with success or error message.
-        """
-        try:
-            if not venue_id:
-                return jsonify({"message": "Invalid venue ID"}), 400
-
-            data = request.json
-            required_fields = ["venue_name", "location", "venue_price"]
-
-            # Ensure all required fields are present
-            if data is None or not all(field in data and data.get(field) for field in required_fields):
-                return jsonify({"message": "All fields are required"}), 400
-
-            # Extract data
-            venue_name = data["venue_name"]
-            location = data["location"]
-            venue_price = data["venue_price"]
-
-            # Update the venue data
-            if update_venue(venue_id, venue_name, location, venue_price):
-                return jsonify({"message": "Venue updated successfully"}), 200
-            else:
-                return jsonify({"message": "Failed to update venue. Venue not found or database error occurred."}), 404
-        except Exception as e:
-            app.logger.error(f"Error in update_venue_details route: {e}")
-            return jsonify({"message": f"Error: {str(e)}"}), 500
-        
 
 
 #routes for outfit packages
@@ -561,7 +543,33 @@ def init_routes(app):
             app.logger.error(f"Error fetching outfits: {e}")
             return jsonify({'message': 'An error occurred while fetching outfits'}), 500
 
-
+    @app.route('/outfits', methods=['POST'])
+    @jwt_required()
+    def create_new_outfit():
+        try:
+            # Get data from request
+            data = request.get_json()
+            
+            # Validate required fields
+            required_fields = ['outfit_name', 'outfit_type', 'outfit_color', 'rent_price', 'size', 'weight']
+            for field in required_fields:
+                if not data.get(field):
+                    return jsonify({'message': f'Missing required field: {field}'}), 400
+            
+            # Create the outfit
+            success, outfit_id, message = create_outfit(data)
+            
+            if success:
+                return jsonify({
+                    'message': message,
+                    'outfit_id': outfit_id
+                }), 201
+            else:
+                return jsonify({'message': message}), 400
+                
+        except Exception as e:
+            logging.error(f"Error in create_new_outfit: {str(e)}")
+            return jsonify({'message': 'An error occurred while creating the outfit'}), 500
 
     @app.route('/add-gown-package', methods=['POST'])
     @jwt_required()
@@ -583,6 +591,16 @@ def init_routes(app):
 
 
 #additional services routes
+
+    @app.route('/additional-services', methods=['GET'])
+    @jwt_required()
+    def get_additional_services_route():
+        try:
+            services = get_all_additional_services()
+            return jsonify(services), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching additional services: {str(e)}")
+            return jsonify({'message': 'An error occurred while fetching additional services'}), 500
 
     @app.route('/created-services', methods=['GET'])
     @jwt_required()
@@ -674,3 +692,146 @@ def init_routes(app):
 
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+
+
+
+
+    @app.route('/wishlist', methods=['POST'])
+    @jwt_required()
+    def add_wishlist():
+        email = get_jwt_identity()
+        userid = get_user_id_by_email(email)
+
+        if userid is None:
+            return jsonify({'message': 'Failed to retrieve user ID'}), 400
+
+        data = request.json
+
+        # Validate required fields
+        required_fields = [
+            'event_name', 'event_type', 'event_theme', 'event_color', 
+            'package_id', 'suppliers', 'venues',
+            'onsite_firstname', 'onsite_lastname', 'onsite_contact', 'onsite_address'
+        ]
+        if not all(field in data for field in required_fields):
+            return jsonify({'message': 'Missing required fields'}), 400
+
+        try:
+            events_id = add_event_item(
+                userid=userid,
+                event_name=data['event_name'],
+                event_type=data['event_type'],
+                event_theme=data['event_theme'],
+                event_color=data['event_color'],
+                package_id=data['package_id'],
+                suppliers=data['suppliers'],
+                venues=data['venues'],
+                schedule=data.get('schedule'),
+                start_time=data.get('start_time'),
+                end_time=data.get('end_time'),
+                status=data.get('status', 'Wishlist'),
+                onsite_firstname=data['onsite_firstname'],
+                onsite_lastname=data['onsite_lastname'],
+                onsite_contact=data['onsite_contact'],
+                onsite_address=data['onsite_address']
+            )
+
+            return jsonify({
+                'message': 'Event added successfully', 
+                'events_id': events_id
+            }), 201
+
+        except Exception as e:
+            app.logger.error(f"Error adding wishlist: {str(e)}")
+            return jsonify({
+                'message': f'Failed to add event: {str(e)}'
+            }), 500
+
+    @app.route('/available-suppliers', methods=['GET'])
+    @jwt_required()
+    def get_available_suppliers_route():
+        try:
+            suppliers = get_available_suppliers()
+            return jsonify(suppliers), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching available suppliers: {e}")
+            return jsonify({'message': 'An error occurred while fetching available suppliers'}), 500
+
+    @app.route('/available-venues', methods=['GET'])
+    @jwt_required()
+    def get_available_venues_route():
+        try:
+            venues = get_available_venues()
+            return jsonify(venues), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching available venues: {e}")
+            return jsonify({'message': 'An error occurred while fetching available venues'}), 500
+
+    @app.route('/available-gown-packages', methods=['GET'])
+    @jwt_required()
+    def get_available_gown_packages_route():
+        try:
+            gown_packages = get_available_gown_packages()
+            return jsonify(gown_packages), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching available gown packages: {e}")
+            return jsonify({'message': 'An error occurred while fetching available gown packages'}), 500
+
+    @app.route('/packages/<int:package_id>', methods=['GET'])
+    @jwt_required()
+    def get_package_details(package_id):
+        try:
+            package = get_package_details_by_id(package_id)  # Implement this function to fetch package details
+            if not package:
+                return jsonify({'message': 'Package not found'}), 404
+            return jsonify(package), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching package details: {e}")
+            return jsonify({'message': 'An error occurred while fetching package details'}), 500
+
+
+    @app.route('/created-venues', methods=['GET'])
+    @jwt_required()
+    def get_created_venues():
+        try:
+            venues = get_all_venues()
+            return jsonify(venues), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching venues: {e}")
+            return jsonify({'message': 'An error occurred while fetching venues'}), 500
+
+    @app.route('/created-suppliers', methods=['GET'])
+    @jwt_required()
+    def get_created_suppliers():
+        try:
+            suppliers = get_suppliers_with_users()
+            return jsonify(suppliers), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching suppliers: {e}")
+            return jsonify({'message': 'An error occurred while fetching suppliers'}), 500
+
+    @app.route('/created-gown-packages', methods=['GET'])
+    @jwt_required()
+    def get_created_gown_packages():
+        try:
+            packages = get_all_gown_packages()
+            return jsonify(packages), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching gown packages: {e}")
+            return jsonify({'message': 'An error occurred while fetching gown packages'}), 500
+
+    @app.route('/booked-wishlist', methods=['GET'])
+    @jwt_required()
+    def get_booked_wishlist():
+        try:
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if userid is None:
+                return jsonify({'message': 'User not found'}), 404
+
+            booked_wishlist = get_all_booked_wishlist()
+            return jsonify(booked_wishlist), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching booked wishlist: {str(e)}")
+            return jsonify({'message': f'Error fetching wishlist: {str(e)}'}), 500

@@ -32,11 +32,11 @@
               </router-link>
               <router-link to="/add-outfitPackage" class="inline-flex items-center py-[15px] px-[6.3px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/add-wardrobe.png">
-                Outfits Packages
+                Outfit Packages
               </router-link>
               <router-link to="/add-services" class="inline-flex items-center py-[15px] px-[6.3px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/events-ticket.png">
-                Events Packages
+                Event Packages
               </router-link>
             </div>
 
@@ -46,10 +46,6 @@
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/events-booked.png">
                 Events
               </router-link>
-              <router-link to="/event-calendar" class="inline-flex items-center py-[15px] px-[7px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
-                <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/upload.png">
-                Event Schedules
-              </router-link>
               <router-link to="/manage-outfits" class="inline-flex items-center py-[15px] px-[10px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/wedding-dress.png">
                 Booked Outfits
@@ -58,11 +54,11 @@
           </div>
 
           <div class="h-[50px]">
-            <router-link to="/settings" class="inline-flex items-center py-[10px] px-[10px] w-full text-sm font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
-              <svg aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" xmlns="http://www.w3.org/2000/svg">
+            <router-link to="/settings" class="flex items-center py-[10px] px-[10px] w-full text-md font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
+              <svg aria-hidden="true" class="mr-2 w-[20px] h-[30px] fill-current mt-2" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
               </svg>
-              Setting
+              Settings
             </router-link>
           </div>
         </div>
@@ -74,22 +70,6 @@
         <div class ="h-[50px] bg-gray-100 flex items-center shadow-xl px-[20px] w-full py-[10px] z-10 border-b">
         <!--Hamburger Menu-->
         <div class="w-[calc(100%-200px)] flex justify-center ">
-            <!-- Search bar -->
-            <form class="flex items-center w-[500px]">
-              <label for="voice-search" class="sr-only">Search</label>
-              <div class="relative w-full">
-                <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                  <svg aria-hidden="true" class="w-5 h-auto text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                  </svg>
-                </div>
-                <input type="text" id="search-bar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..." required>
-                <router-link to="/" class="flex absolute inset-y-0 right-0 items-center pr-3">
-                  <svg aria-hidden="true" class="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  </svg>
-                </router-link>
-              </div>
-            </form>
           </div>
           
           <!--Date--->
@@ -120,11 +100,9 @@
        </div>
 
 
-       <div class="h-[calc(100vh-50px)] bg-white overflow-y-auto">
-
+       <div class="min-h-[calc(100vh-50px)] h-full bg-white overflow-y-auto">
         <router-view />
-
-       </div>
+      </div>
 
       </div>
         

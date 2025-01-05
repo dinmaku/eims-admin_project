@@ -6,13 +6,9 @@
     Events
   </h1>
   <div class="flex items-center">
-    <select class="bg-white font-amaticBold border border-gray-100 rounded-md py-2 px-3 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mr-5">
-    <option>Today</option>
-    <option>Yesterday</option>
-    <option>Last 7 days</option>
-    <option>This Month</option>
-    <option>This Year</option>
-  </select>
+    <button class="bg-[#9B111E] text-white px-3 py-2 rounded shadow-lg 
+    transition-transform duration-300 transform hover:scale-105 font-semibold" 
+    @click="directToOnsiteBooking">Onsite Booking</button>
   </div>
 </div>
  
@@ -95,11 +91,11 @@
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_theme }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_color }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue_name }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.firstname }} {{ event.lastname }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.bookedBy }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.contactnumber }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">
                 <button
-                    @click="openEventModal(event)"
+                    @click="openWishlistModal(event)"
                     class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]">
                     View
                 </button>
@@ -114,136 +110,542 @@
           <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-[#9B111E]': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
             {{ page }}
           </button>
-          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
+          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Next</button>
         </div>
       </div>
     </div>
 
-<!-- Event Details Modal -->
-<div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl overflow-auto max-h-[90vh]">
-        <h2 class="text-2xl font-semibold mb-4">Event Details</h2>
-        <div class="mb-4">
-          <p class="text-lg"><strong>Event Name:</strong> {{ selectedEvent.event_name }}</p>
-          <p class="text-lg"><strong>Event Type:</strong> {{ selectedEvent.event_type }}</p>
-          <p class="text-lg"><strong>Theme:</strong> {{ selectedEvent.event_theme }}</p>
-          <p class="text-lg"><strong>Color:</strong> {{ selectedEvent.event_color }}</p>
-          <p class="text-lg"><strong>Venue:</strong> {{ selectedEvent.venue_name }}</p>
-          <p class="text-lg"><strong>Booked By:</strong> {{ selectedEvent.firstname }} {{ selectedEvent.lastname }}</p>
-          <p class="text-lg"><strong>Contact Number:</strong> {{ selectedEvent.contactnumber }}</p>
-          <p class="text-lg"><strong>Total Price:</strong> {{ selectedEvent.total_price }}</p>
-          <p class="text-lg"><strong>Gown Package:</strong> {{ selectedEvent.gown_package_name }}</p>
-          <p class="text-lg"><strong>Price:</strong> {{ selectedEvent.gown_package_price }}</p>
-        </div>
-        <div class="mb-4">
-          <h3 class="text-xl font-semibold">Suppliers</h3>
-          <div v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="mb-2">
-            <p class="text-lg"><strong>Name:</strong> {{ supplier.name }}</p>
-            <p class="text-lg"><strong>Service:</strong> {{ supplier.service }}</p>
-            <p class="text-lg"><strong>Price:</strong> {{ supplier.price }}</p>
+    <!-- Event Details Modal -->
+    <div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+          <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl overflow-auto max-h-[90vh]">
+            <h2 class="text-2xl font-semibold mb-4">Event Details</h2>
+            <div class="mb-4">
+              <p class="text-lg"><strong>Event Name:</strong> {{ selectedEvent.event_name }}</p>
+              <p class="text-lg"><strong>Event Type:</strong> {{ selectedEvent.event_type }}</p>
+              <p class="text-lg"><strong>Theme:</strong> {{ selectedEvent.event_theme }}</p>
+              <p class="text-lg"><strong>Color:</strong> {{ selectedEvent.event_color }}</p>
+              <p class="text-lg"><strong>Venue:</strong> {{ selectedEvent.venue_name }}</p>
+              <p class="text-lg"><strong>Booked By:</strong> {{ selectedEvent.firstname }} {{ selectedEvent.lastname }}</p>
+              <p class="text-lg"><strong>Contact Number:</strong> {{ selectedEvent.contactnumber }}</p>
+              <p class="text-lg"><strong>Total Price:</strong> {{ selectedEvent.total_price }}</p>
+              <p class="text-lg"><strong>Gown Package:</strong> {{ selectedEvent.gown_package_name }}</p>
+              <p class="text-lg"><strong>Price:</strong> {{ selectedEvent.gown_package_price }}</p>
+            </div>
+            <div class="mb-4">
+              <h3 class="text-xl font-semibold">Suppliers</h3>
+              <div v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="mb-2">
+                <p class="text-lg"><strong>Name:</strong> {{ supplier.name }}</p>
+                <p class="text-lg"><strong>Service:</strong> {{ supplier.service }}</p>
+                <p class="text-lg"><strong>Price:</strong> {{ supplier.price }}</p>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button @click="closeEventModal" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Close</button>
+            </div>
           </div>
         </div>
-        <div class="flex justify-end">
-          <button @click="closeEventModal" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Close</button>
+      
+
+    <!--Upcoming Events Table-->
+    <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-2 py-3">#</th>
+              <th scope="col" class="px-2 py-3">Event</th>
+              <th scope="col" class="px-2 py-3">Event Name</th>
+              <th scope="col" class="px-2 py-3">Package Deal</th>
+              <th scope="col" class="px-2 py-3">Venue</th>
+              <th scope="col" class="px-2 py-3">Schedule</th>
+              <th scope="col" class="px-2 py-3">Start Time</th>
+              <th scope="col" class="px-2 py-3">End Time</th>
+              <th scope="col" class="px-2 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in paginatedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.eventName }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.schedule }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.startTime }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.endTime }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">
+                <button
+                @click="viewEvent(event)"
+                    class="h-8 w-12 mr-2 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
+                    View
+                  </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
+          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
+          <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{'bg-blue-900': currentPage === page, 'bg-gray-300': currentPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+            {{ page }}
+          </button>
+          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
         </div>
       </div>
     </div>
-   
 
- <!--Upcoming Events Table-->
- <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-          <th scope="col" class="px-2 py-3">#</th>
-          <th scope="col" class="px-2 py-3">Event</th>
-          <th scope="col" class="px-2 py-3">Event Name</th>
-          <th scope="col" class="px-2 py-3">Package Deal</th>
-          <th scope="col" class="px-2 py-3">Venue</th>
-          <th scope="col" class="px-2 py-3">Schedule</th>
-          <th scope="col" class="px-2 py-3">Start Time</th>
-          <th scope="col" class="px-2 py-3">End Time</th>
-          <th scope="col" class="px-2 py-3">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="event in paginatedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.eventName }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.schedule }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.startTime }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.endTime }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">
-            <button
-            @click="viewEvent(event)"
-                class="h-8 w-12 mr-2 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
-                View
+
+
+
+    <!--Completed Events-->
+    <div v-if="showTable === 'finished-events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-2 py-3">#</th>
+              <th scope="col" class="px-2 py-3">Event</th>
+              <th scope="col" class="px-2 py-3">Event Name</th>
+              <th scope="col" class="px-2 py-3">Package Deal</th>
+              <th scope="col" class="px-2 py-3">Venue</th>
+              <th scope="col" class="px-2 py-3">Schedule</th>
+              <th scope="col" class="px-2 py-3">Total Charges</th>
+              <th scope="col" class="px-2 py-3">Invoice</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in paginatedFinishedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{event.eventName }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.schedule }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">{{ event.totalCharges }}</td>
+              <td class="px-1 py-3 hidden sm:table-cell">
+                <button class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">View</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
+          <button @click="prevFinishedPage" :disabled="currentFinishedPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
+          <button v-for="page in totalPages" :key="page" @click="changeFinishedPage(page)" :class="{'bg-blue-900': changeFinishedPage === page, 'bg-gray-300': changeFinishedPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+            {{ page }}
+          </button>
+          <button @click="nextFinishedPage" :disabled="currentFinishedPage === totalFinishedPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div v-if="showWishlistModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" @click.self = "closeWishlistModal()">
+      <div class="bg-white w-[900px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[80vh]">
+        <!-- Header -->
+        <div class="flex justify-between mb-4">
+          <h2 class="text-lg font-bold">Wishlist Details</h2>
+          <button @click="closeWishlistModal" class="text-red-500 text-3xl">×</button>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="grid grid-cols-2 gap-4 mb-6 font-amaticSC">
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Event Name</label>
+            <input v-model="selectedEvent.event_name" type="text" class="w-full p-2 border rounded rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Theme</label>
+            <input v-model="selectedEvent.event_theme" type="text" class="w-full p-2 border rounded rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Color</label>
+            <input v-model="selectedEvent.event_color" type="text" class="w-full p-2 border rounded rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Booked By</label>
+            <input v-model="fullName" type="text" class="w-full p-2 border rounded rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Contact</label>
+            <input v-model="selectedEvent.contactnumber" type="text" class="w-full p-2 border rounded rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600">Schedule</label>
+            <input v-model="selectedEvent.schedule" type="text" class="w-full p-2 border rounded text-sm">
+          </div>
+        </div>
+
+        <!-- Inclusion Buttons -->
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <button 
+              @click.prevent="openInclusionModal('supplier')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Supplier Icon" class="mr-2 w-[20px] h-[20px]" src="/img/supplier.png">
+              Suppliers
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('venue')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Venue Icon" class="mr-2 w-[20px] h-[20px]" src="/img/venues1.png">
+             Venue
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('outfit')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
+             Outfit Package
+            </button>
+            <button 
+              @click.prevent="openInclusionModal('service')" 
+              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+            >
+              <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
+              Additionals
+            </button>
+          </div>
+
+
+      <!-- Inclusion Modal for Selecting Supplier Type -->
+      <div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Supplier Type</h2>
+            <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <button v-for="serviceType in supplierTypes" :key="serviceType" @click="selectSupplierType(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
+              {{ serviceType }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Specific Supplier -->
+      <div v-if="showSupplierModal" @click.self="closeSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Supplier</h2>
+            <button @click="closeSupplierModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
+            <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select {{ selectedSupplierType }}</option>
+              <option v-for="supplier in filteredSuppliers(selectedSupplierType)" :key="supplier.supplier_id" :value="supplier">
+                {{ supplier.firstname }} {{ supplier.lastname }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Venue -->
+      <div v-if="showVenueModal" @click.self="closeVenueModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Venue</h2>
+            <button @click="closeVenueModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
+            <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select Venue</option>
+              <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
+                {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Outfit Package -->
+      <div v-if="showOutfitModal" @click.self="closeOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Select Outfit Package</h2>
+            <button @click="closeOutfitModal" class="text-red-500 hover:text-red-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label for="outfit" class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
+            <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option selected disabled value="">Select Outfit Package</option>
+              <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
+                {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-center mt-4">
+            <button type="button" @click="addSelectedOutfit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inclusion Modal for Selecting Additional Services -->
+        <div v-if="showServiceModal" @click.self="closeServiceModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Select Additional Service</h2>
+              <button @click="closeServiceModal" class="text-red-500 hover:text-red-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </div>
+            <div>
+              <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
+              <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <option selected disabled value="">Select Additional Service</option>
+                <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
+                  {{ service.add_service_name }}
+                </option>
+              </select>
+            </div>
+            <div class="flex justify-center mt-4">
+              <button type="button" @click="addSelectedService" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+            </div>
+          </div>
+        </div>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
-      <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{'bg-blue-900': currentPage === page, 'bg-gray-300': currentPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
-        {{ page }}
-      </button>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
+
+        <!-- Inclusions Tables -->
+        <div class="mb-6 space-y-4">
+          <!-- Venue Table -->
+          <div>
+            <h3 class="font-medium mb-2 font-raleway">Venue</h3>
+            <div class="bg-gray-50 p-3 rounded">
+              <table class="table-auto w-full text-left text-sm">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th class="px-2 py-1">Name</th>
+                    <th class="px-2 py-1">Location</th>
+                    <th class="px-2 py-1">Price</th>
+                    <th class ="px-1 py-1">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0">
+                    <td class="px-2 py-1">{{ selectedEvent.venues[0].name }}</td>
+                    <td class="px-2 py-1">{{ selectedEvent.venues[0].location }}</td>
+                    <td class="px-2 py-1">{{ formatPrice(selectedEvent.venues[0].price) }} php</td>
+                    <td class="px-2 py-1">
+                      <div class="flex justify-start items-center space-x-2">
+                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <img 
+                      alt="Delete Icon" 
+                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
+                      src="/img/delete.png" 
+                    >
+                  </div>
+                  </div>
+                  </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Suppliers Table -->
+          <div>
+          <h3 class="font-medium mb-2 font-raleway">Suppliers</h3>
+          <table class="table-auto w-full text-left text-sm">
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="px-2 py-1">Name</th>
+                <th class="px-2 py-1">Service</th>
+                <th class="px-2 py-1">Price</th>
+                <th class="px-2 py-1">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index">
+                <td class="px-2 py-1">{{ supplier.name }}</td>
+                <td class="px-2 py-1">{{ supplier.service }}</td>
+                <td class="px-2 py-1">{{ formatPrice(supplier.price) }}</td>
+                <td class="px-2 py-1">
+                   <div class = "flex justify-start items-center space-x-2">
+                    <div class="inline-block cursor-pointer">
+                    <img 
+                      alt="Approve Icon" 
+                      class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                      src="/img/mark.png" 
+                    >
+                  </div>
+                  <button type = "button" @click="editInclusion(index)" class="inline-block cursor-pointer">
+                              <img 
+                                alt="Edit Icon" 
+                                class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                                src="/img/edit.png" 
+                              >
+                      </button>
+                 
+                  <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                  <img 
+                    alt="Delete Icon" 
+                    class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                    src="/img/delete.png" 
+                  >
+                </div>
+                 </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+          <!-- Outfit Package Table -->
+          <div>
+            <h3 class="font-medium mb-2 font-raleway">Outfit Package</h3>
+            <div class="bg-gray-50 p-3 rounded">
+              <table class="table-auto w-full text-left text-sm">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th class="px-2 py-1">Package Name</th>
+                    <th class="px-2 py-1">Price</th>
+                    <th class="px-2 py-1">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="px-2 py-1">{{ selectedEvent?.gown_package_name || 'N/A' }}</td>
+                    <td class="px-2 py-1">{{ formatPrice(selectedEvent?.gown_package_price || 0) }}</td>
+                    <td class="px-2 py-1">
+                    <div class = "flex justify-start items-center space-x-2">
+                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <img 
+                      alt="Delete Icon" 
+                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
+                      src="/img/delete.png" 
+                    >
+                  </div>
+                  </div>
+                  </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+          <!-- Additional Services Table -->
+          <div>
+            <h3 class="font-medium mb-2 font-raleway">Additional Services</h3>
+            <table class="table-auto w-full text-left text-sm">
+              <thead class="bg-gray-200">
+                <tr>
+                  <th class="px-2 py-1">Service Name</th>
+                  <th class="px-2 py-1">Description</th>
+                  <th class="px-2 py-1">Price</th>
+                  <th class="px-2 py-1">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(service, index) in selectedEvent.services" :key="index">
+                  <td class="px-2 py-1">{{ service.add_service_name }}</td>
+                  <td class="px-2 py-1">{{ service.add_service_description }}</td>
+                  <td class="px-2 py-1">{{ formatPrice(service.add_service_price) }}</td>
+                  <td class="px-2 py-1">
+                    <div class = "flex justify-start items-center space-x-2">
+                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <img 
+                      alt="Delete Icon" 
+                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
+                      src="/img/delete.png" 
+                    >
+                  </div>
+                  </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 mt-4">
+          <div>
+            <div class="flex justify-between items-center mb-2 mt-2">
+              <label class="block text-xs font-semibold font-raleway">Capacity Details</label>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Capacity </label>
+                <div class="flex items-center space-x-2">
+                  <input :value="selectedEvent.capacity" disabled type="number" class="w-full p-2 border rounded bg-gray-50">
+                  <span class="text-sm text-gray-600">{{ selectedEvent.charge_unit }}</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Additional Capacity</label>
+                <div class="flex items-center space-x-2">
+                  <input v-model.number="additionalCapacity" type="number" class="w-full p-2 border rounded" placeholder="Enter additional capacity">
+                  <button @click="addCapacity" class="px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label class="block text-sm font-medium mb-1">Total Capacity</label>
+              <div class="flex items-center space-x-2">
+                <input :value="totalCapacity" disabled type="number" class="w-full p-2 border rounded bg-gray-50">
+                <span class="text-sm text-gray-600">{{ selectedEvent.charge_unit }}</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label class="block text-sm font-medium mb-1">Additional Capacity Charges</label>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm">₱{{ selectedEvent.additional_capacity_charges }} per {{ selectedEvent.charge_unit }} person/s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+
+        <!-- Total Price Section -->
+        <div class="bg-blue-50 p-4 rounded mb-6">
+          <div class="flex justify-between items-center">
+            <h3 class="font-medium">Total Price</h3>
+            <span class="text-xl font-bold">{{ formatPrice(calculateTotalPrice) }}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end space-x-3">
+          <button @click="saveChanges" class="px-4 py-2 bg-blue-500 text-white rounded">Save Changes</button>
+          <button @click="closeWishlistModal" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
 
-
-
-<!--Completed Events-->
-<div v-if="showTable === 'finished-events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-          <th scope="col" class="px-2 py-3">#</th>
-          <th scope="col" class="px-2 py-3">Event</th>
-          <th scope="col" class="px-2 py-3">Event Name</th>
-          <th scope="col" class="px-2 py-3">Package Deal</th>
-          <th scope="col" class="px-2 py-3">Venue</th>
-          <th scope="col" class="px-2 py-3">Schedule</th>
-          <th scope="col" class="px-2 py-3">Total Charges</th>
-          <th scope="col" class="px-2 py-3">Invoice</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="event in paginatedFinishedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{event.eventName }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.schedule }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ event.totalCharges }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">
-            <button class="h-8 w-12 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">View</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Pagination Controls -->
-    <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
-      <button @click="prevFinishedPage" :disabled="currentFinishedPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
-      <button v-for="page in totalPages" :key="page" @click="changeFinishedPage(page)" :class="{'bg-blue-900': changeFinishedPage === page, 'bg-gray-300': changeFinishedPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
-        {{ page }}
-      </button>
-      <button @click="nextFinishedPage" :disabled="currentFinishedPage === totalFinishedPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
-    </div>
-  </div>
-</div>
 
 
 <!----View / Edit event details----------->
@@ -671,9 +1073,66 @@
 
       bookedEvents: [],
       wishlist: [],
+      inclusions: [],
+      additionalServices: [],
 
       showEventModal: false,
-      selectedEvent: {},
+      showWishlistModal: false,
+      selectedEvent: {
+      event_name: '',
+      event_theme: '',
+      event_color: '',
+      contactnumber: '',
+      firstname: '', 
+      lastname: '', 
+      suppliers: [],
+      services: [],
+      outfits: [],
+      venues: [],
+      inclusions: [],
+      additionalCapacity: '',
+      additional_capacity_charges: 0,
+      charge_unit: 1,
+      gown_package_name: 'N/A', // Added default value
+      gown_package_price: 0 // Added default value
+    },
+    showAddCapacityModal: false,
+      capacityList: [
+        { capacity: '50-100', charges: 1000, unit: 'per head' },
+        { capacity: '101-200', charges: 900, unit: 'per head' },
+        { capacity: '201-300', charges: 800, unit: 'per head' }
+      ],
+      newCapacity: {
+        capacity: '',
+        charges: 0,
+        unit: 'per head'
+      },
+
+      showInclusionModal: false,
+      showSupplierModal: false,
+      showVenueModal: false,
+      showOutfitModal: false,
+      showServiceModal: false,
+      selectedInclusionType: '',
+      selectedSupplierType: '',
+      selectedSupplier: null,
+      selectedVenue: null,
+      selectedOutfit: null,
+      selectedService: null,
+      supplierTypes: [
+        'Catering',
+        'Photographer',
+        'Videographer',
+        'Entertainment',
+        'Sound and Lighting',
+        'Transportation',
+        'Host',
+        'Invitations',
+        'Favors and Gifts',
+        'Hair Stylist',
+        'Makeup Artist',
+      ],
+  
 
      //Dummy rani!!
      selectedCapacity: '150to200',
@@ -802,63 +1261,197 @@
     totalWishlist() {
        return this.wishlist.length;
     },
-  },
+    fullName: {
+      get() {
+        return `${this.selectedEvent.firstname || ''} ${this.selectedEvent.lastname || ''}`.trim();
+      },
+      set(value) {
+        const [firstname, ...rest] = value.split(' ');
+        this.selectedEvent.firstname = firstname || '';
+        this.selectedEvent.lastname = rest.join(' ') || '';
+      }
+    },
+    filteredSuppliers() {
+      return this.suppliers.filter(supplier => 
+        supplier.service === this.selectedSupplierType
+      );
+    },
+    
+    filteredAdditionalServices() {
+      return this.additionalServices.filter(service => 
+        !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id)
+      );
+    },
+    allInclusions() {
+        const inclusions = [];
+        const uniqueItems = new Map();
+
+        // Add suppliers
+        if (this.selectedEvent && Array.isArray(this.selectedEvent.suppliers)) {
+          this.selectedEvent.suppliers.forEach(supplier => {
+            const key = `${supplier.id}_${supplier.service}`;
+            if (!uniqueItems.has(key)) {
+              uniqueItems.set(key, {
+                name: `${supplier.name} (${supplier.service})`,
+                type: 'Supplier',
+                price: supplier.price
+              });
+            }
+          });
+        }
+
+        // Add venue details
+        if (this.selectedEvent && this.selectedEvent.venue_name) {
+          uniqueItems.set('venue', {
+            name: `${this.selectedEvent.venue_name} (${this.selectedEvent.venue_location})`,
+            type: 'Venue',
+            price: parseFloat(this.selectedEvent.venue_price) || 0
+          });
+        }
+
+        // Add additional services
+        if (this.selectedEvent && Array.isArray(this.selectedEvent.services)) {
+          this.selectedEvent.services.forEach(service => {
+            const key = `service_${service.add_service_name}`;
+            if (!uniqueItems.has(key)) {
+              uniqueItems.set(key, {
+                name: `${service.add_service_name} - ${service.add_service_description}`,
+                type: 'Additional Service',
+                price: service.add_service_price
+              });
+            }
+          });
+        }
+
+        return Array.from(uniqueItems.values());
+      },
+
+
+    calculateTotalPrice() {
+      return this.allInclusions.reduce((total, item) => total + (parseFloat(item.price) || 0), 0);
+    },
+    totalCapacity() {
+    return Number(this.selectedEvent.capacity || 0) + Number(this.additionalCapacity || 0);
+  }
+},
+
 
   methods: {
     async fetchBookedWishlist() {
-    try {
-        const token = localStorage.getItem('access_token');  // Get the JWT token from localStorage
+        try {
+          const token = localStorage.getItem('access_token');
+          if (!token) return;
 
-        if (!token) {
-            console.error('No access token found');
-            return;
+          const response = await axios.get('http://127.0.0.1:5000/booked-wishlist', {
+            headers: { 'Authorization': `Bearer ${token}` },
+            withCredentials: true
+          });
+
+          this.wishlist = (Array.isArray(response.data) ? response.data : []).map(event => {
+            // Process suppliers
+            const suppliers = Array.isArray(event.suppliers) ? event.suppliers.map(s => ({
+              id: s.supplier_id,
+              name: s.external_supplier_name || `${s.supplier_firstname || ''} ${s.supplier_lastname || ''}`.trim(),
+              service: s.service || '',
+              price: parseFloat(s.external_supplier_price || s.price) || 0,
+              contact: s.external_supplier_contact || s.supplier_email || '',
+              remarks: s.remarks || ''
+            })) : [];
+
+            // Process venues
+            const venues = Array.isArray(event.venues) ? event.venues.map(v => ({
+              id: v.venue_id,
+              name: v.venue_name || '',
+              location: v.location || '',
+              price: parseFloat(v.venue_price) || 0,
+              capacity: parseInt(v.venue_capacity) || 0,
+              description: v.description || ''
+            })) : [];
+
+            // Process services
+            const services = Array.isArray(event.services) ? event.services.map(s => ({
+              id: s.add_service_id,
+              name: s.add_service_name || '',
+              description: s.add_service_description || '',
+              price: parseFloat(s.add_service_price) || 0
+            })) : [];
+
+            // Calculate total price
+            const basePrice = parseFloat(event.total_price) || 0;
+            const venuePrice = venues.reduce((sum, v) => sum + v.price, 0);
+            const gownPrice = parseFloat(event.gown_package_price) || 0;
+            const capacityCharges = parseFloat(event.additional_capacity_charges) || 0;
+            const suppliersTotal = suppliers.reduce((sum, s) => sum + s.price, 0);
+            const servicesTotal = services.reduce((sum, s) => sum + s.price, 0);
+
+            return {
+              events_id: event.events_id,
+              userid: event.userid,
+              event_name: event.event_name || '',
+              event_type: event.event_type || '',
+              event_theme: event.event_theme || '',
+              event_color: event.event_color || '',
+              schedule: event.schedule || '',
+              start_time: event.start_time || '',
+              end_time: event.end_time || '',
+              status: event.status || '',
+              package_id: event.package_id,
+              package_name: event.package_name || '',
+              package_type: event.package_type || '',
+              capacity: event.capacity || 0,
+              package_description: event.package_description || '',
+              package_price: basePrice,
+              total_price: basePrice + venuePrice + gownPrice + capacityCharges + suppliersTotal + servicesTotal,
+              venue_price: venuePrice,
+              firstname: event.firstname || '',
+              lastname: event.lastname || '',
+              contactnumber: event.contactnumber || '',
+              email: event.email || '',
+              bookedBy: `${event.firstname || ''} ${event.lastname || ''}`.trim(),
+              additional_capacity_charges: capacityCharges,
+              charge_unit: event.charge_unit || 'per head',
+              gown_package_name: event.gown_package_name || '',
+              gown_package_price: gownPrice,
+              onsite_firstname: event.onsite_firstname || '',
+              onsite_lastname: event.onsite_lastname || '',
+              onsite_contact: event.onsite_contact || '',
+              onsite_address: event.onsite_address || '',
+              suppliers: suppliers,
+              venues: venues,
+              services: services,
+              modified_suppliers: {
+                added: [],
+                modified: [],
+                removed: []
+              },
+              modified_venues: {
+                added: [],
+                modified: [],
+                removed: []
+              }
+            };
+          });
+
+          console.log('Processed wishlist:', this.wishlist);
+        } catch (error) {
+          console.error('Error:', error);
+          this.wishlist = [];
         }
-
-        // Make the GET request to fetch the booked wishlist
-        const response = await axios.get('http://127.0.0.1:5000/booked-wishlist', {
+      },
+            async fetchAdditionalServices() {
+        try {
+          const token = localStorage.getItem('access_token');
+          const response = await axios.get('http://127.0.0.1:5000/additional-services', {
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,  // Send the JWT token in the Authorization header
-            },
-            withCredentials: true  // Send cookies with the request if needed
-        });
-
-        // Check if response contains data and map it accordingly
-        if (response.data && Array.isArray(response.data)) {
-            this.wishlist = response.data.map(item => ({
-                events_id: item.events_id,
-                userid: item.userid,
-                event_name: item.event_name,
-                event_type: item.event_type,
-                event_theme: item.event_theme,
-                event_color: item.event_color,
-                schedule: item.schedule,
-                start_time: item.start_time,
-                end_time: item.end_time,
-                status: item.status,
-                package_id: item.package_id,
-                package_name: item.package_name,
-                package_type: item.package_type,
-                capacity: item.capacity,
-                package_description: item.package_description,
-                total_price: item.total_price,
-                venue_name: item.venue_name,
-                location: item.location,
-                gown_package_name: item.gown_package_name,
-                gown_package_price: item.gown_package_price,
-                firstname: item.firstname,
-                lastname: item.lastname,
-                contactnumber: item.contactnumber,
-                suppliers: item.suppliers || []
-            }));
-        } else {
-            console.warn('No wishlist data found or data is not an array');
+              Authorization: `Bearer ${token}`
+            }
+          });
+          this.additionalServices = response.data.additional_services;
+        } catch (error) {
+          console.error('Error fetching additional services:', error);
         }
+      },
 
-    } catch (error) {
-        console.error('Error fetching wishlist:', error.message || error);
-    }
-},
 
 
     prevPage() {
@@ -943,15 +1536,12 @@
       this.selectedEvent = {};
     },
 
-    
-
-
-
+  
 
     viewEvent(event) {
-    this.selectedEvent = event; 
-    this.upcomingEventDetailsModal = true; 
-  },
+      this.selectedEvent = event; 
+      this.upcomingEventDetailsModal = true; 
+    },
 
   viewInvoice(event) {
     this.selectedEvent = event; 
@@ -968,138 +1558,271 @@
   updatePricing() {
       console.log(`Selected capacity: ${this.selectedCapacity}`);
     },
-    getCateringPrice() {
-      switch (this.selectedCatering) {
-        case 'catering1':
-          return '₱15,000 - ₱70,000';
-        case 'catering2':
-          return '₱30,000 - ₱250,000';
-        case 'catering3':
-          return '₱20,000 - ₱150,000';
-        default:
-          return 'Price not available';
+    addSelectedSupplier() {
+    if (this.selectedSupplier) {
+      const existingSupplier = this.selectedEvent.suppliers.find(
+        s => s.supplier_id === this.selectedSupplier.supplier_id
+      );
+      
+      if (!existingSupplier) {
+        this.selectedEvent.suppliers.push({
+          ...this.selectedSupplier,
+          price: this.selectedSupplier.price || 0
+        });
       }
-    },
-    getMultimediaPrice() {
-      switch (this.selectedMultimedia) {
-        case 'multimedia1':
-          return '₱20,000 - ₱60,000';
-        case 'multimedia2':
-          return '₱10,000 - ₱30,000';
-        case 'multimedia3':
-          return '₱7,000 - ₱20,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getGlamPrice() {
-      switch (this.selectedGlam) {
-        case 'glam1':
-          return 'PHP 15,000 - 25,000';
-        case 'glam2':
-          return '₱7,000 - ₱30,000';
-        case 'glam3':
-          return '₱5,000 - ₱15,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getHostPrice() {
-      switch (this.selectedHost) {
-        case 'host1':
-          return '₱5,000 - ₱19,000';
-        case 'host2':
-          return '₱7,000 - ₱30,000';
-        case 'host3':
-          return '₱10,000 - ₱25,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getAudioVisualPrice() {
-      switch (this.selectedAudioVisual) {
-        case 'audiovisual1':
-          return '₱30,000 - ₱80,000';
-        case 'audiovisual2':
-          return '₱20,000 - ₱45,000';
-        case 'audiovisual3':
-          return '₱20,000 - ₱70,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getEntertainmentPrice() {
-      switch (this.selectedEntertainment) {
-        case 'entertainment1':
-          return '₱5,000 - ₱40,000';
-        case 'entertainment2':
-          return '₱10,000 - ₱100,000';
-        case 'entertainment3':
-          return '₱40,000 - ₱170,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getTransportationPrice() {
-      switch (this.selectedTransportation) {
-        case 'transportation1':
-          return '₱10,000 - ₱40,000';
-        case 'transportation2':
-          return '₱15,000 - ₱60,000';
-        case 'transportation3':
-          return '₱5,000 - ₱25,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getInvitationsPrice() {
-      switch (this.selectedInvitations) {
-        case 'invitations1':
-          return '₱20,000 - ₱70,000';
-        case 'invitations2':
-          return '₱10,000 - ₱25,000';
-        case 'invitations3':
-          return '₱30,000 - ₱90,000';
-        default:
-          return 'Price not available';
-      }
-    },
-    getGiftsPrice() {
-      switch (this.selectedGifts) {
-        case 'gifts1':
-          return '₱15,500 - ₱100,000';
-        case 'gifts2':
-          return '₱7,000 - ₱30,000';
-        case 'gifts3':
-          return '₱10,000 - ₱80,000';
-        default:
-          return 'Price not available';
-      }
-    },
+      this.closeSupplierModal();
+    }
+  },
 
-    getPackagePrice() {
-      switch (this.selectedPackage) {
-        case 'package2':
-          return '30k php';
-        case 'package3':
-          return '60k php';
-        case 'package4':
-          return '40k php';
-        default:
-          return 'Price not available';
-      }
-    },
+  addSelectedVenue() {
+    if (this.selectedVenue) {
+      this.selectedEvent.venue = this.selectedVenue;
+      this.closeVenueModal();
+    }
+  },
 
+  addSelectedOutfit() {
+    if (this.selectedOutfit) {
+      this.selectedEvent.outfit = this.selectedOutfit;
+      this.closeOutfitModal();
+    }
+  },
+
+  addSelectedService() {
+    if (this.selectedService) {
+      const existingService = this.selectedEvent.services.find(
+        s => s.add_service_id === this.selectedService.add_service_id
+      );
+      
+      if (!existingService) {
+        this.selectedEvent.services.push({
+          ...this.selectedService,
+          price: this.selectedService.price || 0
+        });
+      }
+      this.closeServiceModal();
+    }
+  },
+
+  removeSupplier(index) {
+    this.selectedEvent.suppliers.splice(index, 1);
+  },
+
+  removeService(index) {
+    this.selectedEvent.services.splice(index, 1);
+  },
+
+  removeVenue() {
+    this.selectedEvent.venue = null;
+  },
+
+  removeOutfit() {
+    this.selectedEvent.outfit = null;
+  },
+
+  openInclusionModal(type) {
+    this.selectedInclusionType = type;
+    this.showInclusionModal = true;
+    if (type === 'venue') {
+      this.showVenueModal = true;
+    } else if (type === 'outfit') {
+      this.showOutfitModal = true;
+    } else if (type === 'service') {
+      this.showServiceModal = true;
+    }
+  },
+
+  closeInclusionModal() {
+    this.showInclusionModal = false;
+    this.selectedInclusionType = '';
+  },
+
+  closeSupplierModal() {
+    this.showSupplierModal = false;
+    this.selectedSupplier = null;
+  },
+
+  closeVenueModal() {
+    this.showVenueModal = false;
+    this.selectedVenue = null;
+  },
+
+  closeOutfitModal() {
+    this.showOutfitModal = false;
+    this.selectedOutfit = null;
+  },
+
+  closeServiceModal() {
+    this.showServiceModal = false;
+    this.selectedService = null;
+  },
+
+  selectSupplierType(type) {
+    this.selectedSupplierType = type;
+    this.showInclusionModal = false;
+    this.showSupplierModal = true;
+  },
     getPackagePrice(packageName) {
         const Package = this.packageDeal.find(pkg => pkg.packageName === packageName);
         return Package ? Package.price : 'Price not available';
     },
+    formatPrice(price) {
+      const numPrice = Number(price) || 0;
+      return numPrice.toLocaleString('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    },
+
+  openWishlistModal(event) {
+    this.selectedEvent = {
+      ...this.selectedEvent, // Keep default values for undefined fields
+      ...event,
+      gown_package_name: event.gown_package_name || 'N/A',
+      gown_package_price: event.gown_package_price || 0,
+      firstname: event.firstname || '',
+      lastname: event.lastname || '',
+      contactnumber: event.contactnumber || ''
+    };
+    this.showWishlistModal = true;
+  },
+  addCapacity() {
+    if (this.additionalCapacity > 0) {
+      this.selectedEvent.capacity = this.totalCapacity;
+      this.additionalCapacity = 0;
+    }
+  },
+
+
+
+  addInclusion(type) {
+      // Add a new inclusion based on the type
+      const name = prompt('Enter inclusion name:');
+      const price = parseFloat(prompt('Enter price:')) || 0;
+      if (name) {
+        const category = this.inclusions.find((cat) => cat.type === type);
+        category.items.push({ name, price });
+      }
+    },
+    editInclusion(type, index) {
+        // Convert type to lowercase and match with the correct array
+        const inclusionTypes = {
+          'suppliers': 'suppliers',
+          'venues': 'venues',
+          'outfits': 'outfits',
+          'additional services': 'services'
+        };
+
+        const arrayType = inclusionTypes[type.toLowerCase()];
+        if (arrayType) {
+          // Open a modal or perform edit logic
+          // For example:
+          this.editingInclusion = this.selectedEvent[arrayType][index];
+          this.showInclusionModal = true;
+        }
+      },
+      removeInclusion(type, index) {
+        const inclusionTypes = {
+          'suppliers': 'suppliers',
+          'venues': 'venues',
+          'outfits': 'outfits',
+          'additional services': 'services'
+        };
+
+        const arrayType = inclusionTypes[type.toLowerCase()];
+        if (arrayType) {
+          // Remove the inclusion from the specific array
+          this.selectedEvent[arrayType].splice(index, 1);
+        }
+      },
+
+    saveChanges() {
+      // Save changes logic
+      alert('Changes saved!');
+    },
+    closeWishlistModal() {
+      // Close modal logic
+      this.showWishlistModal = false;
+    },
+    viewEvent(event) {
+      // Deep clone the event to prevent direct mutation
+      this.selectedEvent = JSON.parse(JSON.stringify(event)); 
+      this.upcomingEventDetailsModal = true; 
+    },
+    openInclusionModal(type) {
+      this.selectedInclusionType = type;
+      this.showInclusionModal = true;
+      if (type === 'venue') {
+        this.showVenueModal = true;
+      } else if (type === 'outfit') {
+        this.showOutfitModal = true;
+      } else if (type === 'service') {
+        this.showServiceModal = true;
+      }
+    },
+    closeInclusionModal() {
+      this.showInclusionModal = false;
+      this.selectedInclusionType = '';
+    },
+    closeSupplierModal() {
+      this.showSupplierModal = false;
+      this.selectedSupplier = '';
+    },
+    closeVenueModal() {
+      this.showVenueModal = false;
+      this.selectedVenue = '';
+    },
+    closeOutfitModal() {
+      this.showOutfitModal = false;
+      this.selectedOutfit = '';
+    },
+    closeServiceModal() {
+      this.showServiceModal = false;
+      this.selectedService = '';
+    },
+    selectSupplierType(type) {
+      this.selectedSupplierType = type;
+      this.showInclusionModal = false;
+      this.showSupplierModal = true;
+    },
+    addSelectedSupplier() {
+      if (this.selectedSupplier) {
+        // Add supplier logic here
+        this.closeSupplierModal();
+      }
+    },
+    addSelectedVenue() {
+      if (this.selectedVenue) {
+        // Add venue logic here
+        this.closeVenueModal();
+      }
+    },
+    addSelectedOutfit() {
+      if (this.selectedOutfit) {
+        // Add outfit logic here
+        this.closeOutfitModal();
+      }
+    },
+    addSelectedService() {
+      if (this.selectedService) {
+        // Add service logic here
+        this.closeServiceModal();
+      }
+    },
+
+    directToOnsiteBooking(){
+      this.$router.push('/add-wishlist');
+    }
+  
 
   },
 
   mounted() {
         this.fetchBookedWishlist();
         console.log(this.paginatedWishlist);
+        this.fetchAdditionalServices(); 
          
     },
 

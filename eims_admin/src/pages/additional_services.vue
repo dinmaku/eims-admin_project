@@ -11,16 +11,29 @@
             <img class="w-auto h-12" src="/img/bar-counter.png" alt="Service Image">
             <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalServices }} <span class = "text-sm antialiased text-gray-600">services</span></h2>
         </div>
+        <form class="flex items-center w-[300px] mt-9">
+              <label for="voice-search" class="sr-only">Search</label>
+              <div class="relative w-full">
+                <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                  <svg aria-hidden="true" class="w-5 h-auto text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <input type="text" id="search-bar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Add-ons..." required v-model="searchTerm">
+                <router-link to="/" class="flex absolute inset-y-0 right-0 items-center pr-3">
+                  <svg aria-hidden="true" class="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  </svg>
+                </router-link>
+              </div>
+        </form>
     </div>
 
-        <div class="flex flex-row justify-between items-center m-5 my-7">
-            <div class="flex">
-                <button class="mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
-                transition-transform duration-300 transform hover:scale-105" @click="addServiceBtn">
-                + Add Service
-                </button>
-            </div>
-        </div> 
+        <div class="flex flex-row justify-end items-center m-5 my-7">
+            <button class="mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
+            transition-transform duration-300 transform hover:scale-105" @click="addServiceBtn">
+            + Add Service
+            </button>
+        </div>
 
         <!--- Additional Services Table --->
 
@@ -59,7 +72,7 @@
                 <!-- Pagination Controls -->
                 <div class="flex justify-center space-x-2 mt-4 mb-6">
                     <button @click="prevServicesPage" :disabled="currentServicesPage === 1"
-                        class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+                        class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
                     <button v-for="page in totalServicesPages" :key="page" @click="changeServicesPage(page)"
                         :class="{'bg-[#9B111E]': currentServicesPage === page, 'bg-gray-300 ': currentServicesPage !== page}"
                         class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
@@ -76,9 +89,6 @@
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
                     <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Service</h1>
-                    <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeAddServiceForm">
-                        Close
-                    </button>
                 </div>
                 <div class="border border-gray-500 mt-5 items-center"></div>
                 <div class="m-5">
@@ -100,9 +110,12 @@
                     </div>
 
                     <!-- Confirm Button -->
-                    <div class="flex justify-center items-center mt-10">
+                    <div class="flex justify-center items-center mt-10 space-x-2">
+                        <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddServiceForm">
+                        Cancel
+                         </button>
                         <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                        Confirm
+                        Save
                         </button>
                     </div>
                 </div>
@@ -114,9 +127,6 @@
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
                     <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Service</h1>
-                    <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditServiceForm">
-                        Close
-                    </button>
                 </div>
 
                 <div class="border border-gray-500 mt-5 items-center"></div>
@@ -139,9 +149,12 @@
                     </div>
 
                     <!-- Confirm Button -->
-                    <div class="flex justify-center items-center mt-10 space-x-3">
+                    <div class="flex justify-center items-center mt-10 space-x-2">
+                        <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditServiceForm">
+                        Cancel
+                        </button>
                         <button type="submit" class="w-32 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
-                            Save Changes
+                        Save Changes
                         </button>
                     </div>
                 </div>
@@ -167,6 +180,8 @@ export default {
             addServiceForm: false,
             editServiceForm: false,
 
+            searchTerm: '',
+
             // Service form inputs
             add_service_name: '',
             add_service_description: '',
@@ -183,16 +198,28 @@ export default {
     },
     computed: {
         totalServices() {
-            return this.services.length;
+            return this.filteredAdditionalServices.length;
         },
         totalServicesPages() {
-            return Math.ceil(this.services.length / this.rowsPerServicesPage);
+            return Math.ceil(this.filteredAdditionalServices.length / this.rowsPerServicesPage);
         },
         paginatedServices() {
             const start = (this.currentServicesPage - 1) * this.rowsPerServicesPage;
             const end = start + this.rowsPerServicesPage;
-            return this.services.slice(start, end);
+            return this.filteredAdditionalServices.slice(start, end);
         },
+
+        filteredAdditionalServices() {
+            if (!this.searchTerm) return this.services;
+            const searchLower = this.searchTerm.toLowerCase().trim();
+            return this.services.filter(service => {
+                return [
+                service.add_service_name,
+                service.add_service_description,
+                String(service.add_service_price)
+                ].some(field => String(field || '').toLowerCase().includes(searchLower));
+            });
+            },
     },
     methods: {
         async fetchServices() {

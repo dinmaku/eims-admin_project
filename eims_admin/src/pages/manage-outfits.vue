@@ -42,10 +42,6 @@
     Tuxedo
   </button>
 </div>
-<button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-full shadow-lg 
-transition-transform duration-300 transform hover:scale-105" @click="addOutBtn">
- + Add Outfit
-</button>
 </div>
 
 
