@@ -101,17 +101,29 @@
           <div>
             <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
             <div class="grid grid-cols-2 gap-4">
-              <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-              <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                <option disabled value="">Select Event Type</option>
-                <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
-                  {{ type.event_type_name }}
-                </option>
-                <option value="add-new">+ Add New Event Type</option>
-              </select>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Package Name</label>
+                <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Event Type</label>
+                <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                  <option disabled value="">Select Event Type</option>
+                  <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
+                    {{ type.event_type_name }}
+                  </option>
+                  <option value="add-new">+ Add New Event Type</option>
+                </select>
+              </div>
 
-              <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
-              <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Capacity</label>
+                <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Additional Capacity Charges</label>
+                <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
+              </div>
             </div>
 
             <div class="mt-5">
@@ -120,6 +132,7 @@
             </div>
 
             <div class="mt-5">
+              <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
               <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
             </div>
           </div>
@@ -384,18 +397,31 @@
       <div>
         <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
         <div class="grid grid-cols-2 gap-4">
-          <input type="text" v-model="selectedPackage.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
-          <select v-model="selectedPackage.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" required>
-            <option value="">Select Package Type</option>
-            <option value="Wedding">Wedding</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Debut">Debut</option>
-          </select>
-          <input type="number" v-model="selectedPackage.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
-          <input type="number" v-model="selectedPackage.total_price" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Total Price" required />
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Package Name</label>
+            <input type="text" v-model="selectedPackage.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Package Type</label>
+            <select v-model="selectedPackage.package_type" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" required>
+              <option value="">Select Package Type</option>
+              <option value="Wedding">Wedding</option>
+              <option value="Birthday">Birthday</option>
+              <option value="Debut">Debut</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Capacity</label>
+            <input type="number" v-model="selectedPackage.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Total Price</label>
+            <input type="number" v-model="selectedPackage.total_price" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Total Price" required />
+          </div>
         </div>
 
         <div class="mt-5">
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
           <textarea v-model="selectedPackage.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
         </div>
       </div>

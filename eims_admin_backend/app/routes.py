@@ -1,7 +1,21 @@
 #routes.py
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
-from .models import check_user, create_user, create_supplier, get_users_by_type, get_suppliers_with_users, update_suppliers_and_user, delete_user, update_staff, get_packages, create_package, update_package, delete_package, get_all_booked_wishlist, update_event, get_packages_wedding, get_all_venues, get_package_services_with_suppliers, get_gown_packages,create_venue, update_venue, delete_venue, get_all_gown_packages, add_gown_package, get_all_outfits, get_all_additional_services, create_additional_service, update_additional_service, get_event_types, initialize_event_types, create_event_type, get_admin_users, create_outfit, add_event_item, get_available_suppliers, get_available_venues, get_available_gown_packages, get_all_additional_services, get_event_types, get_package_details_by_id, get_user_id_by_email
+from .models import (
+    check_user, create_user, create_supplier, get_users_by_type, 
+    get_suppliers_with_users, update_suppliers_and_user, delete_user, 
+    update_staff, get_packages, create_package, update_package, 
+    delete_package, get_all_booked_wishlist, update_event, get_packages_wedding,
+    get_all_venues, get_package_services_with_suppliers, get_gown_packages,
+    create_venue, update_venue, delete_venue, get_all_gown_packages,
+    add_gown_package, get_all_outfits, get_all_additional_services,
+    create_additional_service, update_additional_service, get_event_types,
+    initialize_event_types, create_event_type, get_admin_users, create_outfit,
+    add_event_item, get_available_suppliers, get_available_venues,
+    get_available_gown_packages, get_event_types, get_package_details_by_id,
+    get_user_id_by_email, get_event_details, get_db_connection, get_event_types_count,
+    get_events_by_month_and_type
+)
 import logging
 import jwt
 from functools import wraps
@@ -693,8 +707,14 @@ def init_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-
-
+    @app.route('/api/event-types-count', methods=['GET'])
+    def get_event_types_count_route():
+        try:
+            result = get_event_types_count()
+            return jsonify(result), 200
+        except Exception as e:
+            print(f"Error in get_event_types_count_route: {str(e)}")
+            return jsonify({'error': str(e)}), 500
 
     @app.route('/wishlist', methods=['POST'])
     @jwt_required()
@@ -835,3 +855,54 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching booked wishlist: {str(e)}")
             return jsonify({'message': f'Error fetching wishlist: {str(e)}'}), 500
+
+    @app.route('/api/events/all', methods=['GET'])
+    @jwt_required()
+    def get_all_events_route():
+        try:
+            events = get_all_events()
+            return jsonify([{
+                'events_id': event['events_id'],
+                'event_name': event['event_name'],
+                'event_type': event['event_type'],
+                'schedule': event['schedule'].isoformat() if event['schedule'] else None,
+                'start_time': event['start_time'].isoformat() if event['start_time'] else None,
+                'end_time': event['end_time'].isoformat() if event['end_time'] else None,
+                'status': event['status']
+            } for event in events]), 200
+        except Exception as e:
+            logging.error(f"Error in get_all_events_route: {str(e)}")
+            return jsonify({'message': 'An error occurred while fetching events'}), 500
+
+    @app.route('/api/events/date/<date>', methods=['GET'])
+    @jwt_required()
+    def get_events_by_date_route(date):
+        try:
+            events = get_events_by_date(date)
+            return jsonify([{
+                'events_id': event['events_id']
+            } for event in events]), 200
+        except Exception as e:
+            logging.error(f"Error in get_events_by_date_route: {str(e)}")
+            return jsonify({'message': 'An error occurred while fetching events for date'}), 500
+
+    @app.route('/api/events/<int:event_id>', methods=['GET'])
+    @jwt_required()
+    def get_event_route(event_id):
+        try:
+            event_details = get_event_details(event_id)
+            if event_details:
+                return jsonify(event_details), 200
+            return jsonify({'message': 'Event not found'}), 404
+        except Exception as e:
+            logging.error(f"Error in get_event_route: {str(e)}")
+            return jsonify({'message': 'An error occurred while fetching event details'}), 500
+
+    @app.route('/api/events-by-month', methods=['GET'])
+    def get_events_by_month_route():
+        try:
+            result = get_events_by_month_and_type()
+            return jsonify(result), 200
+        except Exception as e:
+            print(f"Error in get_events_by_month_route: {str(e)}")
+            return jsonify({'error': str(e)}), 500

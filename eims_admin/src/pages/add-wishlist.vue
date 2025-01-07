@@ -687,36 +687,47 @@
             </div>
 
 
-                    <!-- Event Schedule Section -->
-                    <div class="mb-5 space-x-4">
-                    <h3 class="text-lg font-semibold mb-2">Event Schedule</h3>
-                    <input 
-                        v-model="eventSchedule.date" 
-                        type="date" 
-                        class="w-1/4 p-2 border rounded mb-2"
-                        @change="checkScheduleAvailability"
-                        :disabled="isDateBooked"
-                    >
-                    <input 
-                        v-model="eventSchedule.start_time" 
-                        type="time" 
-                        class="w-1/4 p-2 border rounded mb-2"
-                        :disabled="!eventSchedule.date || isDateBooked"
-                    >
-                    <input 
-                        v-model="eventSchedule.end_time" 
-                        type="time" 
-                        class="w-1/4 p-2 border rounded"
-                        :disabled="!eventSchedule.start_time || isDateBooked"
-                    >
-                    <p v-if="scheduleError" class="text-red-500 text-sm mt-2">{{ scheduleError }}</p>
+            <!-- Event Schedule Section -->
+            <div class="mb-5">
+                <h3 class="text-lg font-semibold mb-2">Event Schedule</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-xs text-gray-600 mb-1 block">Date</label>
+                        <input 
+                            v-model="eventSchedule.date" 
+                            type="date" 
+                            class="w-full p-2 border rounded"
+                            @change="checkScheduleAvailability"
+                            :disabled="isDateBooked"
+                        >
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-600 mb-1 block">Start Time</label>
+                        <input 
+                            v-model="eventSchedule.start_time" 
+                            type="time" 
+                            class="w-full p-2 border rounded"
+                            :disabled="!eventSchedule.date || isDateBooked"
+                        >
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-600 mb-1 block">End Time</label>
+                        <input 
+                            v-model="eventSchedule.end_time" 
+                            type="time" 
+                            class="w-full p-2 border rounded"
+                            :disabled="!eventSchedule.start_time || isDateBooked"
+                        >
+                    </div>
                 </div>
-                  
-                   <div class = "flex justify-center mb-5">
-                    <button type = "button" @click="submitWishlist" class="mt-5 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                    Add to Wishlist
-                  </button>
-                 </div>
+                <p v-if="scheduleError" class="text-red-500 text-sm mt-2">{{ scheduleError }}</p>
+            </div>
+
+            <div class = "flex justify-center mb-5">
+                <button type = "button" @click="submitWishlist" class="mt-5 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
+                  Add to Wishlist
+                </button>
+            </div>
           
  
             </div>
@@ -747,6 +758,7 @@
 <script>
 import axios from 'axios';
 import { resolveTransitionHooks } from 'vue';
+
 
 // Ensure Axios is configured to send credentials with requests globally
 axios.defaults.withCredentials = true;

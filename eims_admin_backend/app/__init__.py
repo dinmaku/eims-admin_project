@@ -1,17 +1,18 @@
 #__init__.py
 from flask import Flask
 from flask_cors import CORS
-from .routes import init_routes
-import os
 from flask_jwt_extended import JWTManager
+import os
 from .logging_config import setup_logging
+from .routes import init_routes
 
 def create_app():
     app = Flask(__name__)
-
+    
     # Set up logging
     setup_logging(app)
 
+    # Enable CORS for all routes
     CORS(app, origins=["http://localhost:5173"], methods=["GET", "POST", "PUT", "DELETE"], supports_credentials=True)
 
     # Set up the Flask-JWT-Extended configuration
@@ -22,8 +23,8 @@ def create_app():
 
     # Initialize JWT manager
     jwt = JWTManager(app)
-
-    # Initialize your routes
+    
+    # Initialize routes
     init_routes(app)
-
+    
     return app

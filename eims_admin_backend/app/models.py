@@ -331,6 +331,8 @@ def delete_user(userid):
         if cursor.rowcount == 0:
             logger.warning(f"No user found with userid {userid}")
             return False
+        
+        logger.info(f"User with userid {userid} deleted successfully.")
         return True
     except Exception as e:
         logger.error(f"Error deleting user {userid}: {e}")
@@ -738,6 +740,8 @@ def delete_package(package_id):
         if cursor.rowcount == 0:
             logger.warning(f"No package found with package_id {package_id}")
             return False
+        
+        logger.info(f"Package with package_id {package_id} deleted successfully.")
         return True
     except Exception as e:
         logger.error(f"Error deleting package {package_id}: {e}")
@@ -2098,6 +2102,126 @@ def get_event_modifications(events_id):
                 'supplier_identifier': c[4]
             } for c in customizations]
         }
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_all_events():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT events_id, event_name, event_type, schedule, 
+                   start_time, end_time, status
+            FROM events
+            ORDER BY schedule
+        """)
+        events = cursor.fetchall()
+        return events
+    except Exception as e:
+        logger.error(f"Error in get_all_events: {str(e)}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_events_by_date(date):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT events_id
+            FROM events
+            WHERE DATE(schedule) = DATE(%s)
+        """, (date,))
+        events = cursor.fetchall()
+        return events
+    except Exception as e:
+        logger.error(f"Error in get_events_by_date: {str(e)}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_event_types_count():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT event_type, COUNT(*) as count
+            FROM events
+            WHERE event_type IS NOT NULL
+            GROUP BY event_type
+            ORDER BY count DESC
+        """)
+        
+        events_count = cursor.fetchall()
+        result = []
+        for event in events_count:
+            result.append({
+                'type': event[0],  # event_type
+                'count': int(event[1])  # count
+            })
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in get_event_types_count: {str(e)}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_events_by_month_and_type():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT 
+                event_type,
+                EXTRACT(MONTH FROM schedule)::integer as month,
+                COUNT(*) as count
+            FROM events
+            WHERE event_type IS NOT NULL
+                AND EXTRACT(YEAR FROM schedule) = EXTRACT(YEAR FROM CURRENT_DATE)
+            GROUP BY event_type, EXTRACT(MONTH FROM schedule)
+            ORDER BY EXTRACT(MONTH FROM schedule), event_type
+        """)
+        
+        events_data = cursor.fetchall()
+        
+        # Get unique event types
+        cursor.execute("""
+            SELECT DISTINCT event_type
+            FROM events
+            WHERE event_type IS NOT NULL
+            ORDER BY event_type
+        """)
+        event_types = [row[0] for row in cursor.fetchall()]
+        
+        # Process the data
+        months = list(range(1, 13))  # 1 to 12
+        result = {
+            'months': months,
+            'eventTypes': event_types,
+            'data': {}
+        }
+        
+        # Initialize data structure
+        for event_type in event_types:
+            result['data'][event_type] = [0] * 12  # Initialize with zeros for all months
+        
+        # Fill in the actual counts
+        for row in events_data:
+            event_type, month, count = row
+            # Adjust month index to 0-based for array
+            month_index = int(month) - 1
+            result['data'][event_type][month_index] = int(count)
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in get_events_by_month_and_type: {str(e)}")
+        raise
     finally:
         cursor.close()
         conn.close()
