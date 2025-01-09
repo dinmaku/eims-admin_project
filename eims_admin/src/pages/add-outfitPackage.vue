@@ -17,11 +17,11 @@
     <div class="flex flex-row justify-end items-center m-5 my-7">
         <button class = "mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
         transition-transform duration-300 transform hover:scale-105" @click="addOutfitsPackageBtn">
-        + Add Package
+        Create Package
         </button>
 		<button class = "mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
         transition-transform duration-300 transform hover:scale-105" @click="addOutfitsBtn">
-        + Add Outfits
+        Add Outfit
         </button>
     </div>
     
@@ -49,9 +49,9 @@
                                     <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(gownPackage.gown_package_price) }} php</td> 
                                     <td class="px-1 py-3 hidden sm:table-cell">
                                         <button
-                                            class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
+                                            class="h-8 w-14 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
                                             @click="editGownPackageBtn(index)">
-                                            Edit
+                                            Update
                                         </button>
                                     </td>
                                 </tr>
@@ -114,55 +114,51 @@
 
                     <!-- Outfit Selection Buttons -->
                     <div class="flex justify-center space-x-4 my-6">
-                        <button
-                            @click="openModal('gown')"
+                        <button  @click="openOutfitSelection"
                             type="button"
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
                         >
-                            Add Gown
-                        </button>
-                        <button
-                            @click="openModal('tuxedo')"
-                            type="button"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
-                        >
-                            Add Tuxedo
+                            Add Outfits
                         </button>
                     </div>
 
                     
-        <!-- Inclusions Table -->
-        <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Inclusions</h3>
-            <div class="border rounded-lg" style="height: 150px; overflow-y: auto;">
-                <table class="w-full">
-                    <thead class="bg-gray-200 sticky top-0 z-10">
-                        <tr>
-                            <th class="p-2 text-left">Type</th>
-                            <th class="p-2 text-left">Name</th>
-                            <th class="p-2 text-left">Price</th>
-                            <th class="p-2 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="item in inclusions"
-                            :key="item.id"
-                            class="hover:bg-gray-100 border-t"
-                        >
-                            <td class="p-2 text-sm capitalize">{{ item.type }}</td>
-                            <td class="p-2 text-sm">{{ item.name }}</td>
-                            <td class="p-2 text-sm">{{ formatPrice(item.price) }} php</td>
-                            <td class="p-2 text-sm">
-                                <button
-                                    @click="removeInclusion(item.id)"
-                                    class="text-red-500 hover:underline"
+            <!-- Inclusions Table -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Inclusions</h3>
+                <div class="border rounded-lg" style="height: 150px; overflow-y: auto;">
+                    <table class="w-full">
+                        <thead class="bg-gray-200 sticky top-0 z-10">
+                            <tr>
+                                <th class="p-2 text-left">Type</th>
+                                <th class="p-2 text-left">Name</th>
+                                <th class="p-2 text-left">Price</th>
+                                <th class="p-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="item in packageInclusions"
+                                :key="item.outfit_id"
+                                class="hover:bg-gray-100 border-t"
+                            >
+                                <td class="p-2 text-sm capitalize">{{ item.outfit_type }}</td>
+                                <td class="p-2 text-sm">{{ item.outfit_name }}</td>
+                                <td class="p-2 text-sm">{{ formatPrice(item.rent_price) }} php</td>
+                                <td class="p-2 text-sm">
+                                    <button
+                                    @click="removeInclusion(item.outfit_id)"
+                                    class="rounded p-1 hover:bg-red-100"
                                 >
-                                    Remove
+                                    <img 
+                                        src="/img/delete.png"
+                                        alt="Remove"
+                                        class="w-4 h-4"
+                                    />
                                 </button>
-                            </td>
-                        </tr>
-                    </tbody>
+                                </td>
+                            </tr>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -187,13 +183,13 @@
                                 class="w-20 px-2 py-1 border rounded"
                             >
                         </div>
-                        <span class="font-semibold text-red-500">- ₱ {{ formatPrice(calculateDiscount()) }}</span>
+                        <span class="font-semibold ">- ₱ {{ formatPrice(calculateDiscount()) }}</span>
                     </div>
 
                     <!-- Total -->
                     <div class="flex justify-between items-center mt-4 pt-2 border-t">
                         <span class="text-lg font-bold">Total:</span>
-                        <span class="text-lg font-bold text-green-600">₱ {{ formatPrice(calculateTotal()) }}</span>
+                        <span class="text-lg font-bold ">₱ {{ formatPrice(calculateTotal()) }}</span>
                     </div>
                 </div>
 
@@ -210,81 +206,67 @@
                             type="submit"
                             class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
                         >
-                            Save Package
+                            Save
                         </button>
                     </div>
                 </div>
             </form>
 
-            <div
-            v-if="showModal"
-            class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            @click.self="closeModal"
-        >
-            <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-xl">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 capitalize">
-                    Select {{ modalType }}
-                </h3>
-                <form class="flex items-center w-[300px] mt-9 mb-2">
-                <label for="voice-search" class="sr-only">Search</label>
-                <div class="relative w-full">
-                    <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                    <svg aria-hidden="true" class="w-5 h-auto text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                    </svg>
+            <!-- Outfit Selection Modal -->
+            <div v-if="showOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-xl">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Select Outfits</h3>
+                    
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <input
+                            type="text"
+                            v-model="searchQuery"
+                            placeholder="Search outfits..."
+                            class="w-full px-4 py-2 border rounded-lg"
+                        >
                     </div>
-                    <input 
-                        type="text" 
-                        id="outfit-search" 
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" 
-                        placeholder="Search Outfits..." 
-                        v-model="outfitSearchTerm"
-                    >
-                    <router-link to="/" class="flex absolute inset-y-0 right-0 items-center pr-3">
-                    <svg aria-hidden="true" class="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    </svg>
-                    </router-link>
-                </div>
-            </form>
-                <div class="max-h-64 overflow-y-auto border border-gray-300 rounded-lg">
-                    <table class="w-full">
-                        <thead class="bg-gray-200">
+
+                    <!-- Combined Outfits Table -->
+                    <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
                             <tr>
-                                <th class="p-2 text-left">Name</th>
-                                <th class="p-2 text-left">Price</th>
-                                <th class="p-2 text-left">Actions</th>
+                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Type</th>
+                                <th class="px-4 py-2">Price</th>
+                                <th class="px-4 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                v-for="outfit in getOutfits(modalType)"
-                                :key="outfit.id"
-                                class="hover:bg-gray-100"
-                            >
-                                <td class="p-2 text-sm">{{ outfit.name }}</td>
-                                <td class="p-2 text-sm">{{ formatPrice(outfit.price) }} php</td>
-                                <td class="p-2 text-sm">
-                                    <button
-                                        @click="addInclusion(outfit, modalType)"
-                                        class="text-blue-500 hover:underline"
-                                    >
-                                        Add
-                                    </button>
-                                </td>
-                            </tr>
+                            <tr v-for="outfit in filteredOutfits" :key="outfit.outfit_id">
+                            <td class="px-4 py-2">{{ outfit.outfit_name }}</td>
+                            <td class="px-4 py-2 capitalize">{{ outfit.outfit_type }}</td>
+                            <td class="px-4 py-2">₱{{ formatPrice(outfit.rent_price) }}</td>
+                            <td class="px-4 py-2">
+                                <button
+                                    @click="toggleOutfitSelection(outfit)"
+                                    class="rounded p-1"
+                                >
+                                    <img 
+                                        :src="isOutfitSelected(outfit.outfit_id) ? '/img/delete.png' : '/img/inlcude.png'" 
+                                        :alt="isOutfitSelected(outfit.outfit_id) ? 'Remove' : 'Add'"
+                                        class="w-6 h-6"
+                                    />
+                                </button>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button
-                        @click="closeModal"
-                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow-sm hover:bg-gray-400"
-                    >
-                        Close
-                    </button>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <button @click="closeOutfitModal" class="text-gray-600 hover:text-gray-800">
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
 
 
@@ -431,16 +413,48 @@
             <div class="m-5">
                 <span>{{ errorMessage }}</span>
 
-                <!-- Outfit Name -->
-                <div class="flex flex-row mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_name" placeholder="Outfit Name" required>
-                    <!-- Outfit Type -->
-                    <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_type" required>
-                        <option value="" disabled selected>Outfit Type</option>
-                        <option value="Tuxedo">Tuxedo</option>
-                        <option value="Gown">Gown</option>   
-                    </select>
-                </div>
+        <!-- Outfit Name -->
+            <div class="flex flex-row mt-5">
+                <input type="text" 
+                    class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
+                    v-model="newOutfit.outfit_name" 
+                    placeholder="Outfit Name" 
+                    required>
+                        <!-- Outfit Type -->
+                        <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
+                                v-model="newOutfit.outfit_type" 
+                                required>
+                            <option value="" disabled selected>Outfit Type</option>
+                            <option value="Wedding Gown">Wedding Gown</option>
+                            <option value="Saree">Saree</option>
+                            <option value="Lehenga">Lehenga</option>
+                            <option value="Suit">Suit</option>
+                            <option value="Jumpsuit">Jumpsuit</option>
+                            <option value="Reception Dress">Reception Dress</option>
+                            <option value="Bridal Robe">Bridal Robe</option>
+                            <option value="Tuxedo">Tuxedo</option>
+                            <option value="Sherwani">Sherwani</option>
+                            <option value="Kurta Pajama">Kurta Pajama</option>
+                            <option value="Bespoke Tailored Outfit">Bespoke Tailored Outfit</option>
+                            <option value="Barong Tagalog">Barong Tagalog</option>
+                            <option value="Morning Coat">Morning Coat</option>
+                            <option value="Bridesmaid Dress">Bridesmaid Dress</option>
+                            <option value="Cultural Attire">Cultural Attire</option>
+                            <option value="Mix-and-Match Dress">Mix-and-Match Dress</option>
+                            <option value="Flower Girl Dress">Flower Girl Dress</option>
+                            <option value="Ring Bearer Suit">Ring Bearer Suit</option>
+                            <option value="Formal Attire">Formal Attire</option>
+                            <option value="Semi-Formal Attire">Semi-Formal Attire</option>
+                            <option value="Traditional/Tribal Wear">Traditional/Tribal Wear</option>
+                            <option value="Engagement Outfit">Engagement Outfit</option>
+                            <option value="Rehearsal Dinner Attire">Rehearsal Dinner Attire</option>
+                            <option value="Haldi Ceremony Outfit">Haldi Ceremony Outfit</option>
+                            <option value="Mehndi Ceremony Outfit">Mehndi Ceremony Outfit</option>
+                            <option value="Cocktail Party Wear">Cocktail Party Wear</option>
+                            <option value="Destination Wedding Attire">Destination Wedding Attire</option>
+                            <option value="Seasonal Attire">Seasonal Attire</option>
+                        </select>
+                    </div>
 
                 <!-- Outfit Color -->
                 <div class="flex flex-row mt-5">
@@ -609,7 +623,18 @@
 
             showOutfitPackageForm: false,
             outfitSearchTerm: '',
-            
+            showOutfitModal: false,
+            searchQuery: '',
+            outfits: [],
+
+            packageInclusions: [],
+            packageDetails: {
+                name: '',
+                description: '',
+                discount: 0
+            }
+        
+                
 
         };
     },
@@ -626,14 +651,13 @@
         totalGownPackagePages() {
             return Math.ceil(this.gownPackages.length / this.rowsPerGownPackagePage);
         },
-		filteredOutfits() {
-            if (!this.outfitSearchTerm) return this.outfits;
-            const searchTerm = this.outfitSearchTerm.toLowerCase();
-            return this.outfits.filter(outfit => {
-                return outfit.outfit_name.toLowerCase().includes(searchTerm) ||
-                    outfit.outfit_description.toLowerCase().includes(searchTerm) ||
-                    outfit.outfit_type.toLowerCase().includes(searchTerm);
-            });
+        filteredOutfits() {
+            if (!this.searchQuery) return this.outfits;
+            const query = this.searchQuery.toLowerCase();
+            return this.outfits.filter(outfit => 
+                outfit.outfit_name.toLowerCase().includes(query) || 
+                outfit.outfit_type.toLowerCase().includes(query)
+            );
         },
     },
     methods: {
@@ -733,70 +757,66 @@
 
     
         async submitPackage() {
-            try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    alert('You are not logged in. Please log in to add a package.');
-                    return;
+                try {
+                    const token = localStorage.getItem('access_token');
+                    if (!token) {
+                        alert('You are not logged in. Please log in to add a package.');
+                        return;
+                    }
+
+                    // Check if package has a name
+                    if (!this.packageDetails.name) {
+                        this.errorMessage = "Please enter a package name";
+                        return;
+                    }
+
+                    // Check if at least one outfit is included
+                    if (this.packageInclusions.length === 0) {
+                        this.errorMessage = "Please add at least one outfit to the package";
+                        return;
+                    }
+
+                    // Prepare the package data
+                    const packageData = {
+                        gown_package_name: this.packageDetails.name,
+                        description: this.packageDetails.description || '',
+                        outfits: this.packageInclusions.map(item => item.outfit_id),  // Changed from item.id
+                        discount: this.packageDetails.discount || 0
+                    };
+
+                    console.log('Sending data:', packageData);
+
+                    const response = await axios.post('http://127.0.0.1:5000/add-gown-package', packageData, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        withCredentials: true,
+                    });
+
+                    alert('Package added successfully');
+                    
+                    // Reset form
+                    this.packageDetails = {
+                        name: '',
+                        description: '',
+                        discount: 0
+                    };
+                    this.packageInclusions = [];  // Changed from inclusions
+                    this.selectedOutfits = [];    // Added this to clear selected outfits
+                    this.showOutfitPackageForm = false;
+                    this.errorMessage = '';
+                    
+                    await this.fetchGownPackages();
+                } catch (error) {
+                    console.error('Error details:', {
+                        message: error.message,
+                        response: error.response?.data,
+                        status: error.response?.status
+                    });
+                    this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
                 }
-
-                // Check if package has a name
-                if (!this.packageDetails.name) {
-                    this.errorMessage = "Please enter a package name";
-                    return;
-                }
-
-                // Check if at least one outfit is included
-                if (this.inclusions.length === 0) {
-                    this.errorMessage = "Please add at least one outfit to the package";
-                    return;
-                }
-
-                // Calculate total price (for frontend display only)
-                const totalPrice = this.calculateTotal();
-
-                // Prepare the package data - just send outfit IDs as an array
-                const packageData = {
-                    gown_package_name: this.packageDetails.name,
-                    description: this.packageDetails.description || '',
-                    outfits: this.inclusions.map(item => item.id)  // Just send array of IDs
-                };
-
-                // Log the data to be sent to the server
-                console.log('Sending data:', packageData);
-
-                const response = await axios.post('http://127.0.0.1:5000/add-gown-package', packageData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    withCredentials: true,
-                });
-
-                alert('Package added successfully');
-                
-                // Reset form after successful addition
-                this.packageDetails = {
-                    name: '',
-                    description: '',
-                    discount: 0
-                };
-                this.inclusions = [];
-                this.showOutfitPackageForm = false;
-                this.errorMessage = '';
-                
-                // Refresh the packages list
-                await this.fetchGownPackages();
-            } catch (error) {
-                console.error('Error details:', {
-                    message: error.message,
-                    response: error.response?.data,
-                    status: error.response?.status
-                });
-                this.errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
-            }
-        },
-
+            },
         updateFileName(event) {
             const fileInput = event.target;
             const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file selected";
@@ -838,19 +858,7 @@
             this.addOutfitsPackageForm = false;
             this.newGownPackage = {};
         },
-        toggleSelection(outfitId, type) {
-            const selectedArray = type === 'gown' ? this.selectedGowns : this.selectedTuxedos;
-            const index = selectedArray.indexOf(outfitId);
-            
-            if (index > -1) {
-                // If already selected, remove it
-                selectedArray.splice(index, 1);
-            } else {
-                // If not selected, add it
-                selectedArray.push(outfitId);
-            }
-        },
-
+       
         formatPrice(price) {
             if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
                 return 'N/A'; // Return a fallback if price is invalid
@@ -964,14 +972,7 @@
             getOutfits() {
                 return this.currentOutfitType === 'gown' ? this.gowns : this.tuxedos;
             },
-            toggleOutfitSelection(outfitId) {
-                const index = this.selectedOutfits.indexOf(outfitId);
-                if (index > -1) {
-                    this.selectedOutfits.splice(index, 1);
-                } else {
-                    this.selectedOutfits.push(outfitId);
-                }
-            },
+      
             addOutfitToPackage() {
                 // Logic to push selected outfits into the inclusion table
                 console.log('Selected Outfits:', this.selectedOutfits);
@@ -1012,31 +1013,47 @@
                 }
                 this.closeModal();
             },
-            removeInclusion(id) {
-                this.inclusions = this.inclusions.filter(item => item.id !== id);
+            removeInclusion(outfitId) {
+                // Remove from packageInclusions
+                const index = this.packageInclusions.findIndex(item => item.outfit_id === outfitId);
+                if (index !== -1) {
+                    this.packageInclusions.splice(index, 1);
+                }
+                
+                // Remove from selectedOutfits
+                const selectedIndex = this.selectedOutfits.findIndex(item => item.outfit_id === outfitId);
+                if (selectedIndex !== -1) {
+                    this.selectedOutfits.splice(selectedIndex, 1);
+                }
+                
+                // Update total
+                this.calculateTotal();
             },
 
             closePackageForm() {
-                this.showOutfitPackageForm = false;  // Hide the form
+                this.showOutfitPackageForm = false;
                 this.packageDetails = {
                     name: '',
-                    description: ''
+                    description: '',
+                    discount: 0
                 };
-                this.inclusions = [];
+                this.packageInclusions = [];
+                this.selectedOutfits = [];
             },
 
             calculateSubtotal() {
-                return this.inclusions.reduce((total, item) => total + Number(item.price), 0);
+                return this.packageInclusions.reduce((total, item) => total + Number(item.rent_price), 0);
             },
 
             calculateDiscount() {
                 const subtotal = this.calculateSubtotal();
-                return (subtotal * this.packageDetails.discount) / 100;
+                return (subtotal * (this.packageDetails.discount || 0)) / 100;
             },
 
             calculateTotal() {
                 return this.calculateSubtotal() - this.calculateDiscount();
             },
+                    
 
             formatPrice(price) {
                 return Number(price).toFixed(2);
@@ -1050,6 +1067,56 @@
             // Ensure price is treated as a number, round to 2 decimal places, and format with commas
             return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         },
+
+        openOutfitSelection() {
+        this.showOutfitModal = true;
+        this.fetchOutfits();
+    },
+    closeOutfitModal() {
+        this.showOutfitModal = false;
+        this.searchQuery = '';
+    },
+   
+ 
+    isOutfitSelected(outfitId) {
+        return this.selectedOutfits.some(outfit => outfit.outfit_id === outfitId);
+    },
+    toggleOutfitSelection(outfit) {
+        const index = this.selectedOutfits.findIndex(item => item.outfit_id === outfit.outfit_id);
+        if (index === -1) {
+            // Add to selectedOutfits array
+            this.selectedOutfits.push(outfit);
+            
+            // Add to package inclusions
+            this.packageInclusions.push({
+                outfit_id: outfit.outfit_id,
+                outfit_name: outfit.outfit_name,
+                outfit_type: outfit.outfit_type,
+                rent_price: outfit.rent_price,
+                quantity: 1
+            });
+            
+            // Update total
+            this.calculateTotal();
+            
+            // Close the modal
+            this.closeOutfitModal();
+        } else {
+            // Remove from selectedOutfits array
+            this.selectedOutfits.splice(index, 1);
+            
+            // Remove from package inclusions
+            const inclusionIndex = this.packageInclusions.findIndex(item => item.outfit_id === outfit.outfit_id);
+            if (inclusionIndex !== -1) {
+                this.packageInclusions.splice(inclusionIndex, 1);
+            }
+            
+            // Update total
+            this.calculateTotal();
+        }
+    },
+
+ 
                         
 
     

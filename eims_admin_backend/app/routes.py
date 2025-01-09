@@ -13,8 +13,10 @@ from .models import (
     initialize_event_types, create_event_type, get_admin_users, create_outfit,
     add_event_item, get_available_suppliers, get_available_venues,
     get_available_gown_packages, get_event_types, get_package_details_by_id,
-    get_user_id_by_email, get_event_details, get_db_connection, get_event_types_count,
-    get_events_by_month_and_type
+    get_user_id_by_email, get_event_details, get_db_connection, get_events_by_month_and_type,
+    get_inactive_suppliers, get_inactive_venues, toggle_venue_status, update_venue_price,
+    get_inactive_additional_services, toggle_additional_service_status, update_additional_service_price,
+    add_supplier_social_media
 )
 import logging
 import jwt
@@ -221,54 +223,78 @@ def init_routes(app):
         
 
     @app.route('/edit-supplier/<int:supplier_id>', methods=['PUT'])
-    @jwt_required()  # Authentication required
+    @jwt_required()
     def edit_supplier(supplier_id):
         try:
-            data = request.get_json(force=True, silent=True) or {}
+            data = request.get_json()
             app.logger.info(f"Received data: {data}")  # Log incoming data
-            print(data)
 
-            # Extract and validate supplier-specific fields
-            service = data.get('service')
-            price = data.get('price')
-            if not all([service, price]):
-                return jsonify({"message": "Supplier-specific fields 'service' and 'price' are required"}), 400
+            # Get existing supplier data
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-            # Extract and validate user-specific fields
-            firstname = data.get('firstname')
-            lastname = data.get('lastname')
-            email = data.get('email')
-            username = data.get('username')
-            contactnumber = data.get('contactnumber')
-            password = data.get('password')
-            userid = data.get('userid')  # Make sure you extract userid from the request
+            # First, get the existing supplier data
+            cursor.execute("SELECT service FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+            supplier_data = cursor.fetchone()
 
-            if not all([firstname, lastname, username, email, contactnumber, password, userid]):
-                return jsonify({"message": "All user fields are required"}), 400
+            if not supplier_data:
+                return jsonify({"message": "Supplier not found"}), 404
 
-            # Log the fields to check if they match expectations
-            app.logger.info(f"Fields: firstname={firstname}, lastname={lastname}, username={username}, email={email}, contactnumber={contactnumber}, password={password}, userid={userid}")
+            existing_service = supplier_data[0]
 
-            # Assuming `update_suppliers_and_user` is a valid function
-            if update_suppliers_and_user(
-                supplier_id=supplier_id, service=service, price=price,
-                firstname=firstname, lastname=lastname, email=email,
-                contactnumber=contactnumber, username=username, password=password, userid=userid
-            ):
-                return jsonify({"message": "Supplier and user details updated successfully"}), 200
+            # If only price is being updated, use existing service
+            if 'price' in data and len(data) == 1:
+                cursor.execute(
+                    "UPDATE suppliers SET price = %s WHERE supplier_id = %s",
+                    (data['price'], supplier_id)
+                )
             else:
-                return jsonify({"message": "Failed to update supplier or user. Record not found or database error occurred."}), 404
+                # Handle full supplier update
+                if 'service' not in data or 'price' not in data:
+                    return jsonify({"message": "Supplier-specific fields 'service' and 'price' are required"}), 400
+
+                cursor.execute(
+                    "UPDATE suppliers SET service = %s, price = %s WHERE supplier_id = %s",
+                    (data['service'], data['price'], supplier_id)
+                )
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            return jsonify({"message": "Supplier updated successfully"}), 200
 
         except Exception as e:
             app.logger.error(f"Error in edit_supplier route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
 
+    @app.route('/edit-supplier-rate/<int:supplier_id>', methods=['PUT'])
+    @jwt_required()
+    def update_supplier_rate(supplier_id):
+        try:
+            data = request.get_json()
+            price = data.get('price')
+            
+            if price is None:
+                return jsonify({'message': 'Price is required'}), 400
 
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
+            cursor.execute(
+                "UPDATE suppliers SET price = %s WHERE supplier_id = %s",
+                (price, supplier_id)
+            )
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
 
+            return jsonify({'message': 'Supplier rate updated successfully'}), 200
 
-
-
+        except Exception as e:
+            app.logger.error(f"Error updating supplier rate: {e}")
+            return jsonify({'message': 'An error occurred while updating supplier rate'}), 500
 
     @app.route('/created-users/<int:userid>', methods=['PUT'])
     @jwt_required()  # Authentication required
@@ -482,21 +508,25 @@ def init_routes(app):
     @app.route('/venues', methods=['POST'])
     @jwt_required()
     def add_venue():
-        data = request.get_json()
-        venue_name = data.get('venue_name')
-        location = data.get('location')
-        venue_price = data.get('venue_price')
-        venue_capacity = data.get('venue_capacity')
-        description = data.get('description')
-
-        if not all([venue_name, location, venue_price, venue_capacity]):
-            return jsonify({'message': 'Missing required fields'}), 400
-
         try:
-            create_venue(venue_name, location, venue_price, venue_capacity, description)
-            return jsonify({'message': 'Venue added successfully'}), 201
+            data = request.get_json()
+            venue_name = data.get('venue_name')
+            location = data.get('location')
+            description = data.get('description')
+            venue_capacity = data.get('venue_capacity')
+
+            if not all([venue_name, location, description, venue_capacity]):
+                return jsonify({'message': 'Missing required fields'}), 400
+
+            success = create_venue(venue_name, location, description, venue_capacity)
+            if success:
+                return jsonify({'message': 'Venue added successfully'}), 200
+            else:
+                return jsonify({'message': 'Failed to add venue'}), 400
+
         except Exception as e:
-            return jsonify({'message': str(e)}), 500
+            app.logger.error(f"Error adding venue: {e}")
+            return jsonify({'message': 'An error occurred while adding the venue'}), 500
 
     @app.route('/venues/<int:venue_id>', methods=['PUT'])
     @jwt_required()
@@ -530,6 +560,51 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching packages: {e}")
             return jsonify({'message': 'An error occurred while fetching packages'}), 500
+
+    @app.route('/inactive-venues', methods=['GET'])
+    @jwt_required()
+    def get_inactive_venues_route():
+        try:
+            venues = get_inactive_venues()
+            return jsonify(venues), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching inactive venues: {e}")
+            return jsonify({'message': 'An error occurred while fetching inactive venues'}), 500
+
+    @app.route('/toggle-venue-status/<int:venue_id>', methods=['PUT'])
+    @jwt_required()
+    def toggle_venue_status_route(venue_id):
+        try:
+            success, result = toggle_venue_status(venue_id)
+            if success:
+                return jsonify({
+                    'message': 'Venue status updated successfully',
+                    'new_status': result
+                }), 200
+            else:
+                return jsonify({'message': result}), 400
+        except Exception as e:
+            app.logger.error(f"Error updating venue status: {e}")
+            return jsonify({'message': 'An error occurred while updating venue status'}), 500
+
+    @app.route('/update-venue-price/<int:venue_id>', methods=['PUT'])
+    @jwt_required()
+    def update_venue_price_route(venue_id):
+        try:
+            data = request.get_json()
+            price = data.get('price')
+            
+            if price is None:
+                return jsonify({"message": "Price is required"}), 400
+                
+            success = update_venue_price(venue_id, price)
+            if success:
+                return jsonify({"message": "Venue price updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update venue price"}), 400
+        except Exception as e:
+            app.logger.error(f"Error updating venue price: {e}")
+            return jsonify({"message": "An error occurred while updating venue price"}), 500
 
 
 #routes for outfit packages
@@ -606,50 +681,34 @@ def init_routes(app):
 
 #additional services routes
 
-    @app.route('/additional-services', methods=['GET'])
+    @app.route('/additional-services', methods=['GET', 'POST'])
     @jwt_required()
-    def get_additional_services_route():
-        try:
-            services = get_all_additional_services()
-            return jsonify(services), 200
-        except Exception as e:
-            app.logger.error(f"Error fetching additional services: {str(e)}")
-            return jsonify({'message': 'An error occurred while fetching additional services'}), 500
+    def additional_services_route():
+        if request.method == 'GET':
+            try:
+                services = get_all_additional_services()
+                return jsonify(services), 200
+            except Exception as e:
+                app.logger.error(f"Error fetching additional services: {str(e)}")
+                return jsonify({'message': 'An error occurred while fetching additional services'}), 500
+        elif request.method == 'POST':
+            try:
+                data = request.get_json(force=True, silent=True) or {}
+                add_service_name = data.get('add_service_name')
+                add_service_description = data.get('add_service_description')
 
-    @app.route('/created-services', methods=['GET'])
-    @jwt_required()
-    def get_services_route():
-        try:
-            services = get_all_additional_services()
-            return jsonify(services), 200
-        except Exception as e:
-            app.logger.error(f"Error fetching services: {e}")
-            return jsonify({'message': 'An error occurred while fetching services'}), 500
+                if not all([add_service_name, add_service_description]):
+                    return jsonify({"error": "All fields are required: add_service_name, add_service_description"}), 400
 
-    @app.route('/create-service', methods=['POST'])
-    @jwt_required()
-    def create_service_route():
-        try:
-            data = request.get_json(force=True, silent=True) or {}
-            add_service_name = data.get('add_service_name')
-            add_service_description = data.get('add_service_description')
-            add_service_price = data.get('add_service_price')
+                success = create_additional_service(add_service_name, add_service_description)
 
-            if not all([add_service_name, add_service_description, add_service_price]):
-                return jsonify({"error": "All fields are required: add_service_name, add_service_description, add_service_price"}), 400
-
-            if not isinstance(add_service_price, (int, float)) or add_service_price <= 0:
-                return jsonify({"error": "Service price must be a positive number"}), 400
-
-            success = create_additional_service(add_service_name, add_service_description, add_service_price)
-
-            if success:
-                return jsonify({"message": "Service created successfully"}), 201
-            else:
-                return jsonify({"error": "Failed to create service"}), 500
-        except Exception as e:
-            app.logger.error(f"Error in /create-service route: {e}")
-            return jsonify({"error": "An internal server error occurred"}), 500
+                if success:
+                    return jsonify({"message": "Service created successfully"}), 200
+                else:
+                    return jsonify({"error": "Failed to create service"}), 500
+            except Exception as e:
+                app.logger.error(f"Error in /additional-services POST route: {e}")
+                return jsonify({"error": "An internal server error occurred"}), 500
 
     @app.route('/update-service/<int:add_service_id>', methods=['PUT'])
     @jwt_required()
@@ -906,3 +965,117 @@ def init_routes(app):
         except Exception as e:
             print(f"Error in get_events_by_month_route: {str(e)}")
             return jsonify({'error': str(e)}), 500
+
+    @app.route('/toggle-supplier-status/<int:supplier_id>', methods=['PUT'])
+    @jwt_required()
+    def toggle_supplier_status(supplier_id):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # First get current status
+            cursor.execute("SELECT status FROM suppliers WHERE supplier_id = %s", (supplier_id,))
+            current_status = cursor.fetchone()
+
+            if not current_status:
+                return jsonify({"message": "Supplier not found"}), 404
+
+            # Toggle the status
+            new_status = 'Inactive' if current_status[0] == 'Active' else 'Active'
+            
+            cursor.execute(
+                "UPDATE suppliers SET status = %s WHERE supplier_id = %s",
+                (new_status, supplier_id)
+            )
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            return jsonify({
+                'message': 'Supplier status updated successfully',
+                'new_status': new_status
+            }), 200
+
+        except Exception as e:
+            app.logger.error(f"Error updating supplier status: {e}")
+            return jsonify({'message': 'An error occurred while updating supplier status'}), 500
+
+    @app.route('/inactive-suppliers', methods=['GET'])
+    @jwt_required()
+    def get_inactive_suppliers_route():
+        try:
+            suppliers = get_inactive_suppliers()
+            return jsonify(suppliers), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching inactive suppliers: {e}")
+            return jsonify({'message': 'An error occurred while fetching inactive suppliers'}), 500
+
+    @app.route('/inactive-additional-services', methods=['GET'])
+    @jwt_required()
+    def get_inactive_additional_services_route():
+        try:
+            services = get_inactive_additional_services()
+            return jsonify(services), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching inactive additional services: {e}")
+            return jsonify({'message': 'An error occurred while fetching inactive additional services'}), 500
+
+    @app.route('/toggle-additional-service-status/<int:service_id>', methods=['PUT'])
+    @jwt_required()
+    def toggle_additional_service_status_route(service_id):
+        try:
+            success = toggle_additional_service_status(service_id)
+            if success:
+                return jsonify({'message': 'Additional service status updated successfully'}), 200
+            else:
+                return jsonify({'message': 'Failed to update additional service status'}), 400
+        except Exception as e:
+            app.logger.error(f"Error updating additional service status: {e}")
+            return jsonify({'message': 'An error occurred while updating additional service status'}), 500
+
+    @app.route('/update-additional-service-price/<int:service_id>', methods=['PUT'])
+    @jwt_required()
+    def update_additional_service_price_route(service_id):
+        try:
+            data = request.get_json()
+            price = data.get('price')
+            
+            if price is None:
+                return jsonify({"message": "Price is required"}), 400
+                
+            success = update_additional_service_price(service_id, price)
+            if success:
+                return jsonify({"message": "Additional service price updated successfully"}), 200
+            else:
+                return jsonify({"message": "Failed to update additional service price"}), 400
+        except Exception as e:
+            app.logger.error(f"Error updating additional service price: {e}")
+            return jsonify({"message": "An error occurred while updating additional service price"}), 500
+
+    @app.route('/add-supplier-social-media', methods=['POST'])
+    @jwt_required()
+    def add_supplier_social_media_route():
+        try:
+            data = request.get_json()
+            supplier_id = data.get('supplier_id')
+            platform = data.get('platform')
+            handle = data.get('handle')
+            url = data.get('url')
+
+            if not all([supplier_id, platform, handle]):
+                return jsonify({'error': 'Missing required fields'}), 400
+
+            success, social_media_id = add_supplier_social_media(supplier_id, platform, handle, url)
+
+            if success:
+                return jsonify({
+                    'message': 'Social media added successfully',
+                    'social_media_id': social_media_id
+                }), 200
+            else:
+                return jsonify({'error': 'Failed to add social media'}), 500
+
+        except Exception as e:
+            app.logger.error(f"Error adding social media: {str(e)}")
+            return jsonify({'error': 'Failed to add social media'}), 500

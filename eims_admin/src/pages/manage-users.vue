@@ -4,6 +4,11 @@
     <h1 class="font-amaticBold font-extraLight text-3xl">
     Accounts
   </h1>
+    <button class="bg-[#9B111E] text-white px-3 py-2 rounded shadow-lg 
+    transition-transform duration-300 transform hover:scale-105 font-semibold"
+    @click="showInactiveSuppliers">
+      Inactive Suppliers
+    </button>
   </div>
 
   <div class="flex flex-row items-center m-5 space-x-5">
@@ -36,7 +41,7 @@
         </form>
 </div>
 
-<div class="flex flex-row justify-between items-center m-5 my-5">
+<div class="flex flex-row justify-between items-center m-5 space-x-5">
   <div class = "flex">
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
@@ -60,7 +65,7 @@
 </div>
 <button class = "mr-2 w-32 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
 transition-transform duration-300 transform hover:scale-105" @click="addUserBtn">
- + Add Account
+  Add Account
 </button>
 </div>
 
@@ -92,11 +97,33 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.service }}</td>
                     <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(supplier.price) }} php</td>
                     <td class="px-1 py-3 hidden sm:table-cell">
-                        <button
-                            class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" 
-                            @click="editSupplierBtn(index)">
-                            Edit
-                        </button>
+                        <div class="flex items-center space-x-1">
+                            <button
+                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                @click="editSupplierBtn(index)"
+                                title="Edit">
+                                <img src="/img/update.png" alt="Edit" class="w-6 h-6">
+                            </button>
+                        
+                            <button
+                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                @click="toggleSupplierStatus(supplier)"
+                                title="Set Inactive">
+                                <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
+                            </button>
+                            <button
+                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                @click="showRateModal = true; selectedSupplier = supplier"
+                                title="Set Rate">
+                                <img src="/img/rate.png" alt="Set Rate" class="w-6 h-6">
+                            </button>
+                            <button
+                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                @click="addSocialMediaModal(supplier)"
+                                title="Add Social Media">
+                                <img src="/img/social-media.png" alt="Add Social Media" class="w-6 h-6">
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -144,9 +171,11 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
           <td class="px-1 py-3 hidden sm:table-cell">{{ staff.position }}</td>
 
           <td class="px-1 py-3 hidden sm:table-cell">
-            <button class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
-            @click="editStaffBtn(index)">
-                Edit
+            <button class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" 
+            @click="editStaffBtn(index)" 
+            title="Update Staff">
+            <img src="/img/update.png" alt="Update" class="w-6 h-6">
+           
               </button>
           </td>
         </tr>
@@ -211,42 +240,47 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
     </div>
     <div class="border border-gray-500 mt-5 items-center"></div>
     <div class="m-5">
-      <span class = "text-red-500">* {{ errorMessage }}</span>
+      <span class = "text-red-500"> {{ errorMessage }}</span>
       <!-- First Name and Last Name -->
       <div class="flex flex-row">
-        <div class="flex items-center space-x-2">
-          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="firstName" placeholder="First Name" required>
+        <div class="flex flex-col space-y-1 w-full">
+          <label class="text-xs text-gray-600 ml-2">First Name</label>
+          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="firstName" placeholder="First Name" required>
         </div>
-        <div class="flex items-center space-x-2">
-          <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="lastName" placeholder="Last Name" required>
+        <div class="flex flex-col space-y-1 w-full ml-2">
+          <label class="text-xs text-gray-600 ml-2">Last Name</label>
+          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="lastName" placeholder="Last Name" required>
         </div>
       </div>
 
       <!-- Username -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" @click="deriveUsername" placeholder="Username" required>
+        <label class="text-xs text-gray-600 ml-2">Username</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" @click="deriveUsername" placeholder="Username" required>
       </div>
 
       <!-- Email -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" @click="deriveEmail" placeholder="Email" required>
+        <label class="text-xs text-gray-600 ml-2">Email</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" @click="deriveEmail" placeholder="Email" required>
       </div>
 
       <!-- Contact Number -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="contactNumber" placeholder="Contact Number" required>
+        <label class="text-xs text-gray-600 ml-2">Contact Number</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="contactNumber" placeholder="Contact Number" required>
       </div>
 
       <!-- Address -->
       <div class="mt-5">
-        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="address" placeholder="Address" required>
+        <label class="text-xs text-gray-600 ml-2">Address</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="address" placeholder="Address" required>
       </div>
-
 
       <!-- User Type Selection -->
       <div class="mt-5">
-        <select class="flex mt-4 ml-2 p-2 w-52 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
-          <option value="" class="text-gray-700" disabled selected>Select a Type of User</option>
+        <select class="flex mt-4  p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
+          <option value="" class="text-gray-700" disabled selected>Select Account Type</option>
           <option value="Suppliers">Supplier</option>
           <option value="Staff">Staff</option>
           <option value="Admin">Admin</option>
@@ -255,7 +289,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
       <!-- Suppliers Details (only if supplier is selected) -->
       <div v-if="addSupplierDetails" class="mt-5">
-        <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="service">
+        <select class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="service">
           <option value="" class="text-gray-700" disabled selected>Select Service Type</option>
           <option value="Catering">Catering</option>
           <option value="Hair Stylist">Hair Stylist</option>
@@ -269,15 +303,17 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
           <option value="Invitations">Invitations and Stationery</option>
           <option value="Keepsakes">Favor and Gifts</option>
         </select>
+      </div>
 
-        <div class="flex items-center mt-4">
-          <input type="text" class="mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="price" placeholder="Supplier Rate" required>
-    
-        </div>
+      <div v-if="addSupplierDetails" class="flex justify-start items-center mt-5">
+        <button class= "w-40 h-10 bg-[#9B111E] text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 "
+         @click.prevent ="addSocialMediaModal(selectedSupplier)">
+          Add Social Media
+        </button>
       </div>
 
       <!-- Confirm Button -->
-      <div class="flex justify-center items-center mt-10 space-x-2">
+      <div class="flex justify-center items-center mt-5 space-x-2">
           <button class="bg-gray-300 text-white w-20 h-10 rounded-lg transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddUserForm">
           Cancel
         </button>
@@ -289,8 +325,167 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
   </div>
 </form>
 
+<!-- Rate Modal -->
+<div v-if="showRateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
+  <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Set Supplier Rate</h2>
+      <button @click="closeRateModal" class="text-gray-500 hover:text-gray-700">
+        <span class="text-2xl">&times;</span>
+      </button>
+    </div>
+    <div class="mt-4">
+      <label class="text-xs text-gray-600">Rate</label>
+      <input type="number" v-model="supplierRate" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Enter rate">
+    </div>
+    <div class="flex justify-end mt-4 space-x-2">
+      
+      <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
+      <button @click="saveSupplierRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
+    </div>
+  </div>
+</div>
 
-<!--Edit Supplier Form-->
+<!-- Status Confirmation Modal -->
+<div v-if="showStatusConfirmModal" @click.self="closeStatusConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+  <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+    <div class="flex flex-col items-center">
+      <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
+      <p class="mb-6 text-center">Are you sure you want to set this supplier to {{ pendingStatus }}?</p>
+      <div class="flex space-x-4">
+        <button 
+          @click="closeStatusConfirmModal" 
+          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+          Cancel
+        </button>
+        <button 
+          @click="confirmStatusChange" 
+          class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inactive Suppliers Modal -->
+<div v-if="showInactiveSuppliersModal" @click.self="closeInactiveSuppliersModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
+  <div class="bg-white p-5 rounded-lg shadow-lg w-[1000px]">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Inactive Suppliers</h2>
+      <button @click="closeInactiveSuppliersModal" class="text-gray-500 hover:text-gray-700">
+        <span class="text-2xl">&times;</span>
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-6 py-3">No.</th>
+            <th class="px-6 py-3">Name</th>
+            <th class="px-6 py-3">Email</th>
+            <th class="px-6 py-3">Contact</th>
+            <th class="px-6 py-3">Service</th>
+            <th class="px-6 py-3">Price</th>
+            <th class="px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(supplier, index) in inactiveSuppliers" :key="supplier.supplier_id" 
+              class="bg-white border-b hover:bg-gray-50">
+            <td class="px-6 py-4">{{ index + 1 }}</td>
+            <td class="px-6 py-4">{{ supplier.firstname }} {{ supplier.lastname }}</td>
+            <td class="px-6 py-4">{{ supplier.email }}</td>
+            <td class="px-6 py-4">{{ supplier.contactnumber }}</td>
+            <td class="px-6 py-4">{{ supplier.service }}</td>
+            <td class="px-6 py-4">₱{{ formatPrice(supplier.price) }}</td>
+            <td class="px-6 py-4">
+              <button
+                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                @click="toggleSupplierStatus(supplier)"
+                title="Set Active">
+                <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+ <!-- Social Media Modal -->
+<div v-if="showSocialMediaModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-[500px] relative">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Add Social Media</h2>
+            <button @click="closeSocialMediaModal" class="text-gray-600 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form @submit.prevent="submitSocialMedia" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Platform *</label>
+                <select 
+                    v-model="socialMediaForm.platform" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#9B111E]"
+                    required
+                >
+                    <option value="">Select Platform</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Twitter">Twitter</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="YouTube">YouTube</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Handle/Username *</label>
+                <input 
+                    type="text" 
+                    v-model="socialMediaForm.handle"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#9B111E]"
+                    placeholder="@username"
+                    required
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL (Optional)</label>
+                <input 
+                    type="url" 
+                    v-model="socialMediaForm.url"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#9B111E]"
+                    placeholder="https://example.com/profile"
+                >
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button 
+                    type="button"
+                    @click="closeSocialMediaModal"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit"
+                    class="px-4 py-2 bg-[#9B111E] text-white rounded-md hover:bg-opacity-90"
+                >
+                    Add Social Media
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+ <!--Edit Supplier Form-->
 <form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditSupplierBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
@@ -436,13 +631,13 @@ export default {
     return {
       showTable: 'Suppliers',
       currentSuppliersPage: 1,
-      rowsPerSuppliersPage: 6,
+      rowsPerSuppliersPage: 5,
 
       currentStaffsPage: 1,
-      rowsPerStaffsPage: 6,
+      rowsPerStaffsPage: 5,
       
       currentAdminPage: 1,
-      adminPerPage: 6,
+      adminPerPage: 5,
 
       addUserForm: false,
       addSupplierDetails: false,
@@ -468,6 +663,7 @@ export default {
       registerPassword: '',
       service: '',
       price: '',
+      status: '',
       errorMessage: '',
 
       staffs: [],
@@ -475,8 +671,24 @@ export default {
       admins: [],
       searchTerm: '',
 
-      
+      showRateModal: false,
+      supplierRate: '',
 
+      showStatusConfirmModal: false,
+      pendingStatus: '',
+      pendingSupplier: null,
+
+      showInactiveSuppliersModal: false,
+      inactiveSuppliers: [],
+
+      showSocialMediaModal: false,
+      socialMediaForm: {
+        platform: '',
+        handle: '',
+        url: ''
+      },
+
+      selectedSupplier: null,
 
       
     };
@@ -584,7 +796,7 @@ export default {
 
                 // Additional validation for vendors
                 if (this.selectedUserType === 'Suppliers') {
-                    if (!this.service || !this.price) {
+                    if (!this.service) {
                         this.errorMessage = 'Vendor details are incomplete!';
                         return;
                     }
@@ -605,7 +817,8 @@ export default {
                 // Include vendor-specific details if applicable
                 if (this.selectedUserType === 'Suppliers') {
                     requestData.service = this.service;
-                    requestData.price = this.price;
+                    requestData.price = 0;  // Set initial price as 0
+                    requestData.status = 'Active';  // Set status as active for suppliers
                 }
 
                 // Send the request to the backend
@@ -632,7 +845,6 @@ export default {
             this.registerPassword = '';
             this.selectedUserType = '';
             this.service = '';
-            this.price = '';
             this.errorMessage = '';
         },
 
@@ -831,7 +1043,7 @@ export default {
                 }
 
                 const requiredFields = [
-                  'fullName', 'email', 'contact', 'service', 'price', 'username', 'password'
+                  'fullName', 'email', 'contact', 'service', 'username', 'password'
                 ];
                 
                 const missingFields = requiredFields.filter(field => !this.selectedSupplier[field]);
@@ -855,7 +1067,6 @@ export default {
                   email: this.selectedSupplier.email,
                   contactnumber: this.selectedSupplier.contact,
                   service: this.selectedSupplier.service,
-                  price: this.selectedSupplier.price,
                   username: this.selectedSupplier.username,
                   password: this.selectedSupplier.password,
                   userid: userid
@@ -876,6 +1087,7 @@ export default {
                 if (response.status === 200) {
                   alert("Supplier updated successfully!");
 
+                  // Update the suppliers list with new price
                   const index = this.suppliers.findIndex(
                     (supplier) => supplier.no === this.selectedSupplier.no
                   );
@@ -893,7 +1105,7 @@ export default {
               } catch (error) {
                 console.error("Error updating supplier:", error);
                 if (error.response) {
-                  alert(`Error updating supplier: ${error.response.data.message}`);
+                  alert(error.response.data.message);
                 } else {
                   alert("Error updating supplier. Please try again.");
                 }
@@ -1069,8 +1281,195 @@ export default {
       this.currentAdminPage = page;
     },
 
-    
-    
+    closeRateModal() {
+      this.showRateModal = false;
+      this.supplierRate = '';
+    },
+
+    async saveSupplierRate() {
+      try {
+        const token = localStorage.getItem('access_token');
+
+        if (!this.selectedSupplier || !this.selectedSupplier.no) {
+          alert("Supplier ID is missing or invalid.");
+          return;
+        }
+
+        const response = await axios.put(
+          `http://127.0.0.1:5000/edit-supplier/${this.selectedSupplier.no}`,
+          {
+            price: this.supplierRate
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          alert("Supplier rate updated successfully!");
+
+          // Update the suppliers list with new price
+          const index = this.suppliers.findIndex(
+            (supplier) => supplier.no === this.selectedSupplier.no
+          );
+          if (index !== -1) {
+            this.suppliers[index].price = this.supplierRate;
+          }
+
+          this.closeRateModal();
+        }
+      } catch (error) {
+        console.error("Error updating supplier rate:", error);
+        if (error.response) {
+          alert(error.response.data.message);
+        } else {
+          alert("Error updating supplier rate. Please try again.");
+        }
+      }
+    },
+    async toggleSupplierStatus(supplier) {
+      try {
+        const token = localStorage.getItem('access_token');
+        
+        this.pendingSupplier = supplier;
+        this.pendingStatus = supplier.status === 'Active' ? 'Inactive' : 'Active';
+        this.showStatusConfirmModal = true;
+      } catch (error) {
+        console.error("Error toggling supplier status:", error);
+        if (error.response) {
+          alert(error.response.data.message);
+        } else {
+          alert("Error updating supplier status. Please try again.");
+        }
+      }
+    },
+    closeStatusConfirmModal() {
+      this.showStatusConfirmModal = false;
+      this.pendingSupplier = null;
+      this.pendingStatus = '';
+    },
+    async confirmStatusChange() {
+      try {
+        const token = localStorage.getItem('access_token');
+        
+        const response = await axios.put(
+          `http://127.0.0.1:5000/toggle-supplier-status/${this.pendingSupplier.no}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          if (response.data.new_status === 'Inactive') {
+            const index = this.suppliers.findIndex(s => s.no === this.pendingSupplier.no);
+            if (index !== -1) {
+              this.suppliers.splice(index, 1);
+            }
+            alert('Supplier has been set to Inactive');
+          } else {
+            const index = this.inactiveSuppliers.findIndex(s => s.no === this.pendingSupplier.no);
+            if (index !== -1) {
+              this.inactiveSuppliers.splice(index, 1);
+            }
+            await this.fetchSuppliers();
+            alert('Supplier has been set to Active');
+          }
+          this.closeStatusConfirmModal();
+        }
+      } catch (error) {
+        console.error("Error toggling supplier status:", error);
+        if (error.response) {
+          alert(error.response.data.message);
+        } else {
+          alert("Error updating supplier status. Please try again.");
+        }
+        this.closeStatusConfirmModal();
+      }
+    },
+    async showInactiveSuppliers() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get('http://127.0.0.1:5000/inactive-suppliers', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        this.inactiveSuppliers = response.data.map(supplier => ({
+          ...supplier,
+          no: supplier.supplier_id // Ensure we have the 'no' property for consistency
+        }));
+        this.showInactiveSuppliersModal = true;
+      } catch (error) {
+        console.error("Error fetching inactive suppliers:", error);
+        alert("Error fetching inactive suppliers. Please try again.");
+      }
+    },
+
+    closeInactiveSuppliersModal() {
+      this.showInactiveSuppliersModal = false;
+      this.inactiveSuppliers = [];
+    },
+    addSocialMediaModal(supplier) {
+      this.selectedSupplier = supplier;
+      this.showSocialMediaModal = true;
+    },
+    closeSocialMediaModal() {
+      this.showSocialMediaModal = false;
+      this.socialMediaForm = {
+        platform: '',
+        handle: '',
+        url: ''
+      };
+      this.selectedSupplier = null;
+    },
+    async submitSocialMedia() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          alert('Authentication token not found');
+          return;
+        }
+
+        if (!this.selectedSupplier) {
+          alert('No supplier selected');
+          return;
+        }
+
+        if (!this.socialMediaForm.platform || !this.socialMediaForm.handle) {
+          alert('Platform and handle are required fields');
+          return;
+        }
+
+        const response = await axios.post(
+          'http://127.0.0.1:5000/add-supplier-social-media',
+          {
+            supplier_id: this.selectedSupplier.no, // Changed from supplier_id to no
+            ...this.socialMediaForm
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.status === 200) {
+          alert('Social media added successfully!');
+          this.closeSocialMediaModal();
+          await this.fetchSuppliers(); // Refresh supplier data
+        }
+      } catch (error) {
+        console.error('Error adding social media:', error);
+        alert(error.response?.data?.error || 'Failed to add social media');
+      }
+    },
   },
   mounted() {
     if (this.showTable === 'Suppliers') {

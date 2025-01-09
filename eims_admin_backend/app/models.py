@@ -87,8 +87,8 @@ def create_supplier(userid, service, price):
 
     try:
         cursor.execute(
-            "INSERT INTO suppliers (userid, service, price) VALUES (%s, %s, %s)",
-            (userid, service, price)
+            "INSERT INTO suppliers (userid, service, price, status) VALUES (%s, %s, %s, %s)",
+            (userid, service, price, 'Active')
         )
         conn.commit()
         return True
@@ -159,34 +159,34 @@ def get_admin_users():
 def get_suppliers_with_users():
     conn = get_db_connection()
     cursor = conn.cursor()
-
     try:
-        cursor.execute(
-            """
-            SELECT s.supplier_id, s.userid, s.service, s.price, 
-            u.firstname, u.lastname, u.username, u.email, u.contactnumber, u.password
+        cursor.execute("""
+            SELECT s.supplier_id, u.firstname, u.lastname, u.email, u.contactnumber, 
+                   u.username, u.password, s.service, s.price, s.status, u.userid
             FROM suppliers s
             JOIN users u ON s.userid = u.userid
-            """
-        )
+            WHERE s.status = 'Active'
+            ORDER BY s.supplier_id
+        """)
         suppliers = cursor.fetchall()
         
-        
-        return [
-        {
-            'supplier_id': item[0],
-            'userid': item[1],
-            'service': item[2],
-            'price': float(item[3]) if item[3] is not None else 0.0,
-            'firstname': item[4],
-            'lastname': item[5],
-            'email': item[7],  # Ensure this is the correct column index for email
-            'username': item[6],  # Ensure this is the correct column index for username
-            'contactnumber': item[8],
-            'password': item[9],
-        }
-        for item in suppliers
-    ]
+        # Convert to list of dictionaries
+        suppliers_list = []
+        for supplier in suppliers:
+            suppliers_list.append({
+                'supplier_id': supplier[0],
+                'firstname': supplier[1],
+                'lastname': supplier[2],
+                'email': supplier[3],
+                'contactnumber': supplier[4],
+                'username': supplier[5],
+                'password': supplier[6],
+                'service': supplier[7],
+                'price': float(supplier[8]) if supplier[8] else 0,
+                'status': supplier[9],
+                'userid': supplier[10]
+            })
+        return suppliers_list
     finally:
         cursor.close()
         conn.close()
@@ -1001,21 +1001,19 @@ def get_packages_wedding():
 
 #models for venues
 
-def create_venue(venue_name, location, venue_price, venue_capacity, description):
+def create_venue(venue_name, location, description, venue_capacity):
     conn = get_db_connection()
     cursor = conn.cursor()
-
     try:
-        # Insert the package data into the event_packages table
         cursor.execute(
-            "INSERT INTO venues (venue_name, location, venue_price, venue_capacity, description) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (venue_name, location, venue_price, venue_capacity, description)
+            "INSERT INTO venues (venue_name, location, description, venue_capacity, venue_price, status) VALUES (%s, %s, %s, %s, %s, %s)",
+            (venue_name, location, description, venue_capacity, 0, 'Active')
         )
         conn.commit()
         return True
     except Exception as e:
-        print(f"Error inserting package: {e}")  # Log the error message
+        print(f"Error in create_venue: {str(e)}")
+        conn.rollback()
         return False
     finally:
         cursor.close()
@@ -1116,9 +1114,106 @@ def update_venue(venue_id, venue_name, location, venue_price, venue_capacity, de
         cursor.close()
         conn.close()
 
+def get_active_venues():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT venue_id, venue_name, location, venue_price, description, venue_capacity, status
+            FROM venues
+            WHERE status = 'Active'
+            ORDER BY venue_id
+        """)
+        venues = cursor.fetchall()
+        
+        venues_list = []
+        for venue in venues:
+            venues_list.append({
+                'venue_id': venue[0],
+                'venue_name': venue[1],
+                'location': venue[2],
+                'venue_price': float(venue[3]) if venue[3] else 0,
+                'description': venue[4],
+                'venue_capacity': venue[5],
+                'status': venue[6]
+            })
+        return venues_list
+    finally:
+        cursor.close()
+        conn.close()
 
+def get_inactive_venues():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT venue_id, venue_name, location, venue_price, description, venue_capacity, status
+            FROM venues
+            WHERE status = 'Inactive'
+            ORDER BY venue_id
+        """)
+        venues = cursor.fetchall()
+        
+        venues_list = []
+        for venue in venues:
+            venues_list.append({
+                'venue_id': venue[0],
+                'venue_name': venue[1],
+                'location': venue[2],
+                'venue_price': float(venue[3]) if venue[3] else 0,
+                'description': venue[4],
+                'venue_capacity': venue[5],
+                'status': venue[6]
+            })
+        return venues_list
+    finally:
+        cursor.close()
+        conn.close()
 
+def toggle_venue_status(venue_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # First get current status
+        cursor.execute("SELECT status FROM venues WHERE venue_id = %s", (venue_id,))
+        current_status = cursor.fetchone()
+        
+        if not current_status:
+            return False, "Venue not found"
+            
+        # Toggle the status
+        new_status = 'Inactive' if current_status[0] == 'Active' else 'Active'
+        
+        cursor.execute(
+            "UPDATE venues SET status = %s WHERE venue_id = %s",
+            (new_status, venue_id)
+        )
+        conn.commit()
+        return True, new_status
+    except Exception as e:
+        conn.rollback()
+        return False, str(e)
+    finally:
+        cursor.close()
+        conn.close()
 
+def update_venue_price(venue_id, price):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE venues SET venue_price = %s WHERE venue_id = %s",
+            (price, venue_id)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error updating venue price: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
 
 #gown package models
 def get_gown_packages():
@@ -1290,20 +1385,105 @@ def create_outfit(outfit_data):
         conn.close()
 
 #additional services models
-def create_additional_service(add_service_name, add_service_description, add_service_price):
+def create_additional_service(add_service_name, add_service_description):
     conn = get_db_connection()
     cursor = conn.cursor()
-
     try:
         cursor.execute(
-            "INSERT INTO additional_services (add_service_name, add_service_description, add_service_price) "
-            "VALUES (%s, %s, %s)",
-            (add_service_name, add_service_description, add_service_price)
+            "INSERT INTO additional_services (add_service_name, add_service_description, add_service_price, status) VALUES (%s, %s, %s, %s)",
+            (add_service_name, add_service_description, 0, 'Active')
         )
         conn.commit()
         return True
     except Exception as e:
-        print(f"Error inserting additional service: {e}")  # Log the error message
+        print(f"Error creating additional service: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_additional_service_price(service_id, price):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE additional_services SET add_service_price = %s WHERE add_service_id = %s",
+            (price, service_id)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error updating additional service price: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_active_additional_services():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT * FROM additional_services WHERE status = 'Active' ORDER BY add_service_id"
+        )
+        services = cursor.fetchall()
+        return [
+            {
+                'add_service_id': service[0],
+                'add_service_name': service[1],
+                'add_service_description': service[2],
+                'add_service_price': float(service[3]),
+                'status': service[4]
+            }
+            for service in services
+        ]
+    except Exception as e:
+        print(f"Error getting active additional services: {str(e)}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_inactive_additional_services():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT * FROM additional_services WHERE status = 'Inactive' ORDER BY add_service_id"
+        )
+        services = cursor.fetchall()
+        return [
+            {
+                'add_service_id': service[0],
+                'add_service_name': service[1],
+                'add_service_description': service[2],
+                'add_service_price': float(service[3]),
+                'status': service[4]
+            }
+            for service in services
+        ]
+    except Exception as e:
+        print(f"Error getting inactive additional services: {str(e)}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def toggle_additional_service_status(service_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE additional_services SET status = CASE WHEN status = 'Active' THEN 'Inactive' ELSE 'Active' END WHERE add_service_id = %s",
+            (service_id,)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error toggling additional service status: {str(e)}")
+        conn.rollback()
         return False
     finally:
         cursor.close()
@@ -2222,6 +2402,87 @@ def get_events_by_month_and_type():
     except Exception as e:
         logger.error(f"Error in get_events_by_month_and_type: {str(e)}")
         raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_inactive_suppliers():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT s.supplier_id, u.firstname, u.lastname, u.email, u.contactnumber, 
+                   u.username, u.password, s.service, s.price, s.status, u.userid
+            FROM suppliers s
+            JOIN users u ON s.userid = u.userid
+            WHERE s.status = 'Inactive'
+            ORDER BY s.supplier_id
+        """)
+        suppliers = cursor.fetchall()
+        
+        suppliers_list = []
+        for supplier in suppliers:
+            suppliers_list.append({
+                'supplier_id': supplier[0],
+                'firstname': supplier[1],
+                'lastname': supplier[2],
+                'email': supplier[3],
+                'contactnumber': supplier[4],
+                'username': supplier[5],
+                'password': supplier[6],
+                'service': supplier[7],
+                'price': float(supplier[8]) if supplier[8] else 0,
+                'status': supplier[9],
+                'userid': supplier[10]
+            })
+        return suppliers_list
+    finally:
+        cursor.close()
+        conn.close()
+
+def add_supplier_social_media(supplier_id, platform, handle, url=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO supplier_social_media (supplier_id, platform, handle, url)
+            VALUES (%s, %s, %s, %s)
+            RETURNING social_media_id
+        """, (supplier_id, platform, handle, url))
+        
+        social_media_id = cursor.fetchone()[0]
+        conn.commit()
+        return True, social_media_id
+
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error adding supplier social media: {str(e)}")
+        return False, None
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_supplier_social_media(supplier_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT social_media_id, platform, handle, url 
+            FROM supplier_social_media 
+            WHERE supplier_id = %s
+        """, (supplier_id,))
+        
+        social_media = cursor.fetchall()
+        return [{
+            'social_media_id': sm[0],
+            'platform': sm[1],
+            'handle': sm[2],
+            'url': sm[3]
+        } for sm in social_media]
+
     finally:
         cursor.close()
         conn.close()

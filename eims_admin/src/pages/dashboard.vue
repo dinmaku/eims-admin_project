@@ -28,7 +28,7 @@
               </router-link>
               <router-link to="/additional-services" class="inline-flex items-center py-[15px] px-[10px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/birthday-cake.png">
-                Additionals
+                Inclusions
               </router-link>
               <router-link to="/add-outfitPackage" class="inline-flex items-center py-[15px] px-[6.3px] w-full text-sm font-amaticBold font-semibold hover:bg-[#F7E7CE] hover:text-gray-900 transition duration-400 ease-in-out">
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] fill-current" src="/img/add-wardrobe.png">

@@ -2,8 +2,12 @@
     <div class="bg-gray-200 w-full h-full overflow-y-auto">
         <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
         <h1 class="font-amaticBold font-extraLight text-3xl">
-            Additional Services
+            Other Inclusions
         </h1>
+        <button class="bg-[#9B111E] text-white px-3 py-2 rounded shadow-lg 
+        transition-transform duration-300 transform hover:scale-105 font-semibold" @click="showInactiveServicesModal = true">
+            Inactive Inclusions
+            </button>
         </div>
 
         <div class="flex flex-row items-center m-5 space-x-5">
@@ -29,9 +33,9 @@
     </div>
 
         <div class="flex flex-row justify-end items-center m-5 my-7">
-            <button class="mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
+             <button class="mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
             transition-transform duration-300 transform hover:scale-105" @click="addServiceBtn">
-            + Add Service
+            Add Service
             </button>
         </div>
 
@@ -57,13 +61,28 @@
                             <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ service.dummyIndex }}</th>
                             <td class="px-1 py-3 hidden sm:table-cell">{{ service.add_service_name }}</td>
                             <td class="px-1 py-3 hidden sm:table-cell">{{ service.add_service_description }}</td>
-                            <td class="px-1 py-3 hidden sm:table-cell">{{ service.add_service_price }} php</td>
+                            <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(service.add_service_price) }} php</td>
                             <td class="px-1 py-3 hidden sm:table-cell">
-                                <button
-                                    class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45] "
-                                    @click="editServiceBtn(index)">
-                                    Edit
-                                </button>
+                                <div class="flex items-center space-x-2">
+                                    <button
+                                        class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                        @click="editServiceBtn(index)"
+                                        title="Edit">
+                                        <img src="/img/update.png" alt="Update" class="w-6 h-6">
+                                    </button>
+                                    <button
+                                        class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                        @click="showRateModal = true; selectedService = service"
+                                        title="Set Rate">
+                                        <img src="/img/rate.png" alt="Set Rate" class="w-6 h-6">
+                                    </button>
+                                    <button
+                                        class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                        @click="openStatusConfirmModal(service, 'Inactive')"
+                                        title="Set Inactive">
+                                        <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -85,7 +104,7 @@
         </div>
 
         <!-- Add Service Form -->
-        <form v-if="addServiceForm" @submit.prevent="addService" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddServiceForm">
+        <form v-if="addServiceForm" @submit.prevent="submitAddServiceForm" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddServiceForm">
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
                     <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Service</h1>
@@ -96,17 +115,14 @@
                     
                     <!-- Service Name -->
                     <div class="mt-5">
+                        <label class="text-xs text-gray-600 ml-2">Service Name</label>
                         <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_name" placeholder="Service Name" required>
                     </div>
 
                     <!-- Description -->
                     <div class="mt-5">
+                        <label class="text-xs text-gray-600 ml-2">Description</label>
                         <textarea class="mt-2 ml-2 p-2 w-full h-32 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_description" placeholder="Description" required></textarea>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="mt-5">
-                        <input type="number" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.number="add_service_price" placeholder="Price" required>
                     </div>
 
                     <!-- Confirm Button -->
@@ -160,6 +176,96 @@
                 </div>
             </div>
         </form>
+
+        <!-- Rate Modal -->
+        <div v-if="showRateModal" @click.self="closeRateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
+            <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Set Service Rate</h2>
+                        <button @click="closeRateModal" class="text-gray-500 hover:text-gray-700">
+                            <span class="text-2xl">&times;</span>
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <input type="number" v-model="serviceRate" class="w-full p-2 border rounded" placeholder="Enter rate">
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
+                        <button @click="saveServiceRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inactive Services Modal -->
+        <div v-if="showInactiveServicesModal" @click.self="closeInactiveServicesModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
+            <div class="bg-white p-5 rounded-lg shadow-lg w-[800px]">
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Inactive Services</h2>
+                        <button @click="closeInactiveServicesModal" class="text-gray-500 hover:text-gray-700">
+                            <span class="text-2xl">&times;</span>
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-2 py-3">#</th>
+                                    <th scope="col" class="px-2 py-3">Service Name</th>
+                                    <th scope="col" class="px-2 py-3">Description</th>
+                                    <th scope="col" class="px-2 py-3">Rate</th>
+                                    <th scope="col" class="px-2 py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(service, index) in inactiveServices" 
+                                    :key="service.add_service_id"
+                                    class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
+                                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        {{ index + 1 }}
+                                    </th>
+                                    <td class="px-2 py-3">{{ service.add_service_name }}</td>
+                                    <td class="px-2 py-3">{{ service.add_service_description }}</td>
+                                    <td class="px-2 py-3">{{ formatPrice(service.add_service_price) }} php</td>
+                                    <td class="px-2 py-3">
+                                        <button
+                                            class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                            @click="openStatusConfirmModal(service, 'Active')"
+                                            title="Set Active">
+                                            <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Confirmation Modal -->
+        <div v-if="showStatusConfirmModal" @click.self="closeStatusConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+            <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+                <div class="flex flex-col items-center">
+                    <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
+                    <p class="mb-6 text-center">Are you sure you want to set this service to {{ pendingStatus }}?</p>
+                    <div class="flex space-x-4">
+                        <button 
+                            @click="confirmStatusChange" 
+                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+                            Yes
+                        </button>
+                        <button 
+                            @click="closeStatusConfirmModal" 
+                            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -173,55 +279,76 @@ export default {
     data() {
         return {
             showTable: 'Services',
-            services: [],
-            currentServicesPage: 1,
-            rowsPerServicesPage: 5,
-
+            searchTerm: '',
             addServiceForm: false,
             editServiceForm: false,
-
-            searchTerm: '',
-
-            // Service form inputs
+            showRateModal: false,
+            showInactiveServicesModal: false,
+            showStatusConfirmModal: false,
+            serviceRate: '',
+            selectedService: null,
+            inactiveServices: [],
+            pendingStatus: '',
+            serviceToToggle: null,
+            errorMessage: '',
+            currentServicesPage: 1,
+            servicesPerPage: 5,
             add_service_name: '',
             add_service_description: '',
-            add_service_price: null,
-            errorMessage: '',
-
-            selectedService: {
-                add_service_id: null,
-                add_service_name: '',
-                add_service_description: '',
-                add_service_price: null
-            }
+            totalServices: 0,
+            services: []
         };
     },
     computed: {
-        totalServices() {
-            return this.filteredAdditionalServices.length;
-        },
         totalServicesPages() {
-            return Math.ceil(this.filteredAdditionalServices.length / this.rowsPerServicesPage);
+            return Math.ceil(this.filteredAdditionalServices.length / this.servicesPerPage);
         },
         paginatedServices() {
-            const start = (this.currentServicesPage - 1) * this.rowsPerServicesPage;
-            const end = start + this.rowsPerServicesPage;
-            return this.filteredAdditionalServices.slice(start, end);
+            const start = (this.currentServicesPage - 1) * this.servicesPerPage;
+            const end = start + this.servicesPerPage;
+            const paginatedList = this.filteredAdditionalServices.slice(start, end);
+            
+            // Add dummy index for display
+            return paginatedList.map((service, index) => ({
+                ...service,
+                dummyIndex: start + index + 1
+            }));
         },
-
         filteredAdditionalServices() {
-            if (!this.searchTerm) return this.services;
-            const searchLower = this.searchTerm.toLowerCase().trim();
-            return this.services.filter(service => {
-                return [
-                service.add_service_name,
-                service.add_service_description,
-                String(service.add_service_price)
-                ].some(field => String(field || '').toLowerCase().includes(searchLower));
-            });
-            },
+            if (!this.searchTerm) {
+                return this.services;
+            }
+            const searchLower = this.searchTerm.toLowerCase();
+            return this.services.filter(service => 
+                service.add_service_name.toLowerCase().includes(searchLower) ||
+                service.add_service_description.toLowerCase().includes(searchLower)
+            );
+        }
     },
     methods: {
+        formatPrice(price) {
+            if (!price) return '0.00';
+            return parseFloat(price).toFixed(2);
+        },
+        openStatusConfirmModal(service, status) {
+            this.serviceToToggle = service;
+            this.pendingStatus = status;
+            this.showStatusConfirmModal = true;
+        },
+
+        closeStatusConfirmModal() {
+            this.showStatusConfirmModal = false;
+            this.serviceToToggle = null;
+            this.pendingStatus = '';
+        },
+
+        async confirmStatusChange() {
+            if (this.serviceToToggle) {
+                await this.toggleServiceStatus(this.serviceToToggle);
+                this.closeStatusConfirmModal();
+            }
+        },
+
         async fetchServices() {
             try {
                 const token = localStorage.getItem('access_token');
@@ -230,7 +357,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.get('http://127.0.0.1:5000/created-services', {
+                const response = await axios.get('http://127.0.0.1:5000/additional-services', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
@@ -239,82 +366,51 @@ export default {
                 });
 
                 // Populate services array with data from API
-                this.services = response.data.map((service, index) => ({
-                    add_service_id: service.add_service_id,
-                    add_service_name: service.add_service_name,
-                    add_service_description: service.add_service_description,
-                    add_service_price: service.add_service_price,
-                    dummyIndex: index + 1,
-                }));
+                this.services = response.data;
+                this.totalServices = response.data.length;
 
             } catch (error) {
                 console.error('Error fetching services:', error.response?.data || error.message);
             }
         },
 
-        async addService() {
+        async submitAddServiceForm() {
             try {
                 const token = localStorage.getItem('access_token');
                 if (!token) {
-                    this.errorMessage = 'You are not logged in. Please log in to add a service.';
+                    this.errorMessage = 'Authentication token not found';
                     return;
                 }
 
-                console.log('Form values before validation:', {
-                    name: this.add_service_name,
-                    description: this.add_service_description,
-                    price: this.add_service_price,
-                });
-
-                // Validate all required fields
-                if (!this.add_service_name || !this.add_service_description || !this.add_service_price) {
+                if (!this.add_service_name || !this.add_service_description) {
                     this.errorMessage = 'Please fill in all required fields';
-                    console.log('Validation failed:', {
-                        nameEmpty: !this.add_service_name,
-                        descriptionEmpty: !this.add_service_description,
-                        priceEmpty: !this.add_service_price
-                    });
                     return;
                 }
 
-                const payload = {
-                    add_service_name: this.add_service_name.trim(),
-                    add_service_description: this.add_service_description.trim(),
-                    add_service_price: parseFloat(this.add_service_price)
-                };
-
-                console.log('Sending payload:', payload); // Debug log
-
-                const response = await axios.post('http://127.0.0.1:5000/create-service', payload, {
+                const response = await axios.post('http://127.0.0.1:5000/additional-services', {
+                    add_service_name: this.add_service_name,
+                    add_service_description: this.add_service_description
+                }, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    withCredentials: true,
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
-                if (response.status === 201) {
-                    alert('Service added successfully!');
+                if (response.status === 200) {
+                    alert('Service created successfully!');
                     this.closeAddServiceForm();
-                    // Optionally reset fields
-                    this.add_service_name = '';
-                    this.add_service_description = '';
-                    this.add_service_price = '';
+                    await this.fetchServices();
                 }
             } catch (error) {
-                console.error('Error adding service:', error.response?.data || error.message);
-                this.errorMessage = error.response?.data?.error || 'An error occurred while adding the service.';
+                console.error('Error creating service:', error.response?.data || error.message);
+                this.errorMessage = error.response?.data?.error || 'Failed to create service';
             }
         },
 
         async updateService() {
             try {
                 const token = localStorage.getItem('access_token');
-                if (!token) {
-                    this.errorMessage = 'You are not logged in. Please log in to update the service.';
-                    return;
-                }
-
                 // Ensure the service ID is available for updating
                 if (!this.selectedService.add_service_id) {
                     this.errorMessage = 'Service ID is missing.';
@@ -369,7 +465,6 @@ export default {
             // Initialize form fields
             this.add_service_name = '';
             this.add_service_description = '';
-            this.add_service_price = null;
             this.errorMessage = '';
         },
         closeAddServiceForm() {
@@ -377,7 +472,6 @@ export default {
             // Reset form fields
             this.add_service_name = '';
             this.add_service_description = '';
-            this.add_service_price = null;
             this.errorMessage = '';
         },
 
@@ -401,11 +495,98 @@ export default {
             }; // Reset the form fields
             this.errorMessage = '';
         },
+        async fetchInactiveServices() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get('http://127.0.0.1:5000/inactive-additional-services', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                this.inactiveServices = response.data;
+            } catch (error) {
+                console.error('Error fetching inactive services:', error);
+                alert('Failed to fetch inactive services. Please try again.');
+            }
+        },
+
+        async toggleServiceStatus(service) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.put(
+                    `http://127.0.0.1:5000/toggle-additional-service-status/${service.add_service_id}`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (response.status === 200) {
+                    // Show success message
+                    alert("Service status updated successfully!");
+                    // Refresh both active and inactive services
+                    await this.fetchServices();
+                    await this.fetchInactiveServices();
+                    // Close modal if it was opened from inactive services list
+                    if (this.showInactiveServicesModal) {
+                        this.closeInactiveServicesModal();
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling service status:', error);
+                alert('Failed to update service status. Please try again.');
+            }
+        },
+
+        closeRateModal() {
+            this.showRateModal = false;
+            this.serviceRate = '';
+            this.selectedService = null;
+        },
+
+        async saveServiceRate() {
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                if (!this.selectedService || !this.selectedService.add_service_id) {
+                    alert("Service ID is missing or invalid.");
+                    return;
+                }
+
+                const response = await axios.put(
+                    `http://127.0.0.1:5000/update-additional-service-price/${this.selectedService.add_service_id}`,
+                    {
+                        price: this.serviceRate
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (response.status === 200) {
+                    alert("Service rate updated successfully!");
+                    await this.fetchServices();
+                    this.closeRateModal();
+                }
+            } catch (error) {
+                console.error("Error updating service rate:", error);
+                alert("Error updating service rate. Please try again.");
+            }
+        },
+
+        closeInactiveServicesModal() {
+            this.showInactiveServicesModal = false;
+        },
     },
 
     mounted() {
         this.fetchServices();
-    },
+        this.fetchInactiveServices();
+    }
 }
 </script>
 
