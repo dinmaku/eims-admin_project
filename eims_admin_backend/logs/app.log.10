@@ -1,257 +1,500 @@
-2025-01-09 16:40:35,858 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
-2025-01-09 16:40:35,858 - app - INFO - Application startup
-2025-01-09 16:40:35,971 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2025-01-10 00:24:12,316 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2025-01-10 00:24:12,316 - app - INFO - Application startup
+2025-01-10 00:24:12,437 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
-2025-01-09 16:40:35,973 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
-2025-01-09 16:40:35,977 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 16:40:36,525 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
-2025-01-09 16:40:36,525 - app - INFO - Application startup
-2025-01-09 16:40:36,562 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 16:40:36,573 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 16:44:00,606 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:00] "OPTIONS /login HTTP/1.1" 200 -
-2025-01-09 16:44:00,793 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:00] "POST /login HTTP/1.1" 200 -
-2025-01-09 16:44:01,493 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:01] "GET /api/events-by-month HTTP/1.1" 200 -
-2025-01-09 16:44:12,426 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:12] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 16:44:12,536 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:12] "GET /venues HTTP/1.1" 200 -
-2025-01-09 16:44:13,444 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:13] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:13,611 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:13] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:23,968 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:23] "OPTIONS /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:23,980 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:23] "OPTIONS /outfits HTTP/1.1" 200 -
-2025-01-09 16:44:24,048 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:24,061 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /outfits HTTP/1.1" 200 -
-2025-01-09 16:44:24,814 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "OPTIONS /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:24,831 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:24,836 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "OPTIONS /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:24,841 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "OPTIONS /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:24,924 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:24,948 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:24,964 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:24,981 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:24,988 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:24] "GET /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:25,028 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:25] "GET /event-types HTTP/1.1" 200 -
-2025-01-09 16:44:27,119 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:27] "OPTIONS /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 16:44:27,122 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:27] "OPTIONS /additional-services HTTP/1.1" 200 -
-2025-01-09 16:44:27,192 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:27] "GET /additional-services HTTP/1.1" 200 -
-2025-01-09 16:44:27,231 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:27] "GET /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 16:44:28,245 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:28] "GET /additional-services HTTP/1.1" 200 -
-2025-01-09 16:44:28,266 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:28] "GET /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 16:44:31,536 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:31] "GET /additional-services HTTP/1.1" 200 -
-2025-01-09 16:44:31,639 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:31] "GET /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 16:44:32,702 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "OPTIONS /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:32,703 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:32,704 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "OPTIONS /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:32,705 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "OPTIONS /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:32,706 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "OPTIONS /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:32,788 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:32,834 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:32,840 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:32,862 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /event-types HTTP/1.1" 200 -
-2025-01-09 16:44:32,864 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:32,869 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:32] "GET /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:34,439 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:34] "OPTIONS /outfits HTTP/1.1" 200 -
-2025-01-09 16:44:34,506 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:34] "GET /outfits HTTP/1.1" 200 -
-2025-01-09 16:44:34,600 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:34] "GET /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:35,015 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:35] "GET /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:37,380 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:37] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 16:44:37,541 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:37] "GET /venues HTTP/1.1" 200 -
-2025-01-09 16:44:38,292 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:38] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:38,363 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:38] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:39,916 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:39] "OPTIONS /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:39,919 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:39] "OPTIONS /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:39,927 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:39] "OPTIONS /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:39,930 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:39] "OPTIONS /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:40,038 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /created-venues HTTP/1.1" 200 -
-2025-01-09 16:44:40,042 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /event-types HTTP/1.1" 200 -
-2025-01-09 16:44:40,045 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /created-packages HTTP/1.1" 200 -
-2025-01-09 16:44:40,050 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /created-services HTTP/1.1" 200 -
-2025-01-09 16:44:40,082 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /gown-packages HTTP/1.1" 200 -
-2025-01-09 16:44:40,105 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:40] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:44,461 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:44] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:44:44,525 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:44:44] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:47:11,699 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:47:11] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:47:11,845 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:47:11] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:50:41,703 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
-2025-01-09 16:50:42,108 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 16:50:42,865 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
-2025-01-09 16:50:42,865 - app - INFO - Application startup
-2025-01-09 16:50:42,908 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 16:50:42,926 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 16:57:48,260 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:57:48] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:57:48,703 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:57:48] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:57:49,869 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:57:49] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 16:57:50,045 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:57:50] "GET /venues HTTP/1.1" 200 -
-2025-01-09 16:58:05,704 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 16:58:05,834 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 16:58:07,084 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
-2025-01-09 16:58:07,084 - app - INFO - Application startup
-2025-01-09 16:58:07,123 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 16:58:07,132 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 16:58:19,246 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:58:19] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 16:58:19,339 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:58:19] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 16:58:20,603 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:58:20] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 16:58:20,674 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 16:58:20] "GET /venues HTTP/1.1" 200 -
-2025-01-09 17:01:29,120 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:29] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:01:29,274 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:29] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:01:57,480 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:57] "OPTIONS /created-users HTTP/1.1" 200 -
-2025-01-09 17:01:57,550 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:57] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:01:57,999 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:57] "OPTIONS /get_admin HTTP/1.1" 200 -
-2025-01-09 17:01:58,052 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:58] "GET /get_admin HTTP/1.1" 200 -
-2025-01-09 17:01:58,382 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:58] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:01:58,438 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:01:58] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:04:05,820 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:05] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:04:06,201 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:06] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:04:06,490 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:06] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:04:06,553 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:06] "GET /venues HTTP/1.1" 200 -
-2025-01-09 17:04:40,060 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:40] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:04:40,134 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:40] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:04:43,358 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:04:43] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:05:31,350 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:05:31] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:05:31,704 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:05:31] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:07:37,655 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:07:37] "OPTIONS /add-user HTTP/1.1" 200 -
-2025-01-09 17:07:37,933 - app - INFO - Supplier data inserted successfully
-2025-01-09 17:07:45,305 - app - INFO - User data validated and inserted into the database successfully
-2025-01-09 17:07:45,315 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:07:45] "[35m[1mPOST /add-user HTTP/1.1[0m" 201 -
-2025-01-09 17:07:59,612 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:07:59] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:07:59,763 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:07:59] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:08:07,325 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:08:07] "OPTIONS /edit-supplier/12 HTTP/1.1" 200 -
-2025-01-09 17:08:07,329 - app - INFO - Received data: {'price': 8100}
-2025-01-09 17:08:07,428 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:08:07] "[31m[1mPUT /edit-supplier/12 HTTP/1.1[0m" 400 -
-2025-01-09 17:08:48,702 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 17:08:49,271 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:08:51,032 - app - INFO - Application startup
-2025-01-09 17:08:51,287 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:08:51,351 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:09:17,636 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:09:17] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:09:17,750 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:09:17] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:11:03,901 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:11:03] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:11:04,045 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:11:04] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:11:30,945 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:11:30] "OPTIONS /edit-supplier/12 HTTP/1.1" 200 -
-2025-01-09 17:11:30,958 - app - INFO - Received data: {'price': 8100}
-2025-01-09 17:11:31,230 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:11:31] "PUT /edit-supplier/12 HTTP/1.1" 200 -
-2025-01-09 17:15:10,606 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
-2025-01-09 17:15:10,715 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:15:11,760 - app - INFO - Application startup
-2025-01-09 17:15:11,821 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:15:11,850 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:16:03,331 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:16:03] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:16:36,412 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
-2025-01-09 17:16:36,500 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:16:37,257 - app - INFO - Application startup
-2025-01-09 17:16:37,340 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:16:37,348 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:16:53,735 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 17:16:53,889 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:16:55,294 - app - INFO - Application startup
-2025-01-09 17:16:55,436 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:16:55,461 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:17:19,910 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:19] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:17:19,918 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:19] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:17:20,866 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:20] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:17:20,962 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:20] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:17:50,183 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:50] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:17:50,234 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:17:50] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:18:33,713 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:33] "OPTIONS /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 17:18:33,718 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:33] "OPTIONS /additional-services HTTP/1.1" 200 -
-2025-01-09 17:18:33,844 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:33] "GET /additional-services HTTP/1.1" 200 -
-2025-01-09 17:18:34,041 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:34] "GET /booked-wishlist HTTP/1.1" 200 -
-2025-01-09 17:18:35,169 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:35] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:18:35,344 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:35] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:18:54,728 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:54] "OPTIONS /created-users HTTP/1.1" 200 -
-2025-01-09 17:18:54,893 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:54] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:18:55,449 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:55] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:18:55,526 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:55] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:18:57,433 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:57] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:18:58,249 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:58] "OPTIONS /get_admin HTTP/1.1" 200 -
-2025-01-09 17:18:58,307 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:58] "GET /get_admin HTTP/1.1" 200 -
-2025-01-09 17:18:59,042 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:59] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:18:59,467 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:18:59] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:21:55,028 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
-2025-01-09 17:21:55,252 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:22:03,851 - app - INFO - Application startup
-2025-01-09 17:22:04,040 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:22:04,105 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:22:11,295 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 17:22:11,744 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:22:12,566 - app - INFO - Application startup
-2025-01-09 17:22:12,606 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:22:12,614 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:24:35,566 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:35] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:24:36,673 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:36] "GET /venues HTTP/1.1" 200 -
-2025-01-09 17:24:36,772 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:36] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:36,985 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:36] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:38,588 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:38] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:38,642 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:38] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:42,228 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:42] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:24:42,351 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:42] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:24:42,364 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:42] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:42,418 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:42] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:46,635 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:46] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:24:46,802 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:24:46] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:06,564 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:06] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:06,764 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:06] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:11,431 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:11] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:12,197 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:12] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:12,252 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:12] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:14,564 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:14] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:25:14,623 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:14] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:25:16,437 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:16] "OPTIONS /toggle-supplier-status/3 HTTP/1.1" 200 -
-2025-01-09 17:25:16,493 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:16] "PUT /toggle-supplier-status/3 HTTP/1.1" 200 -
-2025-01-09 17:25:17,487 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:17] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:17,646 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:17] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:22,269 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:22] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:25:22,322 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:22] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:25:22,328 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:22] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:22,417 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:22] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:25:24,108 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:24] "OPTIONS /toggle-supplier-status/3 HTTP/1.1" 200 -
-2025-01-09 17:25:24,163 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:24] "PUT /toggle-supplier-status/3 HTTP/1.1" 200 -
-2025-01-09 17:25:24,226 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:25:24] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:26:09,239 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:09] "OPTIONS /created-users HTTP/1.1" 200 -
-2025-01-09 17:26:09,305 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:09] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:26:09,782 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:09] "OPTIONS /get_admin HTTP/1.1" 200 -
-2025-01-09 17:26:09,862 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:09] "GET /get_admin HTTP/1.1" 200 -
-2025-01-09 17:26:10,112 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:10] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:26:10,431 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:10] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:26:10,503 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:26:10] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:27:50,311 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:27:50] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:27:50,412 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:27:50] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:29:23,221 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:23] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:29:23,275 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:23] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:29:25,037 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:25] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:29:25,093 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:25] "GET /inactive-suppliers HTTP/1.1" 200 -
-2025-01-09 17:29:27,124 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:27] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
-2025-01-09 17:29:27,133 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:27] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:29:27,189 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:29:27] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:31:24,169 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:24] "OPTIONS /created-users HTTP/1.1" 200 -
-2025-01-09 17:31:24,227 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:24] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:31:24,521 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:24] "OPTIONS /get_admin HTTP/1.1" 200 -
-2025-01-09 17:31:24,575 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:24] "GET /get_admin HTTP/1.1" 200 -
-2025-01-09 17:31:25,041 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:25] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:31:25,207 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:25] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:31:25,498 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:25] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:31:25,741 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:25] "GET /get_admin HTTP/1.1" 200 -
-2025-01-09 17:31:25,883 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:31:25] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:35:05,284 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
-2025-01-09 17:35:07,171 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:35:08,941 - app - INFO - Application startup
-2025-01-09 17:35:09,000 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:35:09,011 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:35:35,268 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 17:35:35,493 - werkzeug - INFO -  * Restarting with stat
-2025-01-09 17:35:36,958 - app - INFO - Application startup
-2025-01-09 17:35:37,024 - werkzeug - WARNING -  * Debugger is active!
-2025-01-09 17:35:37,041 - werkzeug - INFO -  * Debugger PIN: 100-015-169
-2025-01-09 17:36:32,706 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:36:32] "OPTIONS /created-users HTTP/1.1" 200 -
-2025-01-09 17:36:33,537 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:36:33] "GET /created-users HTTP/1.1" 200 -
-2025-01-09 17:36:33,694 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:36:33] "OPTIONS /suppliers HTTP/1.1" 200 -
-2025-01-09 17:36:33,966 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:36:33] "GET /suppliers HTTP/1.1" 200 -
-2025-01-09 17:37:18,060 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:37:18] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:37:25,587 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:37:25] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:37:25,744 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:37:25] "GET /venues HTTP/1.1" 200 -
-2025-01-09 17:37:46,733 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:37:46] "OPTIONS /inactive-venues HTTP/1.1" 200 -
-2025-01-09 17:37:46,818 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:37:46] "GET /inactive-venues HTTP/1.1" 200 -
-2025-01-09 17:38:12,686 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:38:12] "OPTIONS /venues HTTP/1.1" 200 -
-2025-01-09 17:38:12,791 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:38:12] "GET /venues HTTP/1.1" 200 -
-2025-01-09 17:39:53,682 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:39:53] "OPTIONS /inactive-venues HTTP/1.1" 200 -
-2025-01-09 17:39:53,851 - werkzeug - INFO - 127.0.0.1 - - [09/Jan/2025 17:39:53] "GET /inactive-venues HTTP/1.1" 200 -
-2025-01-09 17:50:12,401 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\routes.py', reloading
-2025-01-09 17:50:17,194 - werkzeug - INFO -  * Restarting with stat
+2025-01-10 00:24:12,438 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-10 00:24:12,441 - werkzeug - INFO -  * Restarting with stat
+2025-01-10 00:24:12,952 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2025-01-10 00:24:12,952 - app - INFO - Application startup
+2025-01-10 00:24:13,012 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 00:24:13,035 - werkzeug - INFO -  * Debugger PIN: 100-015-169
+2025-01-10 00:24:15,591 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:24:15] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:24:15,762 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:24:15] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:24:18,171 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:24:18] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:24:18,221 ERROR: Error getting social media: 'dictionary' is an invalid keyword argument for this function [in E:\eims-admin_project\eims_admin_backend\app\routes.py:1091]
+2025-01-10 00:24:18,221 - app - ERROR - Error getting social media: 'dictionary' is an invalid keyword argument for this function
+2025-01-10 00:24:18,223 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:24:18] "[35m[1mGET /get-supplier-social-media/2 HTTP/1.1[0m" 500 -
+2025-01-10 00:25:03,042 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
+2025-01-10 00:25:03,174 - werkzeug - INFO -  * Restarting with stat
+2025-01-10 00:25:03,967 INFO: Application startup [in E:\eims-admin_project\eims_admin_backend\run.py:33]
+2025-01-10 00:25:03,967 - app - INFO - Application startup
+2025-01-10 00:25:04,025 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 00:25:04,033 - werkzeug - INFO -  * Debugger PIN: 100-015-169
+2025-01-10 00:25:25,595 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:25] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:25:25,742 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:25] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:25:26,260 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:26] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:26,315 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:27,308 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:32,997 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:32] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:33,051 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:33] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:33,187 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:33] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:33,428 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:33] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:33,490 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:33] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:38,381 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:38] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:38,437 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:38] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:38,776 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:38] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:25:39,028 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:25:39] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:32,522 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:32] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:27:32,682 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:32] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:27:47,229 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:47] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:27:47,385 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:47] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:27:52,747 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:52] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:52,908 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:52] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:53,335 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:53] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:53,573 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:53] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:53,630 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:53] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:27:53,863 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:27:53] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:25,713 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:25] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 00:28:25,717 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:25] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 00:28:25,804 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:25] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 00:28:25,815 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:25] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 00:28:26,297 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:26] "OPTIONS /venues HTTP/1.1" 200 -
+2025-01-10 00:28:26,467 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:26] "GET /venues HTTP/1.1" 200 -
+2025-01-10 00:28:26,708 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:26] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:28:26,874 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:26] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:28:27,644 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:27] "OPTIONS /booked-wishlist HTTP/1.1" 200 -
+2025-01-10 00:28:27,647 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:27] "OPTIONS /additional-services HTTP/1.1" 200 -
+2025-01-10 00:28:27,724 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:27] "GET /additional-services HTTP/1.1" 200 -
+2025-01-10 00:28:27,771 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:27] "GET /api/events-by-month HTTP/1.1" 200 -
+2025-01-10 00:28:27,868 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:27] "GET /booked-wishlist HTTP/1.1" 200 -
+2025-01-10 00:28:28,905 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:28] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:28:30,643 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:30] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:30,695 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:30] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:31,117 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:31] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:31,170 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:31] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:31,268 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:31] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:31,409 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:31] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:36,361 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:36] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:28:36,470 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:36] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:28:38,621 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:38] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:38,674 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:38] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:28:39,178 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:28:39] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:03,461 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:03] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:32:03,841 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:03] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:32:04,678 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:04] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:04,729 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:04] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:05,612 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:05,662 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:05,737 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:05,873 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:06,581 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:06] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:06,826 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:06] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:06,879 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:06] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:19,112 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:19] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:32:19,336 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:19] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:32:23,327 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:23] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:23,482 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:23,996 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:24,124 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:24] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:24,279 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:24] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:32:24,428 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:32:24] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:37,613 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:37] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:34:37,916 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:37] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:34:41,188 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:41] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:41,266 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:41] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:41,746 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:41] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:41,980 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:41] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,038 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,108 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,322 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,389 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,568 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,628 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,827 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:34:42,976 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:34:42] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:35:07,977 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:07] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:35:08,146 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:08] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:35:10,413 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:10] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:35:10,472 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:10] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:35:16,199 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:16] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:35:16,319 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:16] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:35:17,560 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:17] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:35:22,085 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:22] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:35:22,149 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:35:22] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:36:50,790 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:36:50] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:36:52,041 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:36:52] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:37:46,016 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:37:46] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:37:46,265 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:37:46] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:01,779 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:01] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:01,945 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:01] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:02,749 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:02] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:02,826 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:02] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:03,430 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:03] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:03,482 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:03] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:03,609 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:03] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:12,336 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:12] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:12,405 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:12] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:16,496 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:16] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:16,871 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:16] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:17,661 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:17] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:17,801 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:17] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:17,873 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:17] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:17,957 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:17] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:18,188 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:18,240 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:18,335 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:18,436 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:18,578 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:20,185 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:20,321 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:20,531 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:20,688 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:20,862 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:24,789 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:24] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:24,843 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:24] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:25,091 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:25] "OPTIONS /get-supplier-social-media/3 HTTP/1.1" 200 -
+2025-01-10 00:38:25,269 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:25] "GET /get-supplier-social-media/3 HTTP/1.1" 200 -
+2025-01-10 00:38:25,394 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:25] "OPTIONS /get-supplier-social-media/4 HTTP/1.1" 200 -
+2025-01-10 00:38:25,446 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:25] "GET /get-supplier-social-media/4 HTTP/1.1" 200 -
+2025-01-10 00:38:25,649 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:25] "GET /get-supplier-social-media/4 HTTP/1.1" 200 -
+2025-01-10 00:38:26,013 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:26] "GET /get-supplier-social-media/3 HTTP/1.1" 200 -
+2025-01-10 00:38:26,125 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:26,379 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:26] "GET /get-supplier-social-media/4 HTTP/1.1" 200 -
+2025-01-10 00:38:46,294 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:46] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:46,434 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:46] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:38:52,046 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:52] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:52,104 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:52] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:52,486 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:52] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:38:52,552 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:38:52] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:26,513 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:26] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:26,684 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:26,755 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:26,918 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:26,983 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:26] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:27,045 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:27,158 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:27,388 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:27,449 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:39:27,559 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:39:27] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:40:02,983 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:40:02] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:40:03,172 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:40:03] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:40:05,269 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:40:05] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:40:05,428 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:40:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:16,348 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:16] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:42:16,629 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:16] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:42:18,088 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:18] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:18,152 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:18,865 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:18,987 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:18] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,086 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,241 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,341 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,438 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,666 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:42:19,749 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:42:19] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:45:38,533 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:45:38] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:45:38,771 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:45:38] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:45:56,594 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:45:56] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:45:56,776 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:45:56] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:46:21,369 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:21] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:46:21,604 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:21] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:46:22,240 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:22] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:22,295 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:22] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:22,792 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:22] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:22,896 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:22] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:23,014 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:23,166 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:23,360 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:23,540 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:23,596 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:23] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:33,328 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:33] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:33,475 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:33] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:34,713 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:34] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:34,854 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:34] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:34,974 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:34] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:35,112 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:35] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:35,230 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:35] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:35,380 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:35] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:46:35,527 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:46:35] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:47:58,097 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:47:58] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:47:58,517 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:47:58] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:49:18,207 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:49:18] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:49:18,337 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:49:18] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:49:21,989 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:49:21] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:49:22,080 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:49:22] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:49:25,655 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:49:25] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:52:44,441 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:44] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:52:44,591 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:44] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:52:45,800 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:45] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:52:45,873 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:45] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:52:54,197 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:54] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:52:54,384 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:52:54] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:53:05,503 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:53:05] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:53:05,567 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:53:05] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:53:20,752 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:53:20] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:53:20,829 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:53:20] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:00,729 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:00] "OPTIONS /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:00,831 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:00] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:01,801 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:01] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:01,904 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:01] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:02,035 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:02] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:02,148 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:02] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:02,553 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:02] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:56:02,740 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:02] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:56:03,234 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:03] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:56:03,441 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:56:03] "GET /get-supplier-social-media/2 HTTP/1.1" 200 -
+2025-01-10 00:59:24,912 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:59:24] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:59:25,221 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:59:25] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 00:59:57,083 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:59:57] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 00:59:57,265 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 00:59:57] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:00:56,193 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:56] "OPTIONS /created-users HTTP/1.1" 200 -
+2025-01-10 01:00:56,292 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:56] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:00:57,611 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:57] "OPTIONS /get_admin HTTP/1.1" 200 -
+2025-01-10 01:00:57,677 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:57] "GET /get_admin HTTP/1.1" 200 -
+2025-01-10 01:00:58,114 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:58] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:00:58,443 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:58] "GET /get_admin HTTP/1.1" 200 -
+2025-01-10 01:00:58,712 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:00:58] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:03:18,469 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:18] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:03:18,717 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:18] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:03:19,084 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:19] "OPTIONS /created-users HTTP/1.1" 200 -
+2025-01-10 01:03:19,141 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:19] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:03:19,490 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:19] "OPTIONS /get_admin HTTP/1.1" 200 -
+2025-01-10 01:03:19,625 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:19] "GET /get_admin HTTP/1.1" 200 -
+2025-01-10 01:03:19,958 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:19] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:03:20,265 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:03:20] "GET /get_admin HTTP/1.1" 200 -
+2025-01-10 01:04:05,281 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:05] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:05,350 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:05] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:05,508 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:05] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:05,703 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:05] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:06,959 - werkzeug - INFO -  * Detected change in 'E:\\eims-admin_project\\eims_admin_backend\\app\\models.py', reloading
+2025-01-10 01:04:09,410 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:09] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:22,725 - werkzeug - INFO -  * Restarting with stat
+2025-01-10 01:04:28,464 - app - INFO - Application startup
+2025-01-10 01:04:28,754 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 01:04:28,923 - werkzeug - INFO -  * Debugger PIN: 100-015-169
+2025-01-10 01:04:28,977 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:28] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:04:29,114 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:04:29] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:05:00,577 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:00] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:05:00,821 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:00] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:05:02,172 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:02] "OPTIONS /created-users HTTP/1.1" 200 -
+2025-01-10 01:05:02,227 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:02] "GET /created-users HTTP/1.1" 200 -
+2025-01-10 01:05:02,677 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:02] "OPTIONS /get_admin HTTP/1.1" 200 -
+2025-01-10 01:05:02,729 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:02] "GET /get_admin HTTP/1.1" 200 -
+2025-01-10 01:05:03,086 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:03] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:05:18,371 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:18] "OPTIONS /additional-services HTTP/1.1" 200 -
+2025-01-10 01:05:18,372 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:18] "OPTIONS /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 01:05:18,526 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:18] "GET /additional-services HTTP/1.1" 200 -
+2025-01-10 01:05:18,526 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:18] "GET /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 01:05:19,497 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:19] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:05:19,499 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:19] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:05:19,578 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:19] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:05:19,612 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:05:19] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:06:45,927 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:45] "OPTIONS /created-packages HTTP/1.1" 200 -
+2025-01-10 01:06:45,956 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:45] "[33mOPTIONS /created-services HTTP/1.1[0m" 404 -
+2025-01-10 01:06:46,034 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:06:46,106 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "OPTIONS /created-venues HTTP/1.1" 200 -
+2025-01-10 01:06:46,132 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:06:46,222 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /event-types HTTP/1.1" 200 -
+2025-01-10 01:06:46,233 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:06:46,330 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /created-packages HTTP/1.1" 200 -
+2025-01-10 01:06:46,359 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /created-venues HTTP/1.1" 200 -
+2025-01-10 01:06:46,363 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:06:46,394 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:06:46,468 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:06:46,477 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:06:46] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:07:24,678 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:07:24] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 01:07:24,741 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:07:24] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 01:14:52,416 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:52] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:14:52,418 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:52] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:14:52,503 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:52] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:14:52,509 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:52] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:14:55,095 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:55] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:14:55,111 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:14:55] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:18,144 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:18] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:18,147 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:18] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:18,220 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:18] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:18,224 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:18] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:21,979 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:21] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:22,029 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:22] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:22,072 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:22] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:22,123 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:22] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:36,437 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:36,440 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:36,443 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:36,711 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:36,722 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:36,978 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:36] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:37,035 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:37] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:55,054 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:55] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:55,062 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:55] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:55,179 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:55] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:15:55,189 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:55] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:15:58,818 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:15:58] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:08,438 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:08] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:08,503 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:08] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:08,580 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:08] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:08,729 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:08] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:12,203 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:12] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:12,232 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:12] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:12,488 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:12] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:12,510 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:12] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:15,003 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:15] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:15,012 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:15] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:15,090 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:15] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:15,145 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:15] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:19:17,312 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:17] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:33,099 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:33] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:19:33,301 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:19:33] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:04,280 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:04] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:21:04,311 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:04] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:04,400 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:04] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:21:04,512 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:04] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:05,779 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:05] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:05,789 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:05] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:21:08,007 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:08] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:19,839 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:19] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:21:19,927 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:21:19] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:25:52,958 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:25:52] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:25:52,995 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:25:52] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:25:53,129 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:25:53] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:25:53,184 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:25:53] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:25:54,268 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:25:54] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:28:26,111 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:26] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:28:26,139 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:26] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:28:26,179 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:26] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:28:26,342 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:26] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:28:28,187 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:28] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:28:28,258 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:28] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:28:50,994 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:50] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:28:50,997 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:50] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:28:51,112 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:51] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:28:51,122 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:28:51] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:29:12,968 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:12] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:29:12,975 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:12] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:29:13,095 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:13] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:29:13,122 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:13] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:29:14,835 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:14] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:29:14,884 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:14] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:29:15,772 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:29:15] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:31:26,503 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:26] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:31:26,524 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:26] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:31:26,753 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:26] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:31:26,863 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:26] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:31:30,686 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:30] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:31:30,697 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:31:30] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:32:27,541 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:27] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:32:27,572 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:27] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:32:27,733 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:27] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:32:27,837 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:27] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:32:29,849 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:29] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:32:29,948 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:29] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:32:31,654 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:31] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:32:38,032 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:38] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:32:38,084 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:32:38] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:23,835 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:23] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:34:23,890 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:23] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:24,066 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:24] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:24,080 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:24] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:34:25,241 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:25] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:45,705 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:45] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:34:45,718 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:45] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:46,832 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:46] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:34:46,840 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:46] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:56,821 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:56] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:34:56,824 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:56] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:56,950 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:56] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:34:56,986 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:34:56] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:07,616 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:07] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:07,619 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:07] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:07,715 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:07] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:07,835 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:07] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:08,891 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:08] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:08,949 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:08] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:21,373 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:21] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:21,377 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:21] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:21,502 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:21] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:21,596 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:21] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:40,567 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:40] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:40,600 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:40] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:40,696 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:40] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:35:40,719 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:40] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:35:44,630 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:35:44] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:12,652 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:12] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:36:12,721 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:12] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:36:13,279 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:13] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:13,345 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:13] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:21,797 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:21] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:36:21,857 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:21] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:21,876 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:21] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:36:22,018 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:22] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:40,523 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:40] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:36:40,582 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:36:40] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:37:00,073 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:37:00] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:37:00,270 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:37:00] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:18,977 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:18] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:41:18,988 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:18] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:19,056 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:19] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:19,136 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:19] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:41:21,722 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:21] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:24,635 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:24] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:24,644 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:24] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:41:24,773 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:24] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:41:24,809 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:24] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 01:41:25,933 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:41:25] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:41,570 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:41] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:41,634 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:41] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:43,757 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:43] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:46,364 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:46] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:50,391 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:50] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:42:50,465 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:42:50] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:44:40,797 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:44:40] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:44:40,917 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:44:40] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:49:43,077 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:49:43] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:49:43,740 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:49:43] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:50:10,455 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:50:10] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:50:10,760 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:50:10] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:53:18,902 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:53:18] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:53:19,286 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:53:19] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:53:20,656 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:53:20] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:53:21,926 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:53:21] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:55:49,139 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:55:49] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:55:49,376 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:55:49] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:55:51,216 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:55:51] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:55:52,940 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:55:52] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:56:49,172 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:56:49] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 01:56:49,272 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:56:49] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 01:56:51,011 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 01:56:51] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:16,753 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:16] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:00:16,770 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:16] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:16,866 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:16] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:17,037 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:17] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:00:19,811 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:19] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:00:19,814 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:19] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:32,363 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:32] "OPTIONS /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:32,432 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:32] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:33,748 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:33] "GET /outfits HTTP/1.1" 200 -
+2025-01-10 02:00:38,983 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:38] "OPTIONS /add-gown-package HTTP/1.1" 200 -
+2025-01-10 02:00:40,398 - root - INFO - Calculated price for gown_package_id 23: 300.00
+2025-01-10 02:00:40,398 - root - INFO - Calculated price for gown_package_id 22: 300.00
+2025-01-10 02:00:40,535 - root - INFO - Updated price for gown_package_id 22 to 300.00
+2025-01-10 02:00:40,535 - root - INFO - Updated price for gown_package_id 23 to 300.00
+2025-01-10 02:00:40,543 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:40] "[35m[1mPOST /add-gown-package HTTP/1.1[0m" 201 -
+2025-01-10 02:00:40,544 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:40] "[35m[1mPOST /add-gown-package HTTP/1.1[0m" 201 -
+2025-01-10 02:00:42,475 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:42] "OPTIONS /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:00:42,554 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:42] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:00:43,080 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:00:43] "GET /gown-packages HTTP/1.1" 200 -
+2025-01-10 02:03:59,859 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:03:59] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:00,143 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:00] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:00,947 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:00] "OPTIONS /venues HTTP/1.1" 200 -
+2025-01-10 02:04:01,025 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:01] "GET /venues HTTP/1.1" 200 -
+2025-01-10 02:04:01,303 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:01] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:13,147 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:13] "OPTIONS /toggle-supplier-status/2 HTTP/1.1" 200 -
+2025-01-10 02:04:13,284 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:13] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
+2025-01-10 02:04:15,097 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:15] "OPTIONS /inactive-suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:15,246 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:15] "GET /inactive-suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:17,381 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:17] "PUT /toggle-supplier-status/2 HTTP/1.1" 200 -
+2025-01-10 02:04:17,389 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:17] "OPTIONS /suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:17,448 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:17] "GET /suppliers HTTP/1.1" 200 -
+2025-01-10 02:04:19,466 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:19] "OPTIONS /additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:19,470 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:19] "OPTIONS /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:19,696 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:19] "GET /additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:19,696 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:19] "GET /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:22,699 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:22] "OPTIONS /toggle-additional-service-status/4 HTTP/1.1" 200 -
+2025-01-10 02:04:22,807 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:22] "PUT /toggle-additional-service-status/4 HTTP/1.1" 200 -
+2025-01-10 02:04:23,659 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:23] "GET /additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:23,717 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:23] "GET /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:26,952 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:26] "PUT /toggle-additional-service-status/4 HTTP/1.1" 200 -
+2025-01-10 02:04:27,708 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:27] "OPTIONS /additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:27,779 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:27] "GET /additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:27,785 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:27] "OPTIONS /inactive-additional-services HTTP/1.1" 200 -
+2025-01-10 02:04:27,844 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 02:04:27] "GET /inactive-additional-services HTTP/1.1" 200 -

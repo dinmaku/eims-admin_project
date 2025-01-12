@@ -17,9 +17,9 @@
         
         <div class="flex flex-row justify-end items-center m-5 my-7">
         <div class = "flex">
-        <button class = "mr-2 w-36 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
+        <button class = "mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
         transition-transform duration-300 transform hover:scale-105" @click="addPackagesBtn">
-        + Add Package
+        Create Event Package
         </button>
         </div>
         </div>
@@ -117,8 +117,8 @@
               </div>
 
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Capacity</label>
-                <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
+                <label for="charge_unit" class="block text-xs font-medium text-gray-700 mb-1">Unit for Additional Charges</label>
+              <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Additional Capacity Charges</label>
@@ -127,8 +127,8 @@
             </div>
 
             <div class="mt-5">
-              <label for="charge_unit" class="block text-sm font-medium text-gray-700">Unit for Additional Charges</label>
-              <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="mt-2 p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Capacity</label>
+              <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
             </div>
 
             <div class="mt-5">
@@ -165,7 +165,7 @@
               class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
             >
               <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
-              Additionals
+              Inclusions
             </button>
           </div>
 
@@ -227,12 +227,18 @@
           </div>
           <div>
             <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
-            <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-              <option selected disabled value="">Select Venue</option>
-              <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
-                {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }}
-              </option>
-            </select>
+            <div v-if="venues && venues.length > 0">
+              <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <option selected disabled value="">Select Venue</option>
+                <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
+                  {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }}
+                </option>
+              </select>
+            </div>
+            <div v-else>
+              <div class="text-red-500">No active venues available</div>
+              <pre class="text-xs mt-2">{{ JSON.stringify(venues, null, 2) }}</pre>
+            </div>
           </div>
           <div class="flex justify-center mt-4">
             <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
@@ -328,7 +334,7 @@
         <div class="mt-4 p-4 bg-gray-50 rounded-lg shadow-sm">
           <div class="flex justify-between items-center">
             <div class="text-lg font-semibold text-gray-700">Total Package Price:</div>
-            <div class="text-xl font-bold text-blue-600">₱{{ formatPrice(
+            <div class="text-xl font-bold text-blue-600">{{ formatPrice(
               inclusions.reduce((total, inc) => {
                 if (inc.type === 'supplier' && inc.data) total += Number(inc.data.price || 0);
                 if (inc.type === 'venue' && inc.data) total += Number(inc.data.venue_price || 0);
@@ -388,7 +394,6 @@
     <div class="bg-white w-[800px] p-5 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
       <div class="flex justify-between items-center mb-5">
         <h1 class="font-semibold text-xl text-gray-800">Edit Package</h1>
-        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="closeEditPackagesBtn">Close</button>
       </div>
 
       <div class="border-b border-gray-300 mb-5"></div>
@@ -425,7 +430,6 @@
           <textarea v-model="selectedPackage.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
         </div>
       </div>
-
       <!-- Inclusion Buttons -->
       <div class="grid grid-cols-4 gap-4 mb-4">
         <button 
@@ -474,45 +478,37 @@
               <td class="border border-gray-300 px-4 py-2 capitalize">
                 {{ inclusion.type === 'supplier' ? `Supplier(${inclusion.serviceType})` : inclusion.type }}
               </td>
-              <td class="border border-gray-300 px-4 py-2">
-                <!-- Supplier select -->
-                <span v-if="inclusion.type === 'supplier'">
-                  <select v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                    <option value="">Select {{ inclusion.serviceType }}</option>
-                    <option v-for="supplier in filteredSuppliers(inclusion.serviceType)" :key="supplier.supplier_id" :value="supplier">
-                      {{ supplier.firstname }} {{ supplier.lastname }}
-                    </option>
-                  </select>
-                </span>
-
-                <!-- Venue select -->
-                <select v-if="inclusion.type === 'venue'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                  <option value="">Select Venue</option>
-                  <option v-for="venue in venues" :key="venue.selectVenueId" :value="venue">
-                    {{ venue.selectVenue_name }}
-                  </option>
-                </select>
-
-                <!-- Outfit select -->
-                <select v-if="inclusion.type === 'outfit'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                  <option value="">Select Outfit Package</option>
-                  <option v-for="gp in gownPackages" :key="gp.gown_package_id" :value="gp">
-                    {{ gp.gown_package_name }}
-                  </option>
-                </select>
-
-                <!-- Additional Services select -->
-                <select v-if="inclusion.type === 'service'" v-model="inclusion.data" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                  <option value="">Select Additional Service</option>
-                  <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
-                    {{ service.add_service_name }}
-                  </option>
-                </select>
+              <td class="border border-gray-300 px-4 py-2">{{ getInclusionName(inclusion) }}</td>
+              <td class="border border-gray-300 px-4 py-2">{{ getInclusionPrice(inclusion) }}</td>
+              <td class="border border-gray-300 py-2">
+                <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                  <img 
+                    alt="Delete Icon" 
+                    class="w-[20px] h-[20px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                    src="/img/delete.png" 
+                  >
+                </div>
               </td>
-              <td class="border border-gray-300 px-4 py-2">{{ formatPrice(inclusion.data?.price || 0) }}</td>
             </tr>
           </tbody>
         </table>
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+          <div class="flex justify-between items-center">
+            <div class="text-lg font-semibold text-gray-700">Total Package Price:</div>
+            <div class="text-xl font-bold text-blue-600">{{ formatPrice(
+              inclusions.reduce((total, inc) => {
+                if (inc.type === 'supplier' && inc.data) total += Number(inc.data.price || 0);
+                if (inc.type === 'venue' && inc.data) total += Number(inc.data.venue_price || 0);
+                if (inc.type === 'outfit' && inc.data) total += Number(inc.data.gown_package_price || 0);
+                if (inc.type === 'service' && inc.data) total += Number(inc.data.add_service_price || 0);
+                return total;
+              }, 0)
+            ) }}</div>
+          </div>
+          <div class="mt-2 text-sm text-gray-500">
+            * Price includes all selected inclusions (suppliers, services, venue, and outfit package)
+          </div>
+        </div>
       </div>
 
       <!-- Submit and Delete Buttons -->
@@ -577,7 +573,7 @@ export default {
       ],
       eventTypes: [],
       availableSuppliers: [],
-      venues: [],
+      venues: [], 
       gownPackages: [],
       additionalServices: [],
       packageData: {
@@ -672,6 +668,8 @@ export default {
       this.showSupplierModal = false;
     },
     openVenueModal() {
+      console.log('Opening venue modal');
+      console.log('Current venues:', this.venues);
       this.showVenueModal = true;
     },
     closeVenueModal() {
@@ -725,10 +723,24 @@ export default {
       this.closeOutfitModal();
     },
     addSelectedService() {
+      if (!this.selectedService) {
+        console.error('No service selected');
+        return;
+      }
+
+      console.log('Adding service:', this.selectedService);
+      
       this.inclusions.push({
         type: 'service',
-        data: this.selectedService
+        data: {
+          add_service_id: this.selectedService.add_service_id,
+          add_service_name: this.selectedService.add_service_name,
+          add_service_description: this.selectedService.add_service_description,
+          add_service_price: this.selectedService.add_service_price,
+          status: this.selectedService.status
+        }
       });
+
       this.selectedService = null;
       this.closeServiceModal();
     },
@@ -742,30 +754,8 @@ export default {
     filteredSuppliers(serviceType) {
       return this.availableSuppliers.filter(supplier => supplier.service === serviceType && !this.inclusions.find(inclusion => inclusion.type === 'supplier' && inclusion.data && inclusion.data.supplier_id === supplier.supplier_id));
     },
-    filteredVenues() {
-      const selectedVenueIds = this.inclusions.filter(inc => inc.type === 'venue' && inc.data).map(inc => inc.data.venue_id);
-      return this.venues.filter(venue => !selectedVenueIds.includes(venue.venue_id));
-    },
-    filteredGownPackages() {
-      const selectedGownPackageIds = this.inclusions.filter(inc => inc.type === 'outfit' && inc.data).map(inc => inc.data.gown_package_id);
-      return this.gownPackages.filter(pkg => !selectedGownPackageIds.includes(pkg.gown_package_id));
-    },
     getInclusionName(inclusion) {
-      if (inclusion.type === 'supplier' && inclusion.data) {
-        return `${inclusion.data.firstname} ${inclusion.data.lastname}`;
-      }
-      if (inclusion.type === 'venue' && inclusion.data) {
-        return inclusion.data.venue_name;
-      }
-      if (inclusion.type === 'outfit' && inclusion.data) {
-        return inclusion.data.gown_package_name;
-      }
-      if (inclusion.type === 'service' && inclusion.data) {
-        return inclusion.data.add_service_name;
-      }
-      return '';
-    },
-    getInclusionName(inclusion) {
+      // Get the name of an inclusion based on its type
       if (!inclusion || !inclusion.data) return '';
       
       switch (inclusion.type) {
@@ -782,21 +772,21 @@ export default {
       }
     },
     getInclusionPrice(inclusion) {
-        if (!inclusion || !inclusion.data) return '-';
-        
-        switch (inclusion.type) {
-          case 'supplier':
-            return `${this.formatPrice(inclusion.data.price)} php`;
-          case 'venue':
-            return `${this.formatPrice(inclusion.data.venue_price)} php`;
-          case 'outfit':
-            return `${this.formatPrice(inclusion.data.gown_package_price)} php`;
-          case 'service':
-            return `${this.formatPrice(inclusion.data.add_service_price)} php`;
-          default:
-            return '-';
-        }
-      },
+      // Get the formatted price of an inclusion based on its type
+      if (!inclusion || !inclusion.data) return '-';
+      
+      const priceMap = {
+        supplier: 'price',
+        venue: 'venue_price', 
+        outfit: 'gown_package_price',
+        service: 'add_service_price'
+      };
+      
+      const priceField = priceMap[inclusion.type];
+      if (!priceField) return '-';
+      
+      return `${this.formatPrice(inclusion.data[priceField])} php`;
+    },
 
       async addPackages() {
           try {
@@ -961,7 +951,7 @@ export default {
             })),
             ...(pkg.venue_id ? [{
               type: 'venue',
-              data: { selectVenueId: pkg.venue_id, selectVenue_name: pkg.venue_name }
+              data: { venue_id: pkg.venue_id, venue_name: pkg.venue_name }
             }] : []),
             ...(pkg.outfit_packages || []).map(outfit => ({
               type: 'outfit',
@@ -990,48 +980,64 @@ export default {
         console.error('Error fetching packages:', error.response?.data || error.message);
       }
     },
-       async fetchVenues() {
-          try {
-              const token = localStorage.getItem('access_token');
-              if (!token) {
-                  alert('You are not logged in. Please log in to view venues.');
-                  return;
-              }
+    async fetchVenues() {
+      try {
+      
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
 
-              const response = await axios.get('http://127.0.0.1:5000/created-venues', {
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}`,
-                  },
-                  withCredentials: true,
-              });
-
-              // Ensure the response data is consistent with template expectations
-              this.venues = response.data.map(venue => ({
-                  venue_id: venue.venue_id,  // Matches v-for and filteredVenues
-                  venue_name: venue.venue_name,
-                  location: venue.location,
-                  venue_price: venue.venue_price,  // Include any other fields needed
-              }));
-          } catch (error) {
-              console.error('Error fetching venues:', error.response?.data || error.message);
+        const response = await axios.get('http://127.0.0.1:5000/created-venues', {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-      },
+        });
+
+        let venuesData = [];
+        if (response.data && typeof response.data === 'object') {
+          if (Array.isArray(response.data)) {
+            venuesData = response.data;
+          } else if (response.data.data && Array.isArray(response.data.data)) {
+            venuesData = response.data.data;
+          }
+        }
+
+      
+
+        // Map venues and format prices
+        this.venues = venuesData.map(venue => ({
+          venue_id: venue.venue_id,
+          venue_name: venue.venue_name,
+          location: venue.location || 'No location specified',
+          venue_price: parseFloat(venue.venue_price) || 0,
+          description: venue.description,
+          capacity: venue.venue_capacity,
+          status: venue.status || 'Active' // Default to Active if not specified
+        }));
+
+        
+        
+      } catch (error) {
+        console.error('Error fetching venues:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+        }
+      }
+    },
 
 
       async fetchSuppliersAndPackageServices() {
             try {
               const token = localStorage.getItem('access_token');
               if (!token) {
-                alert('You are not logged in. Please log in to fetch data.');
+                console.error('No access token found');
                 return;
               }
 
-              const [suppliersResponse, venuesResponse, gownPackagesResponse] = await Promise.all([
+              const [suppliersResponse, gownPackagesResponse] = await Promise.all([
                 axios.get('http://127.0.0.1:5000/suppliers', {
-                  headers: { Authorization: `Bearer ${token}` },
-                }),
-                axios.get('http://127.0.0.1:5000/created-venues', {
                   headers: { Authorization: `Bearer ${token}` },
                 }),
                 axios.get('http://127.0.0.1:5000/gown-packages', {
@@ -1039,33 +1045,28 @@ export default {
                 }),
               ]);
 
-              this.availableSuppliers = suppliersResponse.data;
-              this.venues = venuesResponse.data.map(venue => ({
-                ...venue,
-                venue_id: venue.venue_id,
-                venue_name: venue.venue_name,
-                venue_price: venue.venue_price,
-              }));
-              console.log('Venues fetched:', this.venues); // Add this line
-              this.gownPackages = gownPackagesResponse.data.map(gp => ({
-                ...gp,
-                gown_package_id: gp.gown_package_id,
-                gown_package_name: gp.gown_package_name,
-                gown_package_price: gp.gown_package_price,
-              }));
+
+              this.availableSuppliers = suppliersResponse.data.filter(supplier => supplier.status === 'Active');
+              this.gownPackages = gownPackagesResponse.data
+                .filter(gp => gp.status === 'Active')
+                .map(gp => ({
+                  ...gp,
+                  gown_package_id: gp.gown_package_id,
+                  gown_package_name: gp.gown_package_name,
+                  gown_package_price: gp.gown_package_price,
+                }));
+
+              
             } catch (error) {
-              console.error('Error fetching data:', error.response?.data || error.message);
+              console.error('Error fetching data:', error);
+              console.error('Error details:', error.response?.data || error.message);
             }
         },
 
         async fetchEventTypes() {
           try {
-              console.log('Fetching event types...');
-              console.log('Using URL:', 'http://127.0.0.1:5000/event-types');
               const response = await axios.get('http://127.0.0.1:5000/event-types');
-              console.log('Event types response:', response.data);
               this.eventTypes = response.data;
-              console.log('Event types stored:', this.eventTypes);
           } catch (error) {
               console.error('Error fetching event types:', error);
               console.error('Error details:', error.response ? error.response.data : error.message);
@@ -1095,33 +1096,40 @@ export default {
     removeSupplier(index) {
       this.packageData.suppliers.splice(index, 1);
     },
-      async fetchAdditionalServices() {
+    async fetchAdditionalServices() {
         try {
           const token = localStorage.getItem('access_token');
-          if (!token) {
-            alert('You are not logged in. Please log in to view additional services.');
-            return;
-          }
+          if (!token) return;
 
-          const response = await axios.get('http://127.0.0.1:5000/created-services', {
+          const response = await axios.get('http://127.0.0.1:5000/additional-services', {
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            withCredentials: true,
+              'Authorization': `Bearer ${token}`
+            }
           });
 
-          this.additionalServices = response.data.map((service, index) => ({
+          let servicesData = [];
+          if (response.data && typeof response.data === 'object') {
+            if (Array.isArray(response.data)) {
+              servicesData = response.data;
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+              servicesData = response.data.data;
+            }
+          }
+
+          this.additionalServices = servicesData.map(service => ({
             add_service_id: service.add_service_id,
             add_service_name: service.add_service_name,
-            add_service_description: service.add_service_description,
-            add_service_price: service.add_service_price,
-            dummyIndex: index + 1,
+            add_service_description: service.add_service_description || 'No description available',
+            add_service_price: parseFloat(service.add_service_price) || 0,
+            status: service.status || 'Active'
           }));
+        
         } catch (error) {
-          console.error('Error fetching additional services:', error.response?.data || error.message);
+          if (error.response) {
+            console.error('Error response:', error.response.data);
+          }
         }
-      },
+    },
 
 
       async confirmEditPackage() {
@@ -1140,7 +1148,7 @@ export default {
                 type: inclusion.type,
                 serviceType: inclusion.serviceType,
                 id: inclusion.type === 'supplier' ? data.supplier_id :
-                    inclusion.type === 'venue' ? data.selectVenueId :
+                    inclusion.type === 'venue' ? data.venue_id :
                     inclusion.type === 'outfit' ? data.gown_package_id :
                     inclusion.type === 'service' ? data.add_service_id : null,
                 price: data.price || 0
@@ -1283,8 +1291,8 @@ export default {
             inclusions: [],
             selectedSuppliers: packageToEdit.suppliers || [],
             selectedVenue: packageToEdit.venue_id ? {
-                selectVenueId: packageToEdit.venue_id,
-                selectVenue_name: packageToEdit.venue_name,
+                venue_id: packageToEdit.venue_id,
+                venue_name: packageToEdit.venue_name,
                 price: packageToEdit.venue_price
             } : null,
             selectedOutfitPackage: packageToEdit.outfit_packages?.[0] || null,
@@ -1359,11 +1367,10 @@ export default {
     },
 
     formatPrice(price) {
-      if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
-        return 'N/A'; // Return a fallback if price is invalid
-      }
-      // Ensure price is treated as a number, round to 2 decimal places, and format with commas
-      return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+      return new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP'
+      }).format(price);
     },
 
     displayEventTypeBtn() {
@@ -1397,22 +1404,32 @@ export default {
     return this.supplier.price || this.supplier.external_supplier_price || 0;
    },
    filteredAdditionalServices() {
-      const selectedServiceIds = this.selectedPackage.inclusions
-          .filter(inclusion => inclusion.type === 'service' && inclusion.data)
-          .map(inclusion => inclusion.data.add_service_id);
-      return this.additionalServices.filter(service => !selectedServiceIds.includes(service.add_service_id));
-  },
+      if (!this.additionalServices || !Array.isArray(this.additionalServices)) {
+        return [];
+      }
+
+      const selectedServiceIds = this.inclusions
+        .filter(inc => inc.type === 'service' && inc.data)
+        .map(inc => inc.data.add_service_id);
+
+      return this.additionalServices.filter(service => 
+        service.status === 'Active' && !selectedServiceIds.includes(service.add_service_id)
+      );
+    },
+   filteredVenues() {
+      return this.venues || [];
+   },
 
   dynamicTotalPrice() {
       return (
         // Supplier prices
         this.inclusions
           .filter(inc => inc.type === 'supplier' && inc.data)
-          .reduce((acc, inc) => acc + (Number(inc.data.price) || 0), 0) +
+          .reduce((total, inc) => total + (Number(inc.data.price) || 0), 0) +
         // Additional service prices
         this.inclusions
           .filter(inc => inc.type === 'service' && inc.data)
-          .reduce((acc, inc) => acc + (Number(inc.data.add_service_price) || 0), 0) +
+          .reduce((total, inc) => total + (Number(inc.data.add_service_price) || 0), 0) +
         // Venue price
         Number(this.inclusions.find(inc => inc.type === 'venue' && inc.data)?.data?.venue_price || 0) +
         // Outfit package price
@@ -1423,14 +1440,19 @@ export default {
   
 },
 
-    mounted() {
-      this.fetchPackages();
-      console.log('Component mounted');
-      this.fetchSuppliersAndPackageServices();
-      console.log('Fetch completed');
-      this.fetchAdditionalServices();
-      this.fetchEventTypes();
-  },
+    async mounted() {
+      try {
+        await this.fetchVenues();
+        await this.fetchAdditionalServices();
+        await this.fetchEventTypes();
+        await this.fetchPackages();
+        await this.fetchSuppliersAndPackageServices();
+      } catch (error) {
+        console.error('Error during data fetch in mounted hook:', error);
+      }
+    },
+
+
     watch: {
         showTable(newTable) {
             if (newTable === 'packages') {

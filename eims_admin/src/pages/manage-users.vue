@@ -1,5 +1,5 @@
 <template>
-   <div class="bg-gray-200 w-full h-full">
+  <div class="bg-gray-200 w-full h-full">
     <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
     <h1 class="font-amaticBold font-extraLight text-3xl">
     Accounts
@@ -100,16 +100,9 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                         <div class="flex items-center space-x-1">
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
-                                @click="editSupplierBtn(index)"
+                                @click="editSupplier(supplier)"
                                 title="Edit">
                                 <img src="/img/update.png" alt="Edit" class="w-6 h-6">
-                            </button>
-                        
-                            <button
-                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
-                                @click="toggleSupplierStatus(supplier)"
-                                title="Set Inactive">
-                                <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
                             </button>
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
@@ -119,9 +112,9 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                             </button>
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
-                                @click="addSocialMediaModal(supplier)"
-                                title="Add Social Media">
-                                <img src="/img/social-media.png" alt="Add Social Media" class="w-6 h-6">
+                                @click="toggleSupplierStatus(supplier)"
+                                title="Set Inactive">
+                                <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
                             </button>
                         </div>
                     </td>
@@ -233,7 +226,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </div>
 
  <!-- Add User Form -->
- <form v-if="addUserForm" @submit.prevent="handleRegister" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddUserForm">
+ <form v-if="addUserForm" @submit.prevent="handleRegister" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center" @click.self="closeAddUserForm">
   <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
     <div class="flex justify-between items-center m-3">
       <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Account</h1>
@@ -313,7 +306,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
       </div>
 
       <!-- Confirm Button -->
-      <div class="flex justify-center items-center mt-5 space-x-2">
+      <div class="flex justify-end items-center mt-5 space-x-2">
           <button class="bg-gray-300 text-white w-20 h-10 rounded-lg transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddUserForm">
           Cancel
         </button>
@@ -324,27 +317,6 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
     </div>
   </div>
 </form>
-
-<!-- Rate Modal -->
-<div v-if="showRateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
-  <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-semibold">Set Supplier Rate</h2>
-      <button @click="closeRateModal" class="text-gray-500 hover:text-gray-700">
-        <span class="text-2xl">&times;</span>
-      </button>
-    </div>
-    <div class="mt-4">
-      <label class="text-xs text-gray-600">Rate</label>
-      <input type="number" v-model="supplierRate" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Enter rate">
-    </div>
-    <div class="flex justify-end mt-4 space-x-2">
-      
-      <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
-      <button @click="saveSupplierRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
-    </div>
-  </div>
-</div>
 
 <!-- Status Confirmation Modal -->
 <div v-if="showStatusConfirmModal" @click.self="closeStatusConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
@@ -369,7 +341,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </div>
 
 <!-- Inactive Suppliers Modal -->
-<div v-if="showInactiveSuppliersModal" @click.self="closeInactiveSuppliersModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center">
+<div v-if="showInactiveSuppliersModal" @click.self="closeInactiveSuppliersModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-40">
   <div class="bg-white p-5 rounded-lg shadow-lg w-[1000px]">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">Inactive Suppliers</h2>
@@ -400,23 +372,44 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             <td class="px-6 py-4">{{ supplier.contactnumber }}</td>
             <td class="px-6 py-4">{{ supplier.service }}</td>
             <td class="px-6 py-4">₱{{ formatPrice(supplier.price) }}</td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 flex space-x-2">
               <button
                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
-                @click="toggleSupplierStatus(supplier)"
+                @click.stop="toggleInactiveSupplierStatus(supplier)"
                 title="Set Active">
                 <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
               </button>
             </td>
           </tr>
         </tbody>
-      </table>
+    </table>
+  </div>
+</div>
+</div>
+
+ <!-- Rate Modal -->
+<div v-if="showRateModal" @click.self="closeRateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-20">
+  <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Set Supplier Rate</h2>
+      <button @click="closeRateModal" class="text-gray-500 hover:text-gray-700">
+        <span class="text-2xl">&times;</span>
+      </button>
+    </div>
+    <div class="mt-4">
+      <label class="text-xs text-gray-600">Rate</label>
+      <input type="number" v-model="supplierRate" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Enter rate">
+    </div>
+    <div class="flex justify-end mt-4 space-x-2">
+      
+      <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
+      <button @click="saveSupplierRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
     </div>
   </div>
 </div>
 
  <!-- Social Media Modal -->
-<div v-if="showSocialMediaModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+<div v-if="showSocialMediaModal" @click.self="closeSocialMediaModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-40">
     <div class="bg-white p-8 rounded-lg shadow-xl w-[500px] relative">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-800">Add Social Media</h2>
@@ -486,7 +479,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </div>
 
  <!--Edit Supplier Form-->
-<form v-if="editSupplierForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditSupplierBtn">
+<form v-if="editSupplierForm" class = "fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-30" @click.self="closeEditSupplierBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
               <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Supplier</h1>
@@ -531,10 +524,36 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <option value="Favors and Gifts">Favors and Gifts</option>
                 </select>
                 </div>
-                <div class = "flex items-center mt-4">
-                  <input type="text" v-model="selectedSupplier.price" class = "mt-2 ml-2 p-2 w-[200px] h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" id ="minPrice" placeholder="Price" required>
+              </div>
+              
+              <!-- Social Media Display -->
+              <div class="mt-5 ml-2 border border-gray-200 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-3">
+                  <p class="text-gray-700 font-medium">Social Media Accounts</p>
+                  <button @click="addSocialMedia" type="button" class="text-blue-600 hover:text-blue-800 text-sm">
+                    + Add Account
+                  </button>
                 </div>
- 
+                <div class="max-h-[200px] overflow-y-auto pr-2">
+                  <div v-if="selectedSupplier.socialMedia && selectedSupplier.socialMedia.length > 0" class="space-y-2">
+                    <div v-for="social in selectedSupplier.socialMedia" :key="social.social_media_id" 
+                         class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
+                      <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                          <span class="font-medium text-gray-700">{{ social.platform }}</span>
+                          <span class="text-gray-500">{{ social.handle }}</span>
+                        </div>
+                        <a v-if="social.url" :href="social.url" target="_blank" 
+                           class="text-sm text-blue-600 hover:text-blue-800 break-all">
+                          {{ social.url }}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-gray-500 text-sm text-center py-4">
+                    No social media accounts added yet
+                  </div>
+                </div>
               </div>
 
               <div v-if = "addStaffDetails" class = "mt-5">
@@ -547,7 +566,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
  
               </div>
 
-              <div class = "flex  justify-center items-center mt-10 space-x-3">
+              <div class = "flex justify-end items-center mt-4 space-x-3">
                 <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditSupplierBtn">
                   Cancel
                 </button>
@@ -562,7 +581,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </form> 
 
 <!--Edit Staff Form-->
-<form v-if="editStaffForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" @click.self="closeEditStaffBtn">
+<form v-if="editStaffForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20" @click.self="closeEditStaffBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
               <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Staff</h1>
@@ -617,6 +636,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 </form> 
 
 </div>
+
 </template>
 
 <script>
@@ -629,6 +649,7 @@ export default {
   name: 'ManageUsers',
   data() {
     return {
+      baseURL: 'http://127.0.0.1:5000',
       showTable: 'Suppliers',
       currentSuppliersPage: 1,
       rowsPerSuppliersPage: 5,
@@ -645,12 +666,10 @@ export default {
       selectedOption: '',
 
       editSupplierForm: false,
-      selectedSupplier: null, 
-      editSupplierForm: false,
+      selectedSupplier: null,
 
       editStaffForm: false,
       selectedStaff: null, 
-      editStaffForm: false,
 
       //add users inputs
       selectedUserType: '',
@@ -687,10 +706,6 @@ export default {
         handle: '',
         url: ''
       },
-
-      selectedSupplier: null,
-
-      
     };
   },
   computed: {
@@ -822,7 +837,7 @@ export default {
                 }
 
                 // Send the request to the backend
-                const response = await axios.post('http://127.0.0.1:5000/add-user', requestData);
+                const response = await axios.post(`${this.baseURL}/add-user`, requestData);
 
                 if (response.status === 201) {
                     alert('User added successfully!');
@@ -858,7 +873,7 @@ export default {
                 return;
               }
 
-              const response = await axios.get('http://127.0.0.1:5000/created-users', {
+              const response = await axios.get(`${this.baseURL}/created-users`, {
                 headers: {
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${token}`, // Corrected syntax error
@@ -914,7 +929,7 @@ export default {
                   return;
               }
 
-              const response = await axios.get('http://127.0.0.1:5000/suppliers', {
+              const response = await axios.get(`${this.baseURL}/suppliers`, {
                   headers: {
                       'Content-Type': 'application/json',
                       'Authorization': `Bearer ${token}`,
@@ -926,6 +941,7 @@ export default {
 
               // Populate suppliers array with data from API
               this.suppliers = response.data.map((supplier, index) => ({
+                  supplier_id: supplier.supplier_id, // Add this line to properly set supplier_id
                   no: supplier.supplier_id,
                   fullName: `${supplier.firstname} ${supplier.lastname}`,
                   email: supplier.email,
@@ -934,8 +950,8 @@ export default {
                   contact: supplier.contactnumber,
                   service: supplier.service,
                   price: supplier.price,
-                  userid: supplier.userid, // Include userid here
-                  dummyIndex: index + 1, // Properly set the dummyIndex here
+                  userid: supplier.userid,
+                  dummyIndex: index + 1,
               }));
           } catch (error) {
               console.error('Error fetching suppliers:', error.response?.data || error.message);
@@ -949,7 +965,7 @@ export default {
                 console.error('No token found');
                 return;
             }
-            const response = await axios.get('http://127.0.0.1:5000/get_admin', {
+            const response = await axios.get(`${this.baseURL}/get_admin`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -982,7 +998,7 @@ export default {
               const lastName = lastNameParts.join(' ');
 
               const response = await axios.put(
-                `http://127.0.0.1:5000/created-users/${this.selectedStaff.no}`,
+                `${this.baseURL}/created-users/${this.selectedStaff.no}`,
                 {
                   firstname: firstName,
                   lastname: lastName,
@@ -1075,7 +1091,7 @@ export default {
                 console.log('Payload:', supplierData);
 
                 const response = await axios.put(
-                  `http://127.0.0.1:5000/edit-supplier/${this.selectedSupplier.no}`,
+                  `${this.baseURL}/edit-supplier/${this.selectedSupplier.no}`,
                   supplierData,
                   {
                     headers: {
@@ -1130,7 +1146,7 @@ export default {
                   return;
                 }
 
-                const response = await axios.delete(`http://127.0.0.1:5000/created-users/${userid}`, {
+                const response = await axios.delete(`${this.baseURL}/created-users/${userid}`, {
                   headers: {
                     'Authorization': `Bearer ${token}`,
                   },
@@ -1210,23 +1226,35 @@ export default {
   
 
 
-    editSupplierBtn(index){
-      this.editSupplierForm = true;
-      const selectedSupplier = this.suppliers[index]; 
-      this.supplierFormData = { ...selectedSupplier };
+    async editSupplier(supplier) {
+      try {
+        console.log('Editing supplier:', supplier);
+        this.selectedSupplier = { ...supplier };
+        // Fetch social media for the supplier
+        const supplierId = supplier.no || supplier.supplier_id; // Handle both properties
+        console.log('Fetching social media for supplier_id:', supplierId);
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(`${this.baseURL}/api/supplier/${supplierId}/social-media`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log('Social media response:', response.data);
+        this.selectedSupplier.socialMedia = response.data;
+        this.editSupplierForm = true;
+        // Close any other modals that might be open
+        this.showInactiveSuppliersModal = false;
+        this.showSocialMediaModal = false;
+        this.showStatusConfirmModal = false;
+      } catch (error) {
+        console.error('Error fetching supplier social media:', error);
+        this.selectedSupplier.socialMedia = [];
+        this.editSupplierForm = true;
+      }
     },
-
     closeEditSupplierBtn() {
       this.editSupplierForm = false;
-    },
-
-    editSupplierBtn(index) {
-        this.selectedSupplier = this.paginatedSuppliers[index]; 
-        this.editSupplierForm = true; // Show the edit form
-    },
-    closeEditUserBtn() {
-        this.editUserForm = false; 
-        this.selectedSupplier = null; 
+      this.selectedSupplier = null; 
     },
 
     editStaffBtn(){
@@ -1296,7 +1324,7 @@ export default {
         }
 
         const response = await axios.put(
-          `http://127.0.0.1:5000/edit-supplier/${this.selectedSupplier.no}`,
+          `${this.baseURL}/edit-supplier/${this.selectedSupplier.no}`,
           {
             price: this.supplierRate
           },
@@ -1330,20 +1358,9 @@ export default {
       }
     },
     async toggleSupplierStatus(supplier) {
-      try {
-        const token = localStorage.getItem('access_token');
-        
-        this.pendingSupplier = supplier;
-        this.pendingStatus = supplier.status === 'Active' ? 'Inactive' : 'Active';
-        this.showStatusConfirmModal = true;
-      } catch (error) {
-        console.error("Error toggling supplier status:", error);
-        if (error.response) {
-          alert(error.response.data.message);
-        } else {
-          alert("Error updating supplier status. Please try again.");
-        }
-      }
+      this.pendingSupplier = supplier;
+      this.pendingStatus = supplier.status === 'active' ? 'inactive' : 'active';
+      this.showStatusConfirmModal = true;
     },
     closeStatusConfirmModal() {
       this.showStatusConfirmModal = false;
@@ -1355,7 +1372,7 @@ export default {
         const token = localStorage.getItem('access_token');
         
         const response = await axios.put(
-          `http://127.0.0.1:5000/toggle-supplier-status/${this.pendingSupplier.no}`,
+          `${this.baseURL}/toggle-supplier-status/${this.pendingSupplier.no}`,
           {},
           {
             headers: {
@@ -1365,7 +1382,7 @@ export default {
         );
 
         if (response.status === 200) {
-          if (response.data.new_status === 'Inactive') {
+          if (response.data.new_status === 'inactive') {
             const index = this.suppliers.findIndex(s => s.no === this.pendingSupplier.no);
             if (index !== -1) {
               this.suppliers.splice(index, 1);
@@ -1394,7 +1411,7 @@ export default {
     async showInactiveSuppliers() {
       try {
         const token = localStorage.getItem('access_token');
-        const response = await axios.get('http://127.0.0.1:5000/inactive-suppliers', {
+        const response = await axios.get(`${this.baseURL}/inactive-suppliers`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -1405,6 +1422,9 @@ export default {
           no: supplier.supplier_id // Ensure we have the 'no' property for consistency
         }));
         this.showInactiveSuppliersModal = true;
+        this.editSupplierForm = false;
+        this.showSocialMediaModal = false;
+        this.showStatusConfirmModal = false;
       } catch (error) {
         console.error("Error fetching inactive suppliers:", error);
         alert("Error fetching inactive suppliers. Please try again.");
@@ -1416,8 +1436,13 @@ export default {
       this.inactiveSuppliers = [];
     },
     addSocialMediaModal(supplier) {
+      console.log('Opening social media modal for supplier:', supplier);
       this.selectedSupplier = supplier;
       this.showSocialMediaModal = true;
+      // Close any other modals that might be open
+      this.showInactiveSuppliersModal = false;
+      this.editSupplierForm = false;
+      this.showStatusConfirmModal = false;
     },
     closeSocialMediaModal() {
       this.showSocialMediaModal = false;
@@ -1426,7 +1451,6 @@ export default {
         handle: '',
         url: ''
       };
-      this.selectedSupplier = null;
     },
     async submitSocialMedia() {
       try {
@@ -1447,9 +1471,9 @@ export default {
         }
 
         const response = await axios.post(
-          'http://127.0.0.1:5000/add-supplier-social-media',
+          `${this.baseURL}/add-supplier-social-media`,
           {
-            supplier_id: this.selectedSupplier.no, // Changed from supplier_id to no
+            supplier_id: this.selectedSupplier.no || this.selectedSupplier.supplier_id, 
             ...this.socialMediaForm
           },
           {
@@ -1468,6 +1492,91 @@ export default {
       } catch (error) {
         console.error('Error adding social media:', error);
         alert(error.response?.data?.error || 'Failed to add social media');
+      }
+    },
+    async editSupplier(supplier) {
+      try {
+        console.log('Editing supplier:', supplier);
+        this.selectedSupplier = { ...supplier };
+        // Fetch social media for the supplier
+        console.log('Fetching social media for supplier_id:', supplier.no); 
+        const response = await axios.get(`${this.baseURL}/api/supplier/${supplier.no}/social-media`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        console.log('Social media response:', response.data);
+        this.selectedSupplier.socialMedia = response.data;
+        this.editSupplierForm = true;
+      } catch (error) {
+        console.error('Error fetching supplier social media:', error);
+        this.selectedSupplier.socialMedia = [];
+      }
+    },
+    addSocialMedia() {
+      console.log('Opening social media modal for supplier:', this.selectedSupplier);
+      this.showSocialMediaModal = true;
+    },
+    async toggleInactiveSupplierStatus(supplier) {
+      this.pendingSupplier = supplier;
+      this.pendingStatus = 'active';
+      this.showStatusConfirmModal = true;
+    },
+    editInactiveSupplier(supplier) {
+      console.log('Editing inactive supplier:', supplier);
+      this.selectedSupplier = { ...supplier };
+      // Ensure we have the supplier_id
+      this.selectedSupplier.no = supplier.supplier_id;
+      this.editSupplierForm = true;
+      this.showInactiveSuppliersModal = false;
+    },
+    addInactiveSupplierSocialMedia(supplier) {
+      console.log('Adding social media for inactive supplier:', supplier);
+      this.selectedSupplier = { ...supplier };
+      // Ensure we have the supplier_id
+      this.selectedSupplier.no = supplier.supplier_id;
+      this.showSocialMediaModal = true;
+      this.showInactiveSuppliersModal = false;
+    },
+    async confirmStatusChange() {
+      try {
+        const token = localStorage.getItem('access_token');
+        
+        const response = await axios.put(
+          `${this.baseURL}/toggle-supplier-status/${this.pendingSupplier.no}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          if (response.data.new_status === 'inactive') {
+            const index = this.suppliers.findIndex(s => s.no === this.pendingSupplier.no);
+            if (index !== -1) {
+              this.suppliers.splice(index, 1);
+            }
+            alert('Supplier has been set to Inactive');
+          } else {
+            const index = this.inactiveSuppliers.findIndex(s => s.no === this.pendingSupplier.no);
+            if (index !== -1) {
+              this.inactiveSuppliers.splice(index, 1);
+            }
+            await this.fetchSuppliers();
+            alert('Supplier has been set to Active');
+          }
+          this.closeStatusConfirmModal();
+        }
+      } catch (error) {
+        console.error("Error toggling supplier status:", error);
+        if (error.response) {
+          alert(`Error toggling supplier status: ${error.response.data.message}`);
+        } else {
+          alert("Error updating supplier status. Please try again.");
+        }
+        this.closeStatusConfirmModal();
       }
     },
   },

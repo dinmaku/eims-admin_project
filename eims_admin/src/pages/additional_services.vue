@@ -251,16 +251,16 @@
                 <div class="flex flex-col items-center">
                     <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
                     <p class="mb-6 text-center">Are you sure you want to set this service to {{ pendingStatus }}?</p>
-                    <div class="flex space-x-4">
-                        <button 
-                            @click="confirmStatusChange" 
-                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
-                            Yes
-                        </button>
+                    <div class="flex space-x-4">  
                         <button 
                             @click="closeStatusConfirmModal" 
                             class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
                             Cancel
+                        </button>
+                        <button 
+                            @click="confirmStatusChange" 
+                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+                            Yes
                         </button>
                     </div>
                 </div>

@@ -16,7 +16,7 @@
   <div v-if="displayBookedOutfits">
   <div class="flex flex-row items-center m-5 space-x-5">
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-red-400 space-x-5">
-        <img class="w-auto h-12" src="/img/gowns-booked.png" alt="Gown Image">
+        <img class="w-auto h-12" src="/img/gowns-book.png" alt="Gown Image">
         <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalBookedGowns() }} <span class = "text-xs antialiased text-gray-600">booked gowns</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-cyan-400 space-x-5">

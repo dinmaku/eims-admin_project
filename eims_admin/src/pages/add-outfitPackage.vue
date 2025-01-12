@@ -4,6 +4,12 @@
         <h1 class="font-amaticBold font-extraLight text-3xl">
             Outfit Packages
         </h1>
+        <button 
+            class="bg-[#9B111E] text-white px-3 py-2 rounded shadow-lg transition-transform duration-300 transform hover:scale-105 font-semibold" 
+            @click="showInactivePackagesModal"
+        >
+            Inactive Packages
+        </button>
         </div>
     
         <div class="flex flex-row items-center m-5 space-x-5">
@@ -11,7 +17,13 @@
             <img class="w-auto h-12" src="/img/wardrobes.png" alt="Vendor Image">
             <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalOutfitPackages }} <span class = "text-sm antialiased text-gray-600">packages</span></h2>
         </div>
-       
+        <button 
+        @click="showOutfitsModalFn"
+        class="flex items-center bg-white text-gray-800 font-raleway mt-10 px-3 py-2 rounded shadow-lg transition-transform duration-300 transform hover:scale-105 font-semibold"
+         > <img class="w-auto h-4 pr-2" src="/img/search.png" alt="Vendor Image">
+
+        View All Outfits
+    </button>
     </div>
     
     <div class="flex flex-row justify-end items-center m-5 my-7">
@@ -31,11 +43,11 @@
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-2 py-3">#</th>
-                                    <th scope="col" class="px-2 py-3">Package Name</th>
-                                    <th scope="col" class="px-2 py-3">Description</th>
-                                    <th scope="col" class="px-2 py-3">Price</th>
-                                    <th scope="col" class="px-2 py-3">Action</th>
+                                    <th scope="col" class="px-4 py-3">#</th>
+                                    <th scope="col" class="px-4 py-3">Package Name</th>
+                                    <th scope="col" class="px-4 py-3">Description</th>
+                                    <th scope="col" class="px-4 py-3">Price</th>
+                                    <th scope="col" class="px-4 py-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,12 +60,25 @@
                                     <td class="px-1 py-3 hidden sm:table-cell">{{ gownPackage.description }}</td>
                                     <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(gownPackage.gown_package_price) }} php</td> 
                                     <td class="px-1 py-3 hidden sm:table-cell">
+                                    <div class="flex items-center space-x-2">
                                         <button
-                                            class="h-8 w-14 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]"
-                                            @click="editGownPackageBtn(index)">
-                                            Update
+                                            class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                            @click="editGownPackageBtn(index)"
+                                            title="Update">
+                                            <img src="/img/update.png" alt="Update" class="w-6 h-6">
                                         </button>
-                                    </td>
+                                        <button
+                                            class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                            @click="openStatusConfirmModal(gownPackage, (gownPackage.status || 'Active') === 'Active' ? 'Inactive' : 'Active')"
+                                            :title="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'">
+                                            <img 
+                                                :src="(gownPackage.status || 'Active') === 'Active' ? '/img/inactive.png' : '/img/active.png'" 
+                                                :alt="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'" 
+                                                class="w-6 h-6">
+                                        </button>
+                                    </div>
+                                </td>
+                                                                                                            
                                 </tr>
                             </tbody>
                         </table>
@@ -72,6 +97,69 @@
                         </div>
                     </div>
                 </div>
+
+
+        <div v-if="isInactivePackagesModalVisible" @click.self="closeInactivePackagesModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Inactive Packages</h2>
+                    <button @click="closeInactivePackagesModal" class="text-gray-500 hover:text-gray-700">
+                        <span class="text-2xl">&times;</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3">Package Name</th>
+                                <th class="px-4 py-3">Description</th>
+                                <th class="px-4 py-3">Price</th>
+                                <th class="px-4 py-3">Set</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="packages in inactivePackages" :key="packages.gown_package_id" class="border-b">
+                                <td class="px-4 py-3">{{ packages.gown_package_name }}</td>
+                                <td class="px-4 py-3">{{ packages.description }}</td>
+                                <td class="px-4 py-3">{{ formatPrice(packages.gown_package_price) }} php</td>
+                                <td class="px-4 py-3">
+                                <button
+                                    class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                    @click="openStatusConfirmModal(packages, 'Active')"
+                                    title="Set Active">
+                                    <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                                </button>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div v-if="showStatusConfirmModal" @click.self="closeStatusConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+            <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+                <div class="flex flex-col items-center">
+                    <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
+                    <p class="mb-6 text-center">Are you sure you want to set this package to {{ pendingStatus }}?</p>
+                    <div class="flex space-x-4">
+                        <button
+                            @click="closeStatusConfirmModal"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            @click="confirmStatusChange"
+                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90"
+                        >
+                          Yes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     
          
@@ -213,7 +301,7 @@
             </form>
 
             <!-- Outfit Selection Modal -->
-            <div v-if="showOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div v-if="showOutfitModal" @click.self="closeOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-xl">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Select Outfits</h3>
                     
@@ -271,9 +359,8 @@
 
 
             
-            
-            <!-- Edit Outfit Package Form -->
-                <form v-if="editGownPackageForm" @submit.prevent="updateGownPackage" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
+           <!-- Edit Outfit Package Form -->
+                <form v-if="editGownPackageForm" @click.self="closeEditGownPackageForm" @submit.prevent="updateGownPackage" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center overflow-y-auto z-50">
                 <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform transition duration-300">
                     <!-- Header -->
                     <div class="flex justify-between items-center mb-4">
@@ -403,140 +490,268 @@
             </form>
 
 
-    <!-- Add Outfit Form -->
-    <form v-if="addOutfitForm" @submit.prevent="handleSubmit" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddOutfitForm">
-        <div class="bg-white w-[600px] p-5 rounded-lg shadow-lg overflow-y-auto">
-            <div class="flex justify-between items-center m-3">
-                <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Outfit</h1>
-            </div>
-            <div class="border border-gray-500 mt-5 items-center"></div>
-            <div class="m-5">
-                <span>{{ errorMessage }}</span>
-
-        <!-- Outfit Name -->
-            <div class="flex flex-row mt-5">
-                <input type="text" 
-                    class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
-                    v-model="newOutfit.outfit_name" 
-                    placeholder="Outfit Name" 
-                    required>
-                        <!-- Outfit Type -->
-                        <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
-                                v-model="newOutfit.outfit_type" 
-                                required>
-                            <option value="" disabled selected>Outfit Type</option>
-                            <option value="Wedding Gown">Wedding Gown</option>
-                            <option value="Saree">Saree</option>
-                            <option value="Lehenga">Lehenga</option>
-                            <option value="Suit">Suit</option>
-                            <option value="Jumpsuit">Jumpsuit</option>
-                            <option value="Reception Dress">Reception Dress</option>
-                            <option value="Bridal Robe">Bridal Robe</option>
-                            <option value="Tuxedo">Tuxedo</option>
-                            <option value="Sherwani">Sherwani</option>
-                            <option value="Kurta Pajama">Kurta Pajama</option>
-                            <option value="Bespoke Tailored Outfit">Bespoke Tailored Outfit</option>
-                            <option value="Barong Tagalog">Barong Tagalog</option>
-                            <option value="Morning Coat">Morning Coat</option>
-                            <option value="Bridesmaid Dress">Bridesmaid Dress</option>
-                            <option value="Cultural Attire">Cultural Attire</option>
-                            <option value="Mix-and-Match Dress">Mix-and-Match Dress</option>
-                            <option value="Flower Girl Dress">Flower Girl Dress</option>
-                            <option value="Ring Bearer Suit">Ring Bearer Suit</option>
-                            <option value="Formal Attire">Formal Attire</option>
-                            <option value="Semi-Formal Attire">Semi-Formal Attire</option>
-                            <option value="Traditional/Tribal Wear">Traditional/Tribal Wear</option>
-                            <option value="Engagement Outfit">Engagement Outfit</option>
-                            <option value="Rehearsal Dinner Attire">Rehearsal Dinner Attire</option>
-                            <option value="Haldi Ceremony Outfit">Haldi Ceremony Outfit</option>
-                            <option value="Mehndi Ceremony Outfit">Mehndi Ceremony Outfit</option>
-                            <option value="Cocktail Party Wear">Cocktail Party Wear</option>
-                            <option value="Destination Wedding Attire">Destination Wedding Attire</option>
-                            <option value="Seasonal Attire">Seasonal Attire</option>
-                        </select>
+            <!-- Add Outfit Form -->
+            <form v-if="addOutfitForm" @submit.prevent="handleSubmit" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddOutfitForm">
+                <div class="bg-white w-[600px] p-5 rounded-lg shadow-lg overflow-y-auto">
+                    <div class="flex justify-between items-center m-3">
+                        <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Outfit</h1>
                     </div>
+                    <div class="border border-gray-500 mt-5 items-center"></div>
+                    <div class="m-5">
+                        <span>{{ errorMessage }}</span>
 
-                <!-- Outfit Color -->
-                <div class="flex flex-row mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_color" placeholder="Outfit Color" required>
-                    <!-- Rent Price -->
-                    <input type="number" step="0.01" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.rent_price" placeholder="Rent Price" required>
-                </div>
+                <!-- Outfit Name -->
+                    <div class="flex flex-row mt-5">
+                        <input type="text" 
+                            class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
+                            v-model="newOutfit.outfit_name" 
+                            placeholder="Outfit Name" 
+                            required>
+                                <!-- Outfit Type -->
+                                <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" 
+                                        v-model="newOutfit.outfit_type" 
+                                        required>
+                                    <option value="" disabled selected>Outfit Type</option>
+                                    <option value="Wedding Gown">Wedding Gown</option>
+                                    <option value="Saree">Saree</option>
+                                    <option value="Lehenga">Lehenga</option>
+                                    <option value="Suit">Suit</option>
+                                    <option value="Jumpsuit">Jumpsuit</option>
+                                    <option value="Reception Dress">Reception Dress</option>
+                                    <option value="Bridal Robe">Bridal Robe</option>
+                                    <option value="Tuxedo">Tuxedo</option>
+                                    <option value="Sherwani">Sherwani</option>
+                                    <option value="Kurta Pajama">Kurta Pajama</option>
+                                    <option value="Bespoke Tailored Outfit">Bespoke Tailored Outfit</option>
+                                    <option value="Barong Tagalog">Barong Tagalog</option>
+                                    <option value="Morning Coat">Morning Coat</option>
+                                    <option value="Bridesmaid Dress">Bridesmaid Dress</option>
+                                    <option value="Cultural Attire">Cultural Attire</option>
+                                    <option value="Mix-and-Match Dress">Mix-and-Match Dress</option>
+                                    <option value="Flower Girl Dress">Flower Girl Dress</option>
+                                    <option value="Ring Bearer Suit">Ring Bearer Suit</option>
+                                    <option value="Formal Attire">Formal Attire</option>
+                                    <option value="Semi-Formal Attire">Semi-Formal Attire</option>
+                                    <option value="Traditional/Tribal Wear">Traditional/Tribal Wear</option>
+                                    <option value="Engagement Outfit">Engagement Outfit</option>
+                                    <option value="Rehearsal Dinner Attire">Rehearsal Dinner Attire</option>
+                                    <option value="Haldi Ceremony Outfit">Haldi Ceremony Outfit</option>
+                                    <option value="Mehndi Ceremony Outfit">Mehndi Ceremony Outfit</option>
+                                    <option value="Cocktail Party Wear">Cocktail Party Wear</option>
+                                    <option value="Destination Wedding Attire">Destination Wedding Attire</option>
+                                    <option value="Seasonal Attire">Seasonal Attire</option>
+                                </select>
+                            </div>
 
-                <!-- Size -->
-                <div class="flex flex-row mt-5">
-                    <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.size" required>
-                        <option value="" disabled selected>Size</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="2XL">2XL</option>
-                        <option value="3XL">3XL</option>
-                        <option value="4XL">4XL</option>
-                        <option value="5XL">5XL</option>
-                        </select>
-                    <!-- Weight -->
-                    <input type="number" step="0.01" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.weight" placeholder="Weight" required>
-                </div>
-                  
-                <!-- Outfit From -->
-                <div class="mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="outfitArchive.creation_address" placeholder="Outfit Origin" required>
-                </div>
-
-                <!-- Outfit Owner -->
-                <div class="mt-5">
-                    <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="outfitArchive.owner" placeholder="Outfit Owner" required>
-                </div>
-
-                <!-- Outfit Description -->
-                <div class="mt-5">
-                    <textarea class="mt-2 ml-2 p-2 w-full h-20 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_desc" placeholder="Outfit Description" required></textarea>
-                </div>
-
-                <!-- Outfit Image Upload -->
-                <div class="mt-3 flex flex-col items-center">
-                    <div class="h-[150px] w-[500px] rounded-lg shadow-md flex flex-col items-center justify-between p-2 gap-1 bg-blue-50">
-                        <div class="flex-1 w-full border-2 border-dashed border-royalblue rounded-lg flex items-center justify-center flex-col">
-                            <svg class="h-[50px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                            <p class="text-center text-black text-sm">Browse File to upload!</p>
+                        <!-- Outfit Color -->
+                        <div class="flex flex-row mt-5">
+                            <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_color" placeholder="Outfit Color" required>
+                            <!-- Rent Price -->
+                            <input type="number" step="0.01" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.rent_price" placeholder="Rent Price" required>
                         </div>
-                        <label for="file" class="bg-blue-50 w-full h-[45px] p-2 rounded-lg cursor-pointer flex items-center justify-end text-black border-none">
-                            <svg class="h-[100%] bg-gray-100 rounded-full p-1 shadow-md" fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15.331 6H8.5v20h15V14.154h-8.169z"></path>
-                                <path d="M18.153 6h-.009v5.342H23.5v-.002z"></path>
-                            </svg>
-                            <p id="displayFileName" class="flex-1 text-center text-sm">No file selected</p>
-                            <svg class="h-[100%] bg-gray-100 rounded-full p-1 shadow-md" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.16565 10.1534C5.07629 8.99181 5.99473 8 7.15975 8H16.8402C18.0053 8 18.9237 8.9918 18.8344 10.1534L18.142 19.1534C18.0619 20.1954 17.193 21 16.1479 21H7.85206C6.80699 21 5.93811 20.1954 5.85795 19.1534L5.16565 10.1534Z" stroke="#000000" stroke-width="2"></path>
-                                <path d="M19.5 5H4.5" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
-                                <path d="M10 3C10 2.44772 10.4477 2 11 2H13C13.5523 2 14 2.44772 14 3V5H10V3Z" stroke="#000000" stroke-width="2"></path>
-                            </svg>
-                        </label>
-                        <input id="file" type="file" class="hidden" @change="updateFileName" accept="image/*">
-                      
-                          
+
+                        <!-- Size -->
+                        <div class="flex flex-row mt-5">
+                            <select class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.size" required>
+                                <option value="" disabled selected>Size</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="2XL">2XL</option>
+                                <option value="3XL">3XL</option>
+                                <option value="4XL">4XL</option>
+                                <option value="5XL">5XL</option>
+                                </select>
+                            <!-- Weight -->
+                            <input type="number" step="0.01" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.weight" placeholder="Weight" required>
+                        </div>
+                        
+                        <!-- Outfit From -->
+                        <div class="mt-5">
+                            <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="outfitArchive.creation_address" placeholder="Outfit Origin" required>
+                        </div>
+
+                        <!-- Outfit Owner -->
+                        <div class="mt-5">
+                            <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="outfitArchive.owner" placeholder="Outfit Owner" required>
+                        </div>
+
+                        <!-- Outfit Description -->
+                        <div class="mt-5">
+                            <textarea class="mt-2 ml-2 p-2 w-full h-20 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="newOutfit.outfit_desc" placeholder="Outfit Description" required></textarea>
+                        </div>
+
+                        <!-- Outfit Image Upload -->
+                        <div class="mt-3 flex flex-col items-center">
+                            <div class="h-[150px] w-[500px] rounded-lg shadow-md flex flex-col items-center justify-between p-2 gap-1 bg-blue-50">
+                                <div class="flex-1 w-full border-2 border-dashed border-royalblue rounded-lg flex items-center justify-center flex-col">
+                                    <svg class="h-[50px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                    <p class="text-center text-black text-sm">Browse File to upload!</p>
+                                </div>
+                                <label for="file" class="bg-blue-50 w-full h-[45px] p-2 rounded-lg cursor-pointer flex items-center justify-end text-black border-none">
+                                    <svg class="h-[100%] bg-gray-100 rounded-full p-1 shadow-md" fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.331 6H8.5v20h15V14.154h-8.169z"></path>
+                                        <path d="M18.153 6h-.009v5.342H23.5v-.002z"></path>
+                                    </svg>
+                                    <p id="displayFileName" class="flex-1 text-center text-sm">No file selected</p>
+                                    <svg class="h-[100%] bg-gray-100 rounded-full p-1 shadow-md" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.16565 10.1534C5.07629 8.99181 5.99473 8 7.15975 8H16.8402C18.0053 8 18.9237 8.9918 18.8344 10.1534L18.142 19.1534C18.0619 20.1954 17.193 21 16.1479 21H7.85206C6.80699 21 5.93811 20.1954 5.85795 19.1534L5.16565 10.1534Z" stroke="#000000" stroke-width="2"></path>
+                                        <path d="M19.5 5H4.5" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+                                        <path d="M10 3C10 2.44772 10.4477 2 11 2H13C13.5523 2 14 2.44772 14 3V5H10V3Z" stroke="#000000" stroke-width="2"></path>
+                                    </svg>
+                                </label>
+                                <input id="file" type="file" class="hidden" @change="updateFileName" accept="image/*">
+                            
+                                
+                            </div>
+                        </div>
+
+                        <!-- Confirm and Cancel Buttons -->
+                        <div class="flex justify-end items-center mt-5 space-x-2">
+                            <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddOutfitForm">
+                                Cancel
+                            </button>
+                            <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform transition duration-300 transform hover:scale-105">
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </form>
+     
+     <!-- Outfits Modal -->
+    <div v-if="showOutfitsModal" @click.self="closeOutfitsModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-[1000px]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">All Outfits</h2>
+                <button @click="closeOutfitsModal" class="text-gray-500 hover:text-gray-700">
+                    <span class="text-2xl">&times;</span>
+                </button>
+            </div>
 
-                <!-- Confirm and Cancel Buttons -->
-                <div class="flex justify-center items-center mt-5 space-x-2">
-                    <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddOutfitForm">
-                        Cancel
+            <!-- Search and Filter -->
+            <div class="flex gap-4 mb-4">
+                <input
+                    type="text"
+                    v-model="outfitSearchQuery"
+                    placeholder="Search outfits..."
+                    class="px-4 py-2 border rounded-lg flex-1"
+                >
+                <select 
+                    v-model="outfitTypeFilter"
+                    class="px-4 py-2 border rounded-lg"
+                >
+                    <option value="">All Types</option>
+                    <option value="Gown">Gowns</option>
+                    <option value="Tuxedo">Tuxedos</option>
+        </select>
+     </div>       
+    <!-- Outfits Table -->
+        <div class="h-[400px] flex flex-col">
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs uppercase bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3">#</th>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3">Type</th>
+                            <th class="px-6 py-3">Color</th>
+                            <th class="px-6 py-3">Size</th>
+                            <th class="px-6 py-3">Price</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="outfit in paginatedOutfits" :key="outfit.outfit_id" class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">{{ outfit.dummyIndex }}</td>
+                            <td class="px-6 py-4">{{ outfit.outfit_name }}</td>
+                            <td class="px-6 py-4 capitalize">{{ outfit.outfit_type }}</td>
+                            <td class="px-6 py-4">{{ outfit.outfit_color }}</td>
+                            <td class="px-6 py-4">{{ outfit.size }}</td>
+                            <td class="px-6 py-4">{{ formatPrice(outfit.rent_price) }} php</td>
+                            <td class="px-6 py-4">
+                                <span 
+                                    :class="outfit.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                    class="px-2 py-1 rounded-full text-xs font-medium"
+                                >
+                                    {{ outfit.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <img 
+                                    :src="outfit.outfit_img" 
+                                    :alt="outfit.outfit_name"
+                                    class="w-12 h-12 object-cover rounded"
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-4 flex justify-between items-center bg-white py-3 px-4">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    <button 
+                        @click="currentPage--" 
+                        :disabled="currentPage === 1"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
+                    >
+                        Previous
                     </button>
-                    <button type="submit" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform transition duration-300 transform hover:scale-105">
-                        Save
+                    <button 
+                        @click="currentPage++" 
+                        :disabled="currentPage >= totalPages"
+                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        :class="{ 'opacity-50 cursor-not-allowed': currentPage >= totalPages }"
+                    >
+                        Next
                     </button>
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing
+                            <span class="font-medium">{{ startIndex + 1 }}</span>
+                            to
+                            <span class="font-medium">{{ endIndex }}</span>
+                            of
+                            <span class="font-medium">{{ totalItems }}</span>
+                            results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                            <button 
+                                @click="currentPage--" 
+                                :disabled="currentPage === 1"
+                                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                                :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
+                            >
+                                Previous
+                            </button>
+                            <button 
+                                @click="currentPage++" 
+                                :disabled="currentPage >= totalPages"
+                                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                                :class="{ 'opacity-50 cursor-not-allowed': currentPage >= totalPages }"
+                            >
+                                Next
+                            </button>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
-    </form>
-
-    
+        </div>
+        </div>
+            
     
           
     
@@ -632,8 +847,19 @@
                 name: '',
                 description: '',
                 discount: 0
-            }
-        
+            },
+            showStatusConfirmModal: false,
+            pendingStatus: '',
+            selectedPackage: null,
+            isInactivePackagesModalVisible: false,
+            inactivePackages: [],
+
+            showOutfitsModal: false,
+            outfitSearchQuery: '',
+            outfitTypeFilter: '',
+            currentPage: 1,
+            rowsPerPage: 5
+            
                 
 
         };
@@ -659,6 +885,33 @@
                 outfit.outfit_type.toLowerCase().includes(query)
             );
         },
+        filteredOutfitsForModal() {
+            return this.outfits.filter(outfit => {
+                const matchesSearch = outfit.outfit_name.toLowerCase().includes(this.outfitSearchQuery.toLowerCase()) ||
+                                    outfit.outfit_type.toLowerCase().includes(this.outfitSearchQuery.toLowerCase()) ||
+                                    outfit.outfit_color.toLowerCase().includes(this.outfitSearchQuery.toLowerCase());
+                
+                const matchesType = !this.outfitTypeFilter || outfit.outfit_type === this.outfitTypeFilter;
+                
+                return matchesSearch && matchesType;
+            });
+        },
+
+        totalItems() {
+            return this.filteredOutfitsForModal.length;
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.rowsPerPage);
+        },
+        startIndex() {
+            return (this.currentPage - 1) * this.rowsPerPage;
+        },
+        endIndex() {
+            return Math.min(this.startIndex + this.rowsPerPage, this.totalItems);
+        },
+        paginatedOutfits() {
+            return this.filteredOutfitsForModal.slice(this.startIndex, this.endIndex);
+        },
     },
     methods: {
         async fetchGownPackages() {
@@ -668,44 +921,29 @@
                     alert('You are not logged in. Please log in to view gown packages.');
                     return;
                 }
-
+        
                 const response = await axios.get('http://127.0.0.1:5000/gown-packages', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                    withCredentials: true,calculateSubtotal() {
-                            return this.inclusions.reduce((total, item) => total + item.price, 0);
-                        },
-                    
-                        calculateDiscount() {
-                            const subtotal = this.calculateSubtotal();
-                            return (subtotal * this.packageDetails.discount) / 100;
-                        },
-                    
-                        calculateTotal() {
-                            return this.calculateSubtotal() - this.calculateDiscount();
-                        },
-                    
-                        formatPrice(price) {
-                            return Number(price).toFixed(2);
-                        }
+                    withCredentials: true
                 });
-
+        
                 // Populate gownPackages array with data from API
                 this.gownPackages = response.data.map((item, index) => ({
                     gown_package_id: item.gown_package_id,
                     gown_package_name: item.gown_package_name,
                     gown_package_price: item.gown_package_price,
                     description: item.description,
+                    status: item.status || 'Active', // Add status field
                     dummyIndex: index + 1,
                 }));
-
+        
             } catch (error) {
                 console.error('Error fetching gown packages:', error.response?.data || error.message);
             }
         },
-
 
     async fetchOutfits() {
             try {
@@ -1115,9 +1353,108 @@
             this.calculateTotal();
         }
     },
+    
+    async togglePackageStatus(packages) {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await axios.put(
+                `http://127.0.0.1:5000/toggle-package-status/${packages.gown_package_id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
- 
-                        
+            if (response.status === 200) {
+                alert("Package status updated successfully!");
+                await this.fetchPackages();
+                await this.fetchInactivePackages();
+                if (this.showInactivePackagesModal) {
+                    this.closeInactivePackagesModal();
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling package status:', error);
+            alert('Failed to update package status. Please try again.');
+        }
+    },
+
+    async fetchInactivePackages() {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await axios.get('http://127.0.0.1:5000/inactive-gown-packages', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            this.inactivePackages = response.data;
+        } catch (error) {
+            console.error('Error fetching inactive packages:', error);
+        }
+    },
+
+
+    openStatusConfirmModal(gownPackage, newStatus) {
+        this.selectedPackage = gownPackage;
+        this.pendingStatus = newStatus;
+        this.showStatusConfirmModal = true;
+    },
+
+    async togglePackageStatus() {
+        if (!this.selectedPackage) return;
+        
+        try {
+            const token = localStorage.getItem('access_token');
+            await axios.put(`http://127.0.0.1:5000/toggle-gown-package-status/${this.selectedPackage.gown_package_id}`, {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            // Refresh both active and inactive packages
+            await this.fetchGownPackages();
+            await this.fetchInactivePackages();
+            this.closeStatusConfirmModal();
+        } catch (error) {
+            console.error('Error toggling package status:', error);
+        }
+    },
+
+    closeStatusConfirmModal() {
+        this.showStatusConfirmModal = false;
+        this.selectedPackage = null;
+        this.pendingStatus = '';
+    },
+
+    async confirmStatusChange() {
+        if (this.selectedPackage) {
+            await this.togglePackageStatus(this.selectedPackage);
+            this.closeStatusConfirmModal();
+        }
+    },
+
+    showInactivePackagesModal() {
+        this.fetchInactivePackages();
+        this.isInactivePackagesModalVisible = true;
+    },
+    closeInactivePackagesModal() {
+        this.isInactivePackagesModalVisible = false;
+    },
+    
+    showOutfitsModalFn() {
+        this.showOutfitsModal = true;
+        this.fetchOutfits();
+    },
+    closeOutfitsModal() {
+        this.showOutfitsModal = false;
+        this.outfitSearchQuery = '';
+        this.outfitTypeFilter = '';
+        this.currentPage = 1; // Reset pagination
+    },
 
     
     
@@ -1126,6 +1463,7 @@
         mounted() {
             this.fetchGownPackages();
             this.fetchOutfits();
+            this.fetchInactivePackages();
         },
     
     

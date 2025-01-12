@@ -3,20 +3,24 @@ from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 from .models import (
     check_user, create_user, create_supplier, get_users_by_type, 
-    get_suppliers_with_users, update_suppliers_and_user, delete_user, 
-    update_staff, get_packages, create_package, update_package, 
-    delete_package, get_all_booked_wishlist, update_event, get_packages_wedding,
-    get_all_venues, get_package_services_with_suppliers, get_gown_packages,
-    create_venue, update_venue, delete_venue, get_all_gown_packages,
-    add_gown_package, get_all_outfits, get_all_additional_services,
-    create_additional_service, update_additional_service, get_event_types,
-    initialize_event_types, create_event_type, get_admin_users, create_outfit,
-    add_event_item, get_available_suppliers, get_available_venues,
-    get_available_gown_packages, get_event_types, get_package_details_by_id,
-    get_user_id_by_email, get_event_details, get_db_connection, get_events_by_month_and_type,
-    get_inactive_suppliers, get_inactive_venues, toggle_venue_status, update_venue_price,
-    get_inactive_additional_services, toggle_additional_service_status, update_additional_service_price,
-    add_supplier_social_media
+    get_admin_users, get_suppliers_with_users, get_package_services_with_suppliers,
+    update_suppliers_and_user, update_staff, delete_user, get_packages,
+    create_package, update_package, delete_package, get_user_id_by_email,
+    get_all_booked_wishlist, update_event, get_packages_wedding, create_venue,
+    get_all_venues, delete_venue, update_venue, get_active_venues, get_inactive_venues,
+    toggle_venue_status, update_venue_price, get_gown_packages, get_inactive_packages,
+    toggle_package_status, get_all_gown_packages, add_gown_package, get_all_outfits,
+    create_outfit, create_additional_service, update_additional_service_price,
+    get_active_additional_services, get_inactive_additional_services,
+    toggle_additional_service_status, update_additional_service, get_event_types,
+    initialize_event_types, create_event_type, add_event_item, get_event_details,
+    get_available_suppliers, get_available_venues, get_available_gown_packages,
+    get_event_types, get_package_details_by_id, get_user_id_by_email,
+    get_event_details, track_service_modification, add_service_customization,
+    get_event_modifications, get_all_events, get_events_by_date,
+    get_event_types_count, get_events_by_month_and_type, get_inactive_suppliers,
+    add_supplier_social_media, get_supplier_social_media, initialize_supplier_social_media,
+    Supplier, toggle_supplier_status
 )
 import logging
 import jwt
@@ -28,6 +32,9 @@ logging.basicConfig(level=logging.DEBUG)
 SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
 
 def init_routes(app):
+    # Initialize tables
+    initialize_event_types()
+    initialize_supplier_social_media()
     
     @app.route('/login', methods=['POST'])
     def login():
@@ -678,6 +685,15 @@ def init_routes(app):
             app.logger.error(f"Error adding gown package: {e}")
             return jsonify({'message': 'An error occurred while adding the gown package'}), 500
 
+    @app.route('/outfits', methods=['GET'])
+    @jwt_required()
+    def outfits_route():
+        try:
+            outfits = get_active_outfits()
+            return jsonify(outfits), 200
+        except Exception:
+            return jsonify({'message': 'An error occurred while fetching outfits'}), 500
+
 
 #additional services routes
 
@@ -686,10 +702,9 @@ def init_routes(app):
     def additional_services_route():
         if request.method == 'GET':
             try:
-                services = get_all_additional_services()
+                services = get_active_additional_services()
                 return jsonify(services), 200
             except Exception as e:
-                app.logger.error(f"Error fetching additional services: {str(e)}")
                 return jsonify({'message': 'An error occurred while fetching additional services'}), 500
         elif request.method == 'POST':
             try:
@@ -707,7 +722,6 @@ def init_routes(app):
                 else:
                     return jsonify({"error": "Failed to create service"}), 500
             except Exception as e:
-                app.logger.error(f"Error in /additional-services POST route: {e}")
                 return jsonify({"error": "An internal server error occurred"}), 500
 
     @app.route('/update-service/<int:add_service_id>', methods=['PUT'])
@@ -970,33 +984,14 @@ def init_routes(app):
     @jwt_required()
     def toggle_supplier_status(supplier_id):
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
-            # First get current status
-            cursor.execute("SELECT status FROM suppliers WHERE supplier_id = %s", (supplier_id,))
-            current_status = cursor.fetchone()
-
-            if not current_status:
+            from .models import toggle_supplier_status as toggle_status
+            result = toggle_status(supplier_id)
+            if isinstance(result, tuple) and result[0] == "not_found":
                 return jsonify({"message": "Supplier not found"}), 404
-
-            # Toggle the status
-            new_status = 'Inactive' if current_status[0] == 'Active' else 'Active'
-            
-            cursor.execute(
-                "UPDATE suppliers SET status = %s WHERE supplier_id = %s",
-                (new_status, supplier_id)
-            )
-            
-            conn.commit()
-            cursor.close()
-            conn.close()
-
             return jsonify({
                 'message': 'Supplier status updated successfully',
-                'new_status': new_status
+                'new_status': result
             }), 200
-
         except Exception as e:
             app.logger.error(f"Error updating supplier status: {e}")
             return jsonify({'message': 'An error occurred while updating supplier status'}), 500
@@ -1079,3 +1074,104 @@ def init_routes(app):
         except Exception as e:
             app.logger.error(f"Error adding social media: {str(e)}")
             return jsonify({'error': 'Failed to add social media'}), 500
+
+    @app.route('/api/supplier/<int:supplier_id>/social-media', methods=['GET'])
+    @jwt_required()  # Add JWT protection
+    def get_supplier_social_media(supplier_id):
+        try:
+            app.logger.info(f"Fetching social media for supplier_id: {supplier_id}")
+            # Create a minimal supplier instance just for fetching social media
+            supplier = Supplier(supplier_id=supplier_id)
+            social_media = supplier.get_social_media()
+            app.logger.info(f"Found social media: {social_media}")
+            return jsonify(social_media)
+        except Exception as e:
+            app.logger.error(f"Error fetching social media: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/inactive-packages', methods=['GET'])
+    @jwt_required()
+    def get_inactive_packages_route():
+        try:
+            from . import models  # Import models at function level to avoid circular imports
+            packages = models.get_inactive_packages()
+            return jsonify(packages)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/toggle-package-status/<int:package_id>', methods=['PUT'])
+    @jwt_required()
+    def toggle_package_status_route(package_id):
+        try:
+            from . import models  # Import models at function level to avoid circular imports
+            success = models.toggle_package_status(package_id)
+            if success:
+                return jsonify({'message': 'Package status updated successfully'}), 200
+            else:
+                return jsonify({'error': 'Failed to update package status'}), 400
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/inactive-gown-packages', methods=['GET'])
+    @jwt_required()
+    def get_inactive_gown_packages_route():
+        try:
+            app.logger.info("Fetching inactive gown packages")
+            from . import models  # Import models at function level to avoid circular imports
+            packages = models.get_inactive_packages()
+            app.logger.info(f"Found {len(packages)} inactive packages")
+            return jsonify(packages)
+        except Exception as e:
+            app.logger.error(f"Error fetching inactive packages: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/toggle-gown-package-status/<int:package_id>', methods=['PUT'])
+    @jwt_required()
+    def toggle_gown_package_status_route(package_id):
+        try:
+            app.logger.info(f"Toggling status for package {package_id}")
+            from . import models  # Import models at function level to avoid circular imports
+            success = models.toggle_package_status(package_id)
+            if success:
+                app.logger.info(f"Successfully toggled status for package {package_id}")
+                return jsonify({'message': 'Package status updated successfully'}), 200
+            else:
+                app.logger.error(f"Failed to toggle status for package {package_id}")
+                return jsonify({'error': 'Failed to update package status'}), 400
+        except Exception as e:
+            app.logger.error(f"Error toggling package status: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/event/<int:events_id>/outfits', methods=['GET'])
+    @jwt_required()
+    def get_event_outfits_route(events_id):
+        try:
+            outfits = get_event_outfits(events_id)
+            return jsonify(outfits)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/event/<int:events_id>/outfit', methods=['POST'])
+    @jwt_required()
+    def add_event_outfit_route(events_id):
+        try:
+            data = request.get_json()
+            outfit_type = data.get('type')
+            
+            if outfit_type == 'individual_outfit':
+                outfit_id = data.get('outfit_id')
+                event_outfit_id = add_event_outfit(events_id, outfit_type, outfit_id=outfit_id)
+            elif outfit_type == 'outfit_package':
+                gown_package_id = data.get('gown_package_id')
+                event_outfit_id = add_event_outfit(events_id, outfit_type, gown_package_id=gown_package_id)
+            else:
+                return jsonify({'error': 'Invalid outfit type'}), 400
+
+            if event_outfit_id:
+                return jsonify({'event_outfit_id': event_outfit_id}), 201
+            else:
+                return jsonify({'error': 'Failed to add outfit'}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    return app

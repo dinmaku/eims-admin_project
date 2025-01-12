@@ -311,128 +311,6 @@
           </div>
 
 
-      <!-- Inclusion Modal for Selecting Supplier Type -->
-      <div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Select Supplier Type</h2>
-            <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div class="grid grid-cols-1 gap-2">
-            <button v-for="serviceType in supplierTypes" :key="serviceType" @click="selectSupplierType(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
-              {{ serviceType }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inclusion Modal for Selecting Specific Supplier -->
-      <div v-if="showSupplierModal" @click.self="closeSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Select Supplier</h2>
-            <button @click="closeSupplierModal" class="text-red-500 hover:text-red-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div>
-            <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
-            <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-              <option selected disabled value="">Select {{ selectedSupplierType }}</option>
-              <option v-for="supplier in filteredSuppliers(selectedSupplierType)" :key="supplier.supplier_id" :value="supplier">
-                {{ supplier.firstname }} {{ supplier.lastname }}
-              </option>
-            </select>
-          </div>
-          <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inclusion Modal for Selecting Venue -->
-      <div v-if="showVenueModal" @click.self="closeVenueModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Select Venue</h2>
-            <button @click="closeVenueModal" class="text-red-500 hover:text-red-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div>
-            <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
-            <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-              <option selected disabled value="">Select Venue</option>
-              <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
-                {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }}
-              </option>
-            </select>
-          </div>
-          <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inclusion Modal for Selecting Outfit Package -->
-      <div v-if="showOutfitModal" @click.self="closeOutfitModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Select Outfit Package</h2>
-            <button @click="closeOutfitModal" class="text-red-500 hover:text-red-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div>
-            <label for="outfit" class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
-            <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-              <option selected disabled value="">Select Outfit Package</option>
-              <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
-                {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
-              </option>
-            </select>
-          </div>
-          <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedOutfit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inclusion Modal for Selecting Additional Services -->
-        <div v-if="showServiceModal" @click.self="closeServiceModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-lg font-semibold">Select Additional Service</h2>
-              <button @click="closeServiceModal" class="text-red-500 hover:text-red-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div>
-              <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
-              <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-                <option selected disabled value="">Select Additional Service</option>
-                <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
-                  {{ service.add_service_name }}
-                </option>
-              </select>
-            </div>
-            <div class="flex justify-center mt-4">
-              <button type="button" @click="addSelectedService" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
-            </div>
-          </div>
-        </div>
 
 
         <!-- Inclusions Tables -->
@@ -1583,7 +1461,19 @@
 
   addSelectedOutfit() {
     if (this.selectedOutfit) {
-      this.selectedEvent.outfit = this.selectedOutfit;
+      if (!this.selectedEvent.outfits) {
+        this.selectedEvent.outfits = [];
+      }
+      const existingOutfit = this.selectedEvent.outfits.find(
+        o => o.outfit_id === this.selectedOutfit.outfit_id
+      );
+      
+      if (!existingOutfit) {
+        this.selectedEvent.outfits.push({
+          ...this.selectedOutfit,
+          price: this.selectedOutfit.outfit_price || 0
+        });
+      }
       this.closeOutfitModal();
     }
   },
