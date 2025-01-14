@@ -65,7 +65,7 @@
     
 
     <!-- Tables -->
-    <div v-if="showTable === 'wishlist'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+    <div v-if="showTable === 'wishlist'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -96,8 +96,8 @@
               <td class="px-1 py-3 hidden sm:table-cell">
                 <button
                     @click="openWishlistModal(event)"
-                    class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]">
-                    View
+                    class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                    <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                 </button>
               </td>
             </tr>
@@ -147,7 +147,7 @@
       
 
     <!--Upcoming Events Table-->
-    <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+    <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -199,7 +199,7 @@
 
 
     <!--Completed Events-->
-    <div v-if="showTable === 'finished-events'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+    <div v-if="showTable === 'finished-events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -936,11 +936,11 @@
     return {
       showTable: 'wishlist',
       currentWishlistPage: 1,
-      rowsPerWishlistPage: 6,
+      rowsPerWishlistPage: 5,
       currentPage: 1,
-      rowsPerPage: 6,
+      rowsPerPage: 4,
       currentFinishedPage: 1,
-      rowsPerFinishedPage: 6,
+      rowsPerFinishedPage: 5,
       selectedIndex: null,
       selectedEvent: null,
       event: null,

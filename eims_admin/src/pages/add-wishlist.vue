@@ -725,6 +725,8 @@
                             </div>
                         </div>
 
+                    
+
                         <!-- For Additional Service -->
                         <div v-if="editingInclusion?.type === 'service'" class="space-y-3">
                             <div>
@@ -1384,160 +1386,203 @@ export default {
           }
         },
 
-        addSelectedAdditionalService() {
-          if (this.selectedAdditionalService) {
-            this.inclusions.push({
-              type: 'service',
-              data: {
-                add_service_id: this.selectedAdditionalService.add_service_id,
-                add_service_name: this.selectedAdditionalService.add_service_name,
-                add_service_price: this.selectedAdditionalService.add_service_price,
-                add_service_description: this.selectedAdditionalService.add_service_description
-              }
-            });
-            this.selectedAdditionalService = null;
-            this.showAdditionalServiceModal = false;
-          }
-        },
+        addSelectedService() {
+    if (this.selectedService) {
+        // Check if service already exists
+        const hasExistingService = this.inclusions.some(item => 
+            item.type === 'service' && 
+            item.data.service_id === this.selectedService.add_service_id
+        );
 
-        async submitWishlist() {
-            try {
-                // Get authentication token
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    alert('You are not logged in. Please log in to add to the wishlist.');
-                    return;
-                }
+        if (hasExistingService) {
+            alert('This service is already added.');
+            this.closeServiceModal();
+            return;
+        }
 
-                // Validate required fields
-                if (!this.selectedPackage) {
-                    alert('Please select a package');
-                    return;
-                }
-
-                if (!this.eventSchedule.date || !this.eventSchedule.start_time || !this.eventSchedule.end_time) {
-                    alert('Please fill in all event schedule details');
-                    return;
-                }
-
-                // Validate onsite booking information
-                if (!this.onsite_firstname || !this.onsite_lastname || !this.onsite_contact || !this.onsite_address) {
-                    alert('Please fill in all onsite booking information');
-                    return;
-                }
-
-                // Get original package suppliers
-                const originalSuppliers = this.selectedPackage.suppliers || [];
-                const originalSupplierIds = new Set(originalSuppliers.map(s => s.supplier_id));
-
-                // Transform inclusions into the format expected by the backend
-                const suppliers = this.inclusions
-                    .filter(inclusion => inclusion.type === 'supplier')
-                    .map(inclusion => {
-                        if (inclusion.data.type === 'external') {
-                            return {
-                                type: 'external',
-                                external_supplier_name: inclusion.data.external_supplier_name,
-                                external_supplier_contact: inclusion.data.external_supplier_contact,
-                                external_supplier_price: inclusion.data.price || 0,
-                                remarks: inclusion.data.remarks || '',
-                                is_added: true // External suppliers are always added
-                            };
-                        } else {
-                            const isOriginal = originalSupplierIds.has(inclusion.data.supplier_id);
-                            const originalSupplier = originalSuppliers.find(s => s.supplier_id === inclusion.data.supplier_id);
-                            const priceModified = originalSupplier && originalSupplier.price !== inclusion.data.price;
-                            
-                            return {
-                                type: 'internal',
-                                supplier_id: inclusion.data.supplier_id,
-                                price: inclusion.data.price,
-                                remarks: inclusion.data.remarks || '',
-                                is_added: !isOriginal,
-                                is_modified: isOriginal && priceModified
-                            };
-                        }
-                    });
-
-                // Add removed suppliers
-                const currentSupplierIds = new Set(suppliers
-                    .filter(s => s.type === 'internal')
-                    .map(s => s.supplier_id));
-                
-                const removedSuppliers = originalSuppliers
-                    .filter(s => !currentSupplierIds.has(s.supplier_id))
-                    .map(s => ({
-                        type: 'internal',
-                        supplier_id: s.supplier_id,
-                        price: s.price,
-                        is_removed: true
-                    }));
-
-                // Combine current and removed suppliers
-                const allSuppliers = [...suppliers, ...removedSuppliers];
-
-                // Transform venues
-                const venues = this.inclusions
-                    .filter(inclusion => inclusion.type === 'venue')
-                    .map(inclusion => {
-                        const isOriginal = this.selectedPackage.venues?.some(v => v.venue_id === inclusion.data.venue_id);
-                        const originalVenue = this.selectedPackage.venues?.find(v => v.venue_id === inclusion.data.venue_id);
-                        const priceModified = originalVenue && originalVenue.price !== inclusion.data.price;
-
-                        return {
-                            venue_id: inclusion.data.venue_id,
-                            price: inclusion.data.price,
-                            remarks: inclusion.data.remarks || '',
-                            is_added: !isOriginal,
-                            is_modified: isOriginal && priceModified
-                        };
-                    });
-
-                // Prepare the wishlist data
-                const wishlistData = {
-                    event_name: this.event_name,
-                    event_type: this.event_type,
-                    event_theme: this.event_theme,
-                    event_color: this.event_color,
-                    package_id: this.selectedPackage.package_id,
-                    suppliers: allSuppliers,
-                    venues: venues,
-                    total_price: this.calculatedTotalPrice,
-                    schedule: this.eventSchedule.date,
-                    start_time: this.eventSchedule.start_time,
-                    end_time: this.eventSchedule.end_time,
-                    onsite_firstname: this.onsite_firstname,
-                    onsite_lastname: this.onsite_lastname,
-                    onsite_contact: this.onsite_contact,
-                    onsite_address: this.onsite_address
-                };
-
-                console.log('Submitting wishlist data:', wishlistData);
-
-                // Make API call to save wishlist with authentication
-                const response = await axios.post('http://127.0.0.1:5000/wishlist', wishlistData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.status === 201) {
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                        this.$router.push('/manage-events');
-                    }, 2000);
-                } else {
-                    throw new Error(response.data.message || 'Failed to create wishlist');
-                }
-
-            } catch (error) {
-                console.error('Error submitting wishlist:', error);
-                alert('Failed to create wishlist: ' + (error.response?.data?.message || error.message));
+        const serviceData = {
+            type: 'service',
+            data: {
+                service_id: this.selectedService.add_service_id,
+                service_name: this.selectedService.add_service_name,
+                price: parseFloat(this.selectedService.add_service_price || 0),
+                service_description: this.selectedService.add_service_description,
+                is_modified: true,
+                remarks: ''
             }
-        },
+        };
+        
+        this.inclusions.push(serviceData);
+        this.updateTotalPrice();
+        this.selectedService = null;
+        this.showServiceModal = false;
+    }
+},
 
+      selectService(service) {
+          this.selectedService = service;
+      },
+      async submitWishlist() {
+    try {
+        // Get authentication token
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('You are not logged in. Please log in to add to the wishlist.');
+            return;
+        }
+
+        // Validate required fields
+        if (!this.selectedPackage) {
+            alert('Please select a package');
+            return;
+        }
+
+        if (!this.eventSchedule.date || !this.eventSchedule.start_time || !this.eventSchedule.end_time) {
+            alert('Please fill in all event schedule details');
+            return;
+        }
+
+        // Validate onsite booking information
+        if (!this.onsite_firstname || !this.onsite_lastname || !this.onsite_contact || !this.onsite_address) {
+            alert('Please fill in all onsite booking information');
+            return;
+        }
+
+        // Get original package suppliers
+        const originalSuppliers = this.selectedPackage.suppliers || [];
+        const originalSupplierIds = new Set(originalSuppliers.map(s => s.supplier_id));
+
+        // Transform suppliers into the new format
+        const suppliers = this.inclusions
+            .filter(inclusion => inclusion.type === 'supplier')
+            .map(inclusion => {
+                if (inclusion.data.type === 'external') {
+                    return {
+                        supplier_id: null,
+                        original_price: 0,
+                        modified_price: inclusion.data.external_supplier_price || 0,
+                        is_modified: true,
+                        is_removed: false,
+                        remarks: `External: ${inclusion.data.external_supplier_name} (${inclusion.data.external_supplier_contact})`
+                    };
+                } else {
+                    const isOriginal = originalSupplierIds.has(inclusion.data.supplier_id);
+                    const originalSupplier = originalSuppliers.find(s => s.supplier_id === inclusion.data.supplier_id);
+                    const priceModified = originalSupplier && originalSupplier.price !== inclusion.data.price;
+                    
+                    return {
+                        supplier_id: inclusion.data.supplier_id,
+                        original_price: originalSupplier ? originalSupplier.price : inclusion.data.price,
+                        modified_price: inclusion.data.price,
+                        is_modified: isOriginal && priceModified,
+                        is_removed: false,
+                        remarks: inclusion.data.remarks || ''
+                    };
+                }
+            });
+
+        // Add removed suppliers
+        const currentSupplierIds = new Set(suppliers
+            .filter(s => s.supplier_id)
+            .map(s => s.supplier_id));
+        
+        const removedSuppliers = originalSuppliers
+            .filter(s => !currentSupplierIds.has(s.supplier_id))
+            .map(s => ({
+                supplier_id: s.supplier_id,
+                original_price: s.price,
+                modified_price: s.price,
+                is_modified: false,
+                is_removed: true,
+                remarks: 'Removed from package'
+            }));
+
+        // Combine all suppliers
+        const allSuppliers = [...suppliers, ...removedSuppliers];
+
+        // Transform outfits into the new format
+        const outfits = this.inclusions
+            .filter(inclusion => inclusion.type === 'outfit')
+            .map(inclusion => ({
+                outfit_id: inclusion.data.outfit_id,
+                gown_package_id: inclusion.data.gown_package_id,
+                original_price: inclusion.data.price,
+                modified_price: inclusion.data.modified_price || inclusion.data.price,
+                is_modified: inclusion.data.is_modified || false,
+                is_removed: false,
+                remarks: inclusion.data.remarks || ''
+            }));
+
+        // Transform services into the new format
+        const services = this.inclusions
+            .filter(inclusion => inclusion.type === 'service')
+            .map(inclusion => ({
+                service_id: inclusion.data.service_id,
+                original_price: inclusion.data.price,
+                modified_price: inclusion.data.modified_price || inclusion.data.price,
+                is_modified: inclusion.data.is_modified || false,
+                is_removed: false,
+                remarks: inclusion.data.remarks || ''
+            }));
+
+        // Transform venues and other items into additional_items
+        const additional_items = [
+            // Add venues as additional items
+            ...this.inclusions
+                .filter(inclusion => inclusion.type === 'venue')
+                .map(inclusion => ({
+                    item_type: 'venue',
+                    item_id: inclusion.data.venue_id,
+                    price: inclusion.data.venue_price,
+                    remarks: inclusion.data.remarks || ''
+                }))
+        ];
+
+        // Prepare the wishlist data in the new format
+        const wishlistData = {
+            event_name: this.event_name,
+            event_type: this.event_type,
+            event_theme: this.event_theme,
+            event_color: this.event_color,
+            package_id: this.selectedPackage.package_id,
+            schedule: this.eventSchedule.date,
+            start_time: this.eventSchedule.start_time,
+            end_time: this.eventSchedule.end_time,
+            onsite_firstname: this.onsite_firstname,
+            onsite_lastname: this.onsite_lastname,
+            onsite_contact: this.onsite_contact,
+            onsite_address: this.onsite_address,
+            total_price: this.calculatedTotalPrice,
+            
+            // New format data
+            suppliers: allSuppliers,
+            outfits: outfits,
+            services: services,
+            additional_items: additional_items
+        };
+            
+        console.log('Submitting wishlist data:', wishlistData);
+
+        // Make API call to save wishlist with authentication
+        const response = await axios.post('http://127.0.0.1:5000/wishlist', wishlistData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.data.success) {
+            alert('Wishlist submitted successfully!');
+            this.$router.push('/manage-events');
+        } else {
+            throw new Error(response.data.message || 'Failed to create wishlist');
+        }
+
+    } catch (error) {
+        console.error('Error submitting wishlist:', error);
+        alert('Failed to create wishlist: ' + (error.response?.data?.message || error.message));
+    }
+},
 
 
     
@@ -1759,65 +1804,46 @@ export default {
 
 
 addSelectedOutfit() {
-    if (this.selectedOutfit) {
-        // Check if an outfit already exists
-        const hasOutfit = this.inclusions.some(item => 
-            item.type === 'individual_outfit' || item.type === 'outfit_package'
-        );
-        if (hasOutfit) {
-            alert('An outfit package is already added. Please edit or remove the existing outfit first.');
-            this.closeOutfitModal();
-            return;
-        }
+    if (!this.selectedOutfit) {
+        console.error('No outfit selected');
+        return;
+    }
 
-        // Get the price from the outfit package
-        const price = parseFloat(this.selectedOutfit.gown_package_price || 0);
-        
-        // Create outfit data with proper name and price
-        const outfitData = {
-            outfit_id: this.selectedOutfit.outfit_id,
-            outfit_name: this.selectedOutfit.outfit_name,
-            outfit_type: this.selectedOutfit.outfit_type,
-            rent_price: parseFloat(this.selectedOutfit.rent_price || 0),
-            size: this.selectedOutfit.size
-        };
-
-         // Add to inclusions
-        this.inclusions = [...this.inclusions, {
-            type: 'individual_outfit',
-            data: this.selectedOutfit  // Use the data directly from the API
-        }];
-
-        console.log('Added outfit:', outfitData);
-        this.updateTotalPrice();
-        this.selectedOutfit = null;
+    console.log('Current inclusions:', this.inclusions);
+    
+    // Check if this specific outfit type already exists
+    const hasExistingOutfit = this.inclusions.some(item => 
+        item.type === 'outfit' && 
+        item.data.outfit_id === this.selectedOutfit.outfit_id
+    );
+    
+    if (hasExistingOutfit) {
+        alert('This outfit is already added.');
         this.closeOutfitModal();
+        return;
     }
-},
 
-addSelectedService() {
-    if (this.selectedService) {
-        console.log('Selected service:', this.selectedService);
-        
-        // Get price from the selected service
-        const price = parseFloat(this.selectedService.add_service_price || this.selectedService.price || 0);
-        console.log('Service price:', price);
-        
-        const serviceData = {
-            service_id: this.selectedService.add_service_id,
-            service_name: this.selectedService.add_service_name,
-            service_price: price
-        };
-        console.log('Service data to add:', serviceData);
-        
-        this.inclusions = [...this.inclusions, {
-            type: 'service',
-            data: serviceData
-        }];
-        this.updateTotalPrice();
-        this.selectedService = null;
-        this.closeServiceModal();
-    }
+    // Create outfit data with proper name and price
+    const outfitData = {
+        outfit_id: this.selectedOutfit.outfit_id,
+        outfit_name: this.selectedOutfit.outfit_name,
+        outfit_type: this.selectedOutfit.outfit_type,
+        price: parseFloat(this.selectedOutfit.rent_price || 0),
+        size: this.selectedOutfit.size,
+        is_modified: true,
+        remarks: ''
+    };
+
+    // Add to inclusions with the correct type and data
+    this.inclusions = [...this.inclusions, {
+        type: 'outfit',
+        data: outfitData
+    }];
+
+    console.log('Added outfit:', outfitData);
+    this.updateTotalPrice();
+    this.selectedOutfit = null;
+    this.closeOutfitModal();
 },
 
 
@@ -1854,43 +1880,39 @@ addSelectedService() {
   },
 
     async editInclusion(index) {
-        this.editingInclusionIndex = index;
-        const inclusion = this.inclusions[index];
-        
-        console.log('Original inclusion:', inclusion);
-        
-        // Create a deep copy of the inclusion
-        this.editingInclusion = JSON.parse(JSON.stringify(inclusion));
-        
-        console.log('Editing inclusion:', this.editingInclusion);
-        
-        // Pre-load the necessary data based on inclusion type
-        try {
-            if (inclusion.type === 'supplier') {
-                if (!this.availableSuppliers.length) {
-                    await this.fetchAvailableSuppliers();
-                }
-            } else if (inclusion.type === 'venue') {
-                // Always fetch venues when editing a venue inclusion
-                await this.fetchAvailableVenues();
-                console.log('Venues after fetch:', this.availableVenues);
-            } else if (inclusion.type === 'outfit') {
-                // Always fetch outfits when editing an outfit inclusion
-                await this.fetchAvailableGownPackages();
-                console.log('Outfits after fetch:', this.availableGownPackages);
-            } else if (inclusion.type === 'service') {
-                // Always fetch services when editing a service inclusion
-                await this.fetchAdditionalServices();
-                console.log('Services after fetch:', this.additionalServices);
-            }
-            
-            // Show the modal after data is loaded
-            this.showEditInclusionModal = true;
-            
-        } catch (error) {
-            console.error('Error loading data for edit modal:', error);
-        }
-    },
+      this.editingInclusionIndex = index;
+      const inclusion = this.inclusions[index];
+      
+      console.log('Original inclusion:', inclusion);
+      
+      // Create a deep copy of the inclusion
+      this.editingInclusion = JSON.parse(JSON.stringify(inclusion));
+      
+      console.log('Editing inclusion:', this.editingInclusion);
+      
+      // Pre-load the necessary data based on inclusion type
+      try {
+          if (inclusion.type === 'supplier') {
+              if (!this.availableSuppliers.length) {
+                  await this.fetchAvailableSuppliers();
+              }
+          } else if (inclusion.type === 'venue') {
+              await this.fetchAvailableVenues();
+              console.log('Venues after fetch:', this.availableVenues);
+          } else if (inclusion.type === 'outfit') {
+              await this.fetchAvailableGownPackages();
+              console.log('Outfits after fetch:', this.availableGownPackages);
+          } else if (inclusion.type === 'service') {
+              await this.fetchAdditionalServices();
+              console.log('Services after fetch:', this.additionalServices);
+          }
+          
+          this.showEditInclusionModal = true;
+          
+      } catch (error) {
+          console.error('Error loading data for edit modal:', error);
+      }
+  },
 
       closeEditInclusionModal() {
         this.showEditInclusionModal = false;
@@ -1899,78 +1921,78 @@ addSelectedService() {
       },
 
       saveEditedInclusion() {
-          if (!this.editingInclusion) return;
+        if (!this.editingInclusion) return;
 
-          if (this.editingInclusion.type === 'supplier') {
-              if (this.editingInclusion.data.type === 'external') {
-                  if (!this.editingInclusion.data.external_supplier_name || !this.editingInclusion.serviceType) {
-                      alert('Please fill in all required fields');
-                      return;
-                  }
+        if (this.editingInclusion.type === 'supplier') {
+            if (this.editingInclusion.data.type === 'external') {
+                if (!this.editingInclusion.data.external_supplier_name || !this.editingInclusion.serviceType) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
 
-                  this.editingInclusion.data.name = this.editingInclusion.data.external_supplier_name;
-                  const price = parseFloat(this.editingInclusion.data.external_supplier_price);
-                  this.editingInclusion.data.price = price;
-              } else {
-                  const selectedSupplier = this.availableSuppliers.find(s => s.supplier_id === this.editingInclusion.data.supplier_id);
-                  if (selectedSupplier) {
-                      this.editingInclusion.data = {
-                          ...selectedSupplier,
-                          supplier_id: selectedSupplier.supplier_id,
-                          firstname: selectedSupplier.firstname,
-                          lastname: selectedSupplier.lastname,
-                          price: parseFloat(selectedSupplier.price || 0),
-                          type: 'internal'
-                      };
-                  }
-              }
+                this.editingInclusion.data.name = this.editingInclusion.data.external_supplier_name;
+                const price = parseFloat(this.editingInclusion.data.external_supplier_price);
+                this.editingInclusion.data.price = price;
+            } else {
+                const selectedSupplier = this.availableSuppliers.find(s => s.supplier_id === this.editingInclusion.data.supplier_id);
+                if (selectedSupplier) {
+                    this.editingInclusion.data = {
+                        ...selectedSupplier,
+                        supplier_id: selectedSupplier.supplier_id,
+                        firstname: selectedSupplier.firstname,
+                        lastname: selectedSupplier.lastname,
+                        price: parseFloat(selectedSupplier.price || 0),
+                        type: 'internal'
+                    };
+                }
+            }
 
-              const duplicateSupplier = this.inclusions.find((inclusion, index) => 
-                  index !== this.editingInclusionIndex &&
-                  inclusion.type === 'supplier' &&
-                  inclusion.serviceType === this.editingInclusion.serviceType
-              );
+            const duplicateSupplier = this.inclusions.find((inclusion, index) => 
+                index !== this.editingInclusionIndex &&
+                inclusion.type === 'supplier' &&
+                inclusion.serviceType === this.editingInclusion.serviceType
+            );
 
-              if (duplicateSupplier) {
-                  alert(`A supplier for ${this.editingInclusion.serviceType} already exists`);
-                  return;
-              }
-          }
+            if (duplicateSupplier) {
+                alert(`A supplier for ${this.editingInclusion.serviceType} already exists`);
+                return;
+            }
+        }
 
-          if (this.editingInclusion.type === 'outfit') {
-              const selectedOutfit = this.availableGownPackages.find(o => o.gown_package_id === parseInt(this.editingInclusion.data.outfit_id));
-              console.log('Selected outfit:', selectedOutfit);
-              
-              if (selectedOutfit) {
-                  this.editingInclusion.data = {
-                      outfit_id: selectedOutfit.gown_package_id,
-                      gown_package_id: selectedOutfit.gown_package_id,
-                      name: selectedOutfit.gown_package_name,
-                      gown_package_name: selectedOutfit.gown_package_name,
-                      price: parseFloat(selectedOutfit.gown_package_price || 0),
-                      gown_package_price: parseFloat(selectedOutfit.gown_package_price || 0)
-                  };
-                  console.log('Updated outfit data:', this.editingInclusion.data);
-              }
-          }
+        if (this.editingInclusion.type === 'outfit') {
+            const selectedOutfit = this.availableGownPackages.find(o => o.gown_package_id === parseInt(this.editingInclusion.data.outfit_id));
+            console.log('Selected outfit:', selectedOutfit);
+            
+            if (selectedOutfit) {
+                this.editingInclusion.data = {
+                    outfit_id: selectedOutfit.gown_package_id,
+                    gown_package_id: selectedOutfit.gown_package_id,
+                    name: selectedOutfit.gown_package_name,
+                    gown_package_name: selectedOutfit.gown_package_name,
+                    price: parseFloat(selectedOutfit.gown_package_price || 0),
+                    gown_package_price: parseFloat(selectedOutfit.gown_package_price || 0)
+                };
+                console.log('Updated outfit data:', this.editingInclusion.data);
+            }
+        }
 
-          if (this.editingInclusion.type === 'venue') {
-              const selectedVenue = this.availableVenues.find(v => v.venue_id === this.editingInclusion.data.venue_id);
-              if (selectedVenue) {
-                  this.editingInclusion.data = {
-                      ...selectedVenue,
-                      venue_id: selectedVenue.venue_id,
-                      venue_name: selectedVenue.venue_name || selectedVenue.name,
-                      price: parseFloat(selectedVenue.venue_price || selectedVenue.price || 0),
-                      venue_price: parseFloat(selectedVenue.venue_price || selectedVenue.price || 0)
-                  };
-              }
-          }
+        if (this.editingInclusion.type === 'venue') {
+            const selectedVenue = this.availableVenues.find(v => v.venue_id === this.editingInclusion.data.venue_id);
+            if (selectedVenue) {
+                this.editingInclusion.data = {
+                    ...selectedVenue,
+                    venue_id: selectedVenue.venue_id,
+                    venue_name: selectedVenue.venue_name || selectedVenue.name,
+                    price: parseFloat(selectedVenue.venue_price || selectedVenue.price || 0),
+                    venue_price: parseFloat(selectedVenue.venue_price || selectedVenue.price || 0)
+                };
+            }
+        }
 
-          this.inclusions.splice(this.editingInclusionIndex, 1, this.editingInclusion);
-          this.updateTotalPrice();
-          this.closeEditInclusionModal();
-      },
+        this.inclusions.splice(this.editingInclusionIndex, 1, this.editingInclusion);
+        this.updateTotalPrice();
+        this.closeEditInclusionModal();
+    },
       getInclusionName(inclusion) {
           if (!inclusion || !inclusion.data) return 'Unknown Item';
           
@@ -2049,75 +2071,64 @@ addSelectedService() {
     },
 
     updateTotalPrice() {
-        let totalPrice = 0;
-        console.log('Starting price calculation...');
+    let totalPrice = 0;
+    console.log('Starting price calculation...');
 
-        // Create Sets to track unique service types and outfit types
-        const addedServices = new Set();
-        const addedOutfitTypes = new Set();
+    // Create Sets to track unique service types and outfit types
+    const addedServices = new Set();
+    const addedOutfitTypes = new Set();
 
-        // Process all inclusions
-        this.inclusions.forEach(inclusion => {
-            let price = 0;
-            console.log('Processing inclusion:', inclusion);
-            
-            // Skip if we've already processed this service type
-            if (inclusion.type === 'supplier' && addedServices.has(inclusion.serviceType)) {
-                console.log(`Skipping duplicate service: ${inclusion.serviceType}`);
-                return;
-            }
-
-            // Skip if we've already processed an outfit of this type
-            if ((inclusion.type === 'outfit_package' || inclusion.type === 'individual_outfit') && 
-                addedOutfitTypes.has(inclusion.type)) {
-                console.log(`Skipping duplicate outfit type: ${inclusion.type}`);
-                return;
-            }
-
-            if (inclusion.type === 'venue') {
-                price = parseFloat(inclusion.data.venue_price || 0);
-                console.log(`Adding venue price: ${price}`);
-            } 
-            else if (inclusion.type === 'outfit_package') {
-                price = parseFloat(inclusion.data.gown_package_price || 0);
-                addedOutfitTypes.add('outfit_package');
-                console.log(`Adding outfit package price: ${price}`);
-            }
-            else if (inclusion.type === 'individual_outfit' || inclusion.type === 'outfit') {
-                price = parseFloat(inclusion.data.rent_price || 0);
-                addedOutfitTypes.add('individual_outfit');
-                console.log(`Adding outfit price (${inclusion.type}): ${price}`);
-            }
-            else if (inclusion.type === 'supplier') {
-                price = parseFloat(inclusion.data.price || 0);
-                addedServices.add(inclusion.serviceType);
-                console.log(`Adding supplier price (${inclusion.serviceType}): ${price}`);
-            }
-            else if (inclusion.type === 'service') {
-                price = parseFloat(inclusion.data.service_price || 0);
-                console.log(`Adding service price: ${price}`);
-            }
-
-            totalPrice += price;
-            console.log(`Current total after adding ${inclusion.type}: ${totalPrice}`);
-        });
-
-        // Add additional capacity charges if any
-        if (this.selectedPackage && this.selectedPackage.additional_capacity > 0) {
-            const additionalCapacity = this.selectedPackage.additional_capacity;
-            const chargePerUnit = parseFloat(this.selectedPackage.additional_capacity_charges || 0);
-            const chargeUnit = parseInt(this.selectedPackage.charge_unit || 1);
-            const units = Math.ceil(additionalCapacity / chargeUnit);
-            const additionalCharges = units * chargePerUnit;
-            
-            totalPrice += additionalCharges;
-            console.log(`Additional capacity charges: ${additionalCharges}`);
-            console.log(`Final total after capacity charges: ${totalPrice}`);
+    // Process all inclusions
+    this.inclusions.forEach(inclusion => {
+        let price = 0;
+        console.log('Processing inclusion:', inclusion);
+        
+        // Only skip duplicates for suppliers and outfits, NOT for additional services
+        if (inclusion.type === 'supplier' && addedServices.has(inclusion.serviceType)) {
+            console.log(`Skipping duplicate supplier service: ${inclusion.serviceType}`);
+            return;
         }
 
-        console.log('Final total:', totalPrice);
-        this.totalPrice = totalPrice;
-    },
+        if (inclusion.type === 'venue') {
+            price = parseFloat(inclusion.data.venue_price || 0);
+            console.log(`Adding venue price: ${price}`);
+        } 
+        else if (inclusion.type === 'outfit_package' || inclusion.type === 'outfit') {
+            price = parseFloat(inclusion.data.price || inclusion.data.gown_package_price || 0);
+            addedOutfitTypes.add(inclusion.type);
+            console.log(`Adding outfit price: ${price}`);
+        }
+        else if (inclusion.type === 'supplier') {
+            price = parseFloat(inclusion.data.price || 0);
+            addedServices.add(inclusion.serviceType);
+            console.log(`Adding supplier price (${inclusion.serviceType}): ${price}`);
+        }
+        else if (inclusion.type === 'service') {
+            // Allow multiple services by not tracking them in addedServices
+            price = parseFloat(inclusion.data.price || 0);
+            console.log(`Adding additional service price: ${price}`);
+        }
+
+        totalPrice += price;
+        console.log(`Current total after adding ${inclusion.type}: ${totalPrice}`);
+    });
+
+    // Add additional capacity charges if any
+    if (this.selectedPackage && this.selectedPackage.additional_capacity > 0) {
+        const additionalCapacity = this.selectedPackage.additional_capacity;
+        const chargePerUnit = parseFloat(this.selectedPackage.additional_capacity_charges || 0);
+        const chargeUnit = parseInt(this.selectedPackage.charge_unit || 1);
+        const units = Math.ceil(additionalCapacity / chargeUnit);
+        const additionalCharges = units * chargePerUnit;
+        
+        totalPrice += additionalCharges;
+        console.log(`Additional capacity charges: ${additionalCharges}`);
+        console.log(`Final total after capacity charges: ${totalPrice}`);
+    }
+
+    console.log('Final total:', totalPrice);
+    this.totalPrice = totalPrice;
+},
 
     cleanupDuplicateInclusions() {
         // Use a Map to keep track of unique items based on type and service type/ID
@@ -2224,20 +2235,20 @@ addSelectedService() {
         let price = 0;
         switch (inclusion.type) {
             case 'venue':
-                price = parseFloat(inclusion.data.venue_price || 0);
+                price = parseFloat(inclusion.data.price || 0);
                 break;
             case 'outfit_package':
-                price = parseFloat(inclusion.data.gown_package_price || 0);
+                price = parseFloat(inclusion.data.price || 0);
                 break;
             case 'individual_outfit':
             case 'outfit':
-                price = parseFloat(inclusion.data.rent_price || 0);
+                price = parseFloat(inclusion.data.price || 0);
                 break;
             case 'supplier':
                 price = parseFloat(inclusion.data.price || 0);
                 break;
             case 'service':
-                price = parseFloat(inclusion.data.service_price || 0);
+                price = parseFloat(inclusion.data.price || 0);
                 break;
         }
         total += price;
@@ -2253,6 +2264,7 @@ addSelectedService() {
         total += additionalCharges;
     }
 
+    console.log('Total price calculation:', total);
     return total.toFixed(2);
 },
 

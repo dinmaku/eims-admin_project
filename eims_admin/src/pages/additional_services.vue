@@ -12,10 +12,12 @@
 
         <div class="flex flex-row items-center m-5 space-x-5">
         <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-            <img class="w-auto h-12" src="/img/bar-counter.png" alt="Service Image">
-            <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalServices }} <span class = "text-sm antialiased text-gray-600">services</span></h2>
+            <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalServices }} <span class = "text-sm antialiased text-gray-600">inclusions</span></h2>
         </div>
-        <form class="flex items-center w-[300px] mt-9">
+    </div>
+
+        <div class="flex flex-row justify-between items-center m-5 my-7">
+            <form class="flex items-center w-[300px]">
               <label for="voice-search" class="sr-only">Search</label>
               <div class="relative w-full">
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -23,31 +25,28 @@
                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                   </svg>
                 </div>
-                <input type="text" id="search-bar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Add-ons..." required v-model="searchTerm">
+                <input type="text" id="search-bar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Other Inclusions..." required v-model="searchTerm">
                 <router-link to="/" class="flex absolute inset-y-0 right-0 items-center pr-3">
                   <svg aria-hidden="true" class="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   </svg>
                 </router-link>
               </div>
         </form>
-    </div>
-
-        <div class="flex flex-row justify-end items-center m-5 my-7">
-             <button class="mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
+             <button class="mr-2 w-44 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
             transition-transform duration-300 transform hover:scale-105" @click="addServiceBtn">
-            Add Service
+            Add Other Inclusions
             </button>
         </div>
 
         <!--- Additional Services Table --->
 
-        <div v-if="showTable === 'Services'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+        <div v-if="showTable === 'Services'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-2 py-3">#</th>
-                            <th scope="col" class="px-2 py-3">Service Name</th>
+                            <th scope="col" class="px-2 py-3">Inclsusion Name</th>
                             <th scope="col" class="px-2 py-3">Description</th>
                             <th scope="col" class="px-2 py-3">Price</th>
                             <th scope="col" class="px-2 py-3">Action</th>
@@ -67,20 +66,20 @@
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="editServiceBtn(index)"
-                                        title="Edit">
-                                        <img src="/img/update.png" alt="Update" class="w-6 h-6">
+                                        title="Update Other Inclusions Info">
+                                        <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                                     </button>
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="showRateModal = true; selectedService = service"
                                         title="Set Rate">
-                                        <img src="/img/rate.png" alt="Set Rate" class="w-6 h-6">
+                                        <img src="/img/rate2.png" alt="Set Rate" class="w-5 h-5">
                                     </button>
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="openStatusConfirmModal(service, 'Inactive')"
-                                        title="Set Inactive">
-                                        <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
+                                        title="Deactivate">
+                                        <img src="/img/inactive2.png" alt="Set Inactive" class="w-5 h-5">
                                     </button>
                                 </div>
                             </td>
@@ -107,26 +106,26 @@
         <form v-if="addServiceForm" @submit.prevent="submitAddServiceForm" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeAddServiceForm">
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
-                    <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Service</h1>
+                    <h1 class="font-semibold text-xl font-raleway text-gray-800">Add Other Inclusions</h1>
                 </div>
                 <div class="border border-gray-500 mt-5 items-center"></div>
                 <div class="m-5">
                     <span>{{ errorMessage }}</span>
                     
                     <!-- Service Name -->
-                    <div class="mt-5">
-                        <label class="text-xs text-gray-600 ml-2">Service Name</label>
-                        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_name" placeholder="Service Name" required>
+                    <div class="flex flex-col mt-5">
+                        <label class="text-xs text-gray-600 text-start">Inclusion Name</label>
+                        <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_name" placeholder="Service Name" required>
                     </div>
 
                     <!-- Description -->
-                    <div class="mt-5">
-                        <label class="text-xs text-gray-600 ml-2">Description</label>
-                        <textarea class="mt-2 ml-2 p-2 w-full h-32 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_description" placeholder="Description" required></textarea>
+                    <div class="flex flex-col mt-5">
+                        <label class="text-xs text-gray-600 text-start">Description</label>
+                        <textarea class="mt-2 p-2 w-full h-32 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model.trim="add_service_description" placeholder="Description" required></textarea>
                     </div>
 
                     <!-- Confirm Button -->
-                    <div class="flex justify-center items-center mt-10 space-x-2">
+                    <div class="flex justify-end items-center mt-10 space-x-2">
                         <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddServiceForm">
                         Cancel
                          </button>
@@ -142,7 +141,7 @@
         <form v-if="editServiceForm" @submit.prevent="updateService" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditServiceForm">
             <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
                 <div class="flex justify-between items-center m-3">
-                    <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Service</h1>
+                    <h1 class="font-semibold text-xl font-raleway text-gray-800">Update Other Inclusions</h1>
                 </div>
 
                 <div class="border border-gray-500 mt-5 items-center"></div>
@@ -150,22 +149,19 @@
                     <span>{{ errorMessage }}</span>
 
                     <!-- Service Name -->
-                    <div class="mt-5">
-                        <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedService.add_service_name" placeholder="Service Name" required>
+                    <div class="flex flex-col mt-5">
+                        <label class="text-xs text-gray-600 text-start">Inclusion Name</label>
+                        <input type="text" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedService.add_service_name" placeholder="Service Name" required>
                     </div>
 
                     <!-- Description -->
-                    <div class="mt-5">
-                        <textarea class="mt-2 ml-2 p-2 w-full h-32 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedService.add_service_description" placeholder="Description" required></textarea>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="mt-5">
-                        <input type="number" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedService.add_service_price" placeholder="Price" required>
+                    <div class="flex flex-col mt-5">
+                        <label class="text-xs text-gray-600 text-start">Description</label>
+                        <textarea class="mt-2 p-2 w-full h-32 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedService.add_service_description" placeholder="Description" required></textarea>
                     </div>
 
                     <!-- Confirm Button -->
-                    <div class="flex justify-center items-center mt-10 space-x-2">
+                    <div class="flex justify-end items-center mt-10 space-x-2">
                         <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditServiceForm">
                         Cancel
                         </button>
@@ -182,7 +178,7 @@
             <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
                 <div class="flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">Set Service Rate</h2>
+                        <h2 class="text-xl font-semibold">Set Inclusion Rate</h2>
                         <button @click="closeRateModal" class="text-gray-500 hover:text-gray-700">
                             <span class="text-2xl">&times;</span>
                         </button>
@@ -192,7 +188,7 @@
                     </div>
                     <div class="mt-4 flex justify-end space-x-2">
                         <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
-                        <button @click="saveServiceRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
+                        <button @click="saveServiceRate" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
                     </div>
                 </div>
             </div>
@@ -233,8 +229,8 @@
                                         <button
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                             @click="openStatusConfirmModal(service, 'Active')"
-                                            title="Set Active">
-                                            <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                                            title="Activate">
+                                            <img src="/img/active2.png" alt="Set Active" class="w-5 h-5">
                                         </button>
                                     </td>
                                 </tr>
@@ -250,7 +246,7 @@
             <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
                 <div class="flex flex-col items-center">
                     <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
-                    <p class="mb-6 text-center">Are you sure you want to set this service to {{ pendingStatus }}?</p>
+                    <p class="mb-6 text-center">Are you sure you want to set this inclusion to {{ pendingStatus }}?</p>
                     <div class="flex space-x-4">  
                         <button 
                             @click="closeStatusConfirmModal" 
@@ -259,7 +255,7 @@
                         </button>
                         <button 
                             @click="confirmStatusChange" 
-                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
                             Yes
                         </button>
                     </div>

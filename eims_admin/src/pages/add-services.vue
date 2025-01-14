@@ -4,13 +4,12 @@
             <h1 class="font-amaticBold font-extraLight text-3xl">
                 Events Packages
             </h1>
-            <button class="bg-[#9B111E] text-white px-3 py-1 rounded shadow-lg 
-              transition-transform duration-300 transform hover:scale-105" @click="displayEventTypeBtn">+ Event Type</button>
+            <button class="bg-[#9B111E] font-semibold text-white px-3 py-1 rounded shadow-lg 
+              transition-transform duration-300 transform hover:scale-105" @click="displayEventTypeBtn">Event Type</button>
         </div>
         
         <div class="flex flex-row items-center m-5 space-x-5">
             <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-                <img class="w-auto h-12" src="/img/box.png" alt="Vendor Image">
                 <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalPackages }} <span class = "text-sm antialiased text-gray-600">packages</span></h2>
             </div>
         </div>
@@ -51,9 +50,9 @@
                         <td class="px-4 py-3">{{ packageItem.capacity }}</td>
                         <td class="px-4 py-3">
                             <button
-                                class="h-8 w-20 bg-[#9B111E] font-amaticBold text-sm rounded-md text-white hover:bg-[#B73A45]"
-                                @click="editPackageBtn(index)">
-                                View
+                                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
+                                @click="editPackageBtn(index)"> 
+                                <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                             </button>
                         </td>
                     </tr>
@@ -141,28 +140,28 @@
           <div class="grid grid-cols-4 gap-4 mb-4">
             <button 
               @click.prevent="openInclusionModal('supplier')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
             >
               <img alt="Supplier Icon" class="mr-2 w-[20px] h-[20px]" src="/img/supplier.png">
               Suppliers
             </button>
             <button 
               @click.prevent="openInclusionModal('venue')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
             >
               <img alt="Venue Icon" class="mr-2 w-[20px] h-[20px]" src="/img/venues1.png">
              Venue
             </button>
             <button 
               @click.prevent="openInclusionModal('outfit')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
             >
               <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
              Outfit Package
             </button>
             <button 
               @click.prevent="openInclusionModal('service')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
             >
               <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
               Inclusions
@@ -374,16 +373,16 @@
       />
       <div class="flex justify-end mt-4 space-x-2">
         <button
-          @click="saveNewEventType"
-          class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-        >
-          Save
-        </button>
-        <button
           @click="closeAddEventTypeModal"
           class="px-4 py-2 text-gray-700 bg-gray-300 rounded-md hover:bg-gray-400 mr-2"
         >
           Cancel
+        </button>
+        <button
+          @click="saveNewEventType"
+          class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+        >
+          Save
         </button>
       </div>
     </div>
@@ -434,31 +433,31 @@
       <div class="grid grid-cols-4 gap-4 mb-4">
         <button 
           @click.prevent="openInclusionModal('supplier')" 
-          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+          class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
         >
           <img alt="Supplier Icon" class="mr-2 w-[20px] h-[20px]" src="/img/supplier.png">
           Suppliers
         </button>
         <button 
           @click.prevent="openInclusionModal('venue')" 
-          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+          class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
         >
           <img alt="Venue Icon" class="mr-2 w-[20px] h-[20px]" src="/img/venues1.png">
          Venue
         </button>
         <button 
           @click.prevent="openInclusionModal('outfit')" 
-          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+          class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
         >
           <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
          Outfit Package
         </button>
         <button 
           @click.prevent="openInclusionModal('service')" 
-          class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+          class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
         >
           <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
-          Additionals
+          Inclusions
         </button>
       </div>
 

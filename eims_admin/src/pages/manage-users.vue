@@ -13,16 +13,13 @@
 
   <div class="flex flex-row items-center m-5 space-x-5">
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-        <img class="w-auto h-12" src="/img/vendor2.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalSuppliers }} <span class = "text-sm antialiased text-gray-600">suppliers</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0 ml-5">{{ totalSuppliers }} <span class = "text-sm antialiased text-gray-600 ml-2">suppliers</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
-        <img class="w-auto h-12" src="/img/staff.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600">staff</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0 ml-5">{{ totalStaff }} <span class = "text-sm antialiased text-gray-600 ml-2">staff</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-blue-400 space-x-5">
-        <img class="w-auto h-12" src="/img/admin.png" alt="Vendor Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0">{{ totalAdmin }} <span class = "text-sm antialiased text-gray-600">admin</span></h2>
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0 ml-5">{{ totalAdmin }} <span class = "text-sm antialiased text-gray-600 ml-2">admin</span></h2>
     </div>
     <form class="flex items-center w-[300px] mt-9">
               <label for="voice-search" class="sr-only">Search</label>
@@ -71,7 +68,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
 
 <!--- Supplier Table --->
-<div v-if="showTable === 'Suppliers'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+<div v-if="showTable === 'Suppliers'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -101,20 +98,20 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                 @click="editSupplier(supplier)"
-                                title="Edit">
-                                <img src="/img/update.png" alt="Edit" class="w-6 h-6">
+                                title="Update Supplier Info">
+                                <img src="/img/update2.png" alt="Edit" class="w-5 h-5">
                             </button>
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                 @click="showRateModal = true; selectedSupplier = supplier"
                                 title="Set Rate">
-                                <img src="/img/rate.png" alt="Set Rate" class="w-6 h-6">
+                                <img src="/img/rate2.png" alt="Set Rate" class="w-5 h-5">
                             </button>
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                 @click="toggleSupplierStatus(supplier)"
-                                title="Set Inactive">
-                                <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
+                                title="Deactivate">
+                                <img src="/img/inactive2.png" alt="Set Inactive" class="w-5 h-5">
                             </button>
                         </div>
                     </td>
@@ -139,13 +136,13 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
 
   <!--- Staff Table--->
-  <div v-if="showTable === 'Staffs'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+  <div v-if="showTable === 'Staffs'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-2 py-3">#</th>
-          <th scope="col" class="px-2 py-3">FullName</th>
+          <th scope="col" class="px-2 py-3">Name</th>
           <th scope="col" class="px-2 py-3">Email</th>
           <th scope="col" class="px-2 py-3">Contact</th>
           <th scope="col" class="px-2 py-3">Position</th>
@@ -166,8 +163,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
           <td class="px-1 py-3 hidden sm:table-cell">
             <button class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" 
             @click="editStaffBtn(index)" 
-            title="Update Staff">
-            <img src="/img/update.png" alt="Update" class="w-6 h-6">
+            title="Update Staff Info">
+            <img src="/img/update2.png" alt="Update" class="w-5 h-5">
            
               </button>
           </td>
@@ -191,7 +188,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
   </div>
 
   <!-- Admin Table -->
-<div v-if="showTable === 'Admin'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+<div v-if="showTable === 'Admin'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -212,7 +209,9 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <td class="px-1 py-3 hidden sm:table-cell">{{ admin.contactnumber }}</td>
                     <td class="px-1 py-3 hidden sm:table-cell">{{ admin.user_type }}</td>
                     <td class="px-1 py-3 hidden sm:table-cell">
-                        <button class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editAdminBtn(index)">Edit</button>
+                        <button class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" @click="editAdminBtn(index)" title = "Update Admin Info">
+                          <img src="/img/update2.png" alt="Update" class="w-5 h-5">
+                          </button>
                     </td>
                 </tr>
             </tbody>
@@ -237,42 +236,43 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
       <!-- First Name and Last Name -->
       <div class="flex flex-row">
         <div class="flex flex-col space-y-1 w-full">
-          <label class="text-xs text-gray-600 ml-2">First Name</label>
-          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="firstName" placeholder="First Name" required>
+          <label class="text-xs text-gray-600 ml-2 text-start">First Name</label>
+          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="firstName" required>
         </div>
         <div class="flex flex-col space-y-1 w-full ml-2">
-          <label class="text-xs text-gray-600 ml-2">Last Name</label>
-          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="lastName" placeholder="Last Name" required>
+          <label class="text-xs text-gray-600 ml-2 text-start">Last Name</label>
+          <input type="text" class="p-2 h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="lastName" required>
         </div>
       </div>
 
       <!-- Username -->
-      <div class="mt-5">
-        <label class="text-xs text-gray-600 ml-2">Username</label>
-        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" @click="deriveUsername" placeholder="Username" required>
+      <div class="flex flex-col  mt-5">
+        <label class="text-xs text-gray-600 ml-2 text-start">Username</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="username" @click="deriveUsername" required>
       </div>
 
       <!-- Email -->
-      <div class="mt-5">
-        <label class="text-xs text-gray-600 ml-2">Email</label>
-        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" @click="deriveEmail" placeholder="Email" required>
+      <div class="flex flex-col  mt-5">
+        <label class="text-xs text-gray-600 ml-2 text-start">Email</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="email" @click="deriveEmail" required>
       </div>
 
       <!-- Contact Number -->
-      <div class="mt-5">
-        <label class="text-xs text-gray-600 ml-2">Contact Number</label>
-        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="contactNumber" placeholder="Contact Number" required>
+      <div class="flex flex-col  mt-5">
+        <label class="text-xs text-gray-600 ml-2 text-start">Contact Number</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="contactNumber" required>
       </div>
 
       <!-- Address -->
-      <div class="mt-5">
-        <label class="text-xs text-gray-600 ml-2">Address</label>
-        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="address" placeholder="Address" required>
+      <div class="flex flex-col  mt-5">
+        <label class="text-xs text-gray-600 ml-2 text-start">Address</label>
+        <input type="text" class="mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="address" required>
       </div>
 
       <!-- User Type Selection -->
-      <div class="mt-5">
-        <select class="flex mt-4  p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
+      <div class="flex flex-col  mt-5">
+        <label class="text-xs text-gray-600 ml-2 text-start">Account Type</label>
+        <select class="flex mt-1 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedUserType" @change="selectAddForm">
           <option value="" class="text-gray-700" disabled selected>Select Account Type</option>
           <option value="Suppliers">Supplier</option>
           <option value="Staff">Staff</option>
@@ -332,7 +332,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
         </button>
         <button 
           @click="confirmStatusChange" 
-          class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+          class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
           Yes
         </button>
       </div>
@@ -376,8 +376,8 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
               <button
                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                 @click.stop="toggleInactiveSupplierStatus(supplier)"
-                title="Set Active">
-                <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                title="Activate">
+                <img src="/img/active2.png" alt="Set Active" class="w-5 h-5">
               </button>
             </td>
           </tr>
@@ -403,7 +403,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
     <div class="flex justify-end mt-4 space-x-2">
       
       <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
-      <button @click="saveSupplierRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
+      <button @click="saveSupplierRate" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">Save</button>
     </div>
   </div>
 </div>
@@ -422,7 +422,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
         <form @submit.prevent="submitSocialMedia" class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Platform *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1 text-start">Platform *</label>
                 <select 
                     v-model="socialMediaForm.platform" 
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#9B111E]"
@@ -439,7 +439,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Handle/Username *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1 text-start">Handle/Username *</label>
                 <input 
                     type="text" 
                     v-model="socialMediaForm.handle"
@@ -450,7 +450,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">URL (Optional)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1 text-start">URL (Optional)</label>
                 <input 
                     type="url" 
                     v-model="socialMediaForm.url"
@@ -469,7 +469,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 </button>
                 <button 
                     type="submit"
-                    class="px-4 py-2 bg-[#9B111E] text-white rounded-md hover:bg-opacity-90"
+                    class = "w-44 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105"
                 >
                     Add Social Media
                 </button>
@@ -480,102 +480,99 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 
  <!--Edit Supplier Form-->
 <form v-if="editSupplierForm" class = "fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-30" @click.self="closeEditSupplierBtn">
-  <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
+  <div class = "bg-white w-[800px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
-              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Supplier</h1>
+              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Update Supplier Info</h1>
         </div>
         <div class = "border border-gray-500 mt-5 items-center"></div>
-               <div class = "m-5">
+        <div class="m-5 flex gap-8">
+          <!-- Input Fields Section - Left Side -->
+          <div class="w-3/5 space-y-5">
+            <div>
+              <label class="text-xs text-gray-600 block">Full Name</label>
+              <input type="text" v-model="selectedSupplier.fullName" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
+            </div>
 
-             
-                <div class = "flex items-center space-x-2">
-                  <input type="text"  v-model="selectedSupplier.fullName" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
-              
-              </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text"  v-model="selectedSupplier.username" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Username" required>
-                </div>
-              </div>
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text"  v-model="selectedSupplier.email" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Email" required>
-                </div>
-              </div>
+            <div>
+              <label class="text-xs text-gray-600 block">Username</label>
+              <input type="text" v-model="selectedSupplier.username" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
+            </div>
 
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text"  v-model="selectedSupplier.contact" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
-                </div>
+            <div>
+              <label class="text-xs text-gray-600 block">Email</label>
+              <input type="text" v-model="selectedSupplier.email" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-600 block">Contact</label>
+              <input type="text" v-model="selectedSupplier.contact" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-600 block">Service Type</label>
+              <select v-model="selectedSupplier.service" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
+                <option value="" class="text-gray-700" disabled selected>Select Service Type</option>
+                <option value="Catering">Catering</option>
+                <option value="Hair and Makeup">Hair and Makeup</option>
+                <option value="Host">Host</option>
+                <option value="Entertainment">Entertainer / Singer</option>
+                <option value="Multimedia">Photographer and Videographer</option>
+                <option value="Sound and Light">Sound and Lighting</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Invitations and Stationery">Invitations and Stationery</option>
+                <option value="Favors and Gifts">Favors and Gifts</option>
+              </select>
+            </div>
+
+            <div v-if="addStaffDetails">
+              <label class="text-xs text-gray-600 block">Position</label>
+              <select class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
+                <option value="" class="text-gray-700" disabled selected>Select Position</option>
+                <option value="Staff">Staff</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Social Media Section - Right Side -->
+          <div class="w-1/2">
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex justify-between items-center mb-3">
+                <p class="text-gray-700 font-medium">Social Media Accounts</p>
+                <button @click="addSocialMedia" type="button" class="text-blue-600 hover:text-blue-800 text-sm">
+                  + Add Account
+                </button>
               </div>
-  
-              <div class = "mt-5">
-                <div class = "flex items-center">
-                  <select v-model="selectedSupplier.service" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
-                    <option value="" class = "text-gray-700" disabled selected>Select Service Type</option>
-                    <option value="Catering">Catering</option>
-                    <option value="Hair and Makeup">Hair and Makeup</option>
-                    <option value="Host">Host</option>
-                    <option value="Entertainment">Entertainer / Singer</option>
-                    <option value="Multimedia">Photographer and Videographer</option>
-                    <option value="Sound and Light">Sound and Lighting</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Invitations and Stationery">Invitations and Stationery</option>
-                    <option value="Favors and Gifts">Favors and Gifts</option>
-                </select>
-                </div>
-              </div>
-              
-              <!-- Social Media Display -->
-              <div class="mt-5 ml-2 border border-gray-200 rounded-lg p-4">
-                <div class="flex justify-between items-center mb-3">
-                  <p class="text-gray-700 font-medium">Social Media Accounts</p>
-                  <button @click="addSocialMedia" type="button" class="text-blue-600 hover:text-blue-800 text-sm">
-                    + Add Account
-                  </button>
-                </div>
-                <div class="max-h-[200px] overflow-y-auto pr-2">
-                  <div v-if="selectedSupplier.socialMedia && selectedSupplier.socialMedia.length > 0" class="space-y-2">
-                    <div v-for="social in selectedSupplier.socialMedia" :key="social.social_media_id" 
-                         class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
-                      <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                          <span class="font-medium text-gray-700">{{ social.platform }}</span>
-                          <span class="text-gray-500">{{ social.handle }}</span>
-                        </div>
-                        <a v-if="social.url" :href="social.url" target="_blank" 
-                           class="text-sm text-blue-600 hover:text-blue-800 break-all">
-                          {{ social.url }}
-                        </a>
+              <div class="max-h-[400px] overflow-y-auto pr-2">
+                <div v-if="selectedSupplier.socialMedia && selectedSupplier.socialMedia.length > 0" class="space-y-2">
+                  <div v-for="social in selectedSupplier.socialMedia" :key="social.social_media_id" 
+                       class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium text-gray-700">{{ social.platform }}</span>
+                        <span class="text-gray-500">{{ social.handle }}</span>
                       </div>
+                      <a v-if="social.url" :href="social.url" target="_blank" 
+                         class="text-sm text-blue-600 hover:text-blue-800 break-all">
+                        {{ social.url }}
+                      </a>
                     </div>
                   </div>
-                  <div v-else class="text-gray-500 text-sm text-center py-4">
-                    No social media accounts added yet
-                  </div>
+                </div>
+                <div v-else class="text-gray-500 text-sm text-center py-4">
+                  No social media accounts added yet
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div v-if = "addStaffDetails" class = "mt-5">
-                <div class = "flex items-center">
-                  <select class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
-                    <option value="" class = "text-gray-700" disabled selected>Select Position</option>
-                    <option value="Staff">Staff</option>
-                  </select>
-                </div>
- 
-              </div>
-
-              <div class = "flex justify-end items-center mt-4 space-x-3">
-                <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditSupplierBtn">
-                  Cancel
-                </button>
-                   <button @click.prevent ="confirmEditSupplier" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
-                     Save
-                   </button>
-              </div>
-
-
+        <div class="flex justify-end items-center mt-4 space-x-3 px-5">
+          <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditSupplierBtn">
+            Cancel
+          </button>
+          <button @click.prevent="confirmEditSupplier" class="w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
+            Save
+          </button>
         </div>
   </div>
 </form> 
@@ -584,34 +581,33 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 <form v-if="editStaffForm" class = "flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-20" @click.self="closeEditStaffBtn">
   <div class = "bg-white w-[500px] p-5 rounded-lg shadow-lg  overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
-              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Edit Staff</h1>
-               <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditStaffBtn">
-                  Close
-                </button>
+              <h1 class = "font-semibold text-xl font-raleway text-gray-800">Update Staff Info</h1>
         </div>
         <div class = "border border-gray-500 mt-5 items-center"></div>
                <div class = "m-5">
-
-             
-                <div class = "flex items-center space-x-2">
-                  <input type="text"  v-model="selectedStaff.fullName" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
+                <div class = "flex flex-col">
+                  <label class="text-xs text-gray-600 block text-start">Full Name</label>
+                  <input type="text"  v-model="selectedStaff.fullName" class = "mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Name" required>
                 
               </div>
               <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text"  v-model="selectedStaff.email" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Email" required>
+                <div class = "flex flex-col">
+                  <label class="text-xs text-gray-600 block text-start">Email</label>
+                  <input type="text"  v-model="selectedStaff.email" class = "mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Email" required>
                 </div>
               </div>
               <div class = "mt-5">
-                <div class = "flex items-center">
-                  <input type="text"  v-model="selectedStaff.contact" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
+                <div class = "flex flex-col">
+                  <label class="text-xs text-gray-600 block text-start">Contact</label>
+                  <input type="text"  v-model="selectedStaff.contact" class = "mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
                 </div>
               </div>
 
 
               <div class = "mt-5">
-                <div class = "flex items-center">
-                  <select v-model="selectedStaff.position" class = "mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
+                <div class = "flex flex-col">
+                  <label class="text-xs text-gray-600 block text-start">Position</label>
+                  <select v-model="selectedStaff.position" class = "mt-2p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Position</option>
                     <option value="Assistant">Assistant</option>
                     <option value="Staff">Staff</option>
@@ -620,10 +616,10 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                 </div>   
              </div>
 
-              <div class = "flex justify-center items-center mt-10 space-x-3">
-                   <button @click.prevent="deleteUserItem(selectedStaff.no)" class = "w-20 h-10 bg-yellow-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
-                     Delete
-                   </button>
+              <div class = "flex justify-end items-center mt-10 space-x-3">
+                <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditStaffBtn">
+                  Close
+                </button>
                    <button @click.prevent="confirmEditStaff" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                      Confirm
                    </button>
@@ -1401,7 +1397,7 @@ export default {
       } catch (error) {
         console.error("Error toggling supplier status:", error);
         if (error.response) {
-          alert(error.response.data.message);
+          alert(`Error toggling supplier status: ${error.response.data.message}`);
         } else {
           alert("Error updating supplier status. Please try again.");
         }

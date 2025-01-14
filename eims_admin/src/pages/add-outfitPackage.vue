@@ -14,13 +14,12 @@
     
         <div class="flex flex-row items-center m-5 space-x-5">
         <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-            <img class="w-auto h-12" src="/img/wardrobes.png" alt="Vendor Image">
             <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalOutfitPackages }} <span class = "text-sm antialiased text-gray-600">packages</span></h2>
         </div>
         <button 
         @click="showOutfitsModalFn"
         class="flex items-center bg-white text-gray-800 font-raleway mt-10 px-3 py-2 rounded shadow-lg transition-transform duration-300 transform hover:scale-105 font-semibold"
-         > <img class="w-auto h-4 pr-2" src="/img/search.png" alt="Vendor Image">
+         > 
 
         View All Outfits
     </button>
@@ -38,7 +37,7 @@
     </div>
     
             <!-- Gown Packages Table -->
-                <div v-if="showTable === 'GownPackages'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+                <div v-if="showTable === 'GownPackages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -65,16 +64,16 @@
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                             @click="editGownPackageBtn(index)"
                                             title="Update">
-                                            <img src="/img/update.png" alt="Update" class="w-6 h-6">
+                                            <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                                         </button>
                                         <button
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                             @click="openStatusConfirmModal(gownPackage, (gownPackage.status || 'Active') === 'Active' ? 'Inactive' : 'Active')"
                                             :title="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'">
                                             <img 
-                                                :src="(gownPackage.status || 'Active') === 'Active' ? '/img/inactive.png' : '/img/active.png'" 
+                                                :src="(gownPackage.status || 'Active') === 'Active' ? '/img/inactive2.png' : '/img/active2.png'" 
                                                 :alt="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'" 
-                                                class="w-6 h-6">
+                                                class="w-5 h-5">
                                         </button>
                                     </div>
                                 </td>
@@ -126,8 +125,8 @@
                                 <button
                                     class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                     @click="openStatusConfirmModal(packages, 'Active')"
-                                    title="Set Active">
-                                    <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                                    title="Activate">
+                                    <img src="/img/active2.png" alt="Set Active" class="w-5 h-5">
                                 </button>
                             </td>
                             </tr>
@@ -152,7 +151,7 @@
                         </button>
                         <button
                             @click="confirmStatusChange"
-                            class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-opacity-90"
                         >
                           Yes
                         </button>
@@ -176,6 +175,8 @@
 
                     <!-- Package Name -->
                     <div class="mb-4">
+                        
+                        
                         <input
                             id="package-name"
                             type="text"
@@ -204,7 +205,7 @@
                     <div class="flex justify-center space-x-4 my-6">
                         <button  @click="openOutfitSelection"
                             type="button"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
+                            class="px-4 py-2 bg-[#9B111E] text-white rounded-lg shadow-sm hover:bg-blue-700 transition duration-300"
                         >
                             Add Outfits
                         </button>

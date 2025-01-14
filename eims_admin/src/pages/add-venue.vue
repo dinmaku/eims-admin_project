@@ -13,10 +13,13 @@
 
         <div class="flex flex-row items-center m-5 space-x-5">
         <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-green-400 space-x-5">
-            <img class="w-auto h-12" src="/img/venues.png" alt="Vendor Image">
             <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalVenues }} <span class = "text-sm antialiased text-gray-600">venues</span></h2>
         </div>
-        <form class="flex items-center w-[300px] mt-9">
+  
+    </div>
+
+            <div class="flex flex-row justify-between items-center m-5 my-7">
+              <form class="flex items-center w-[300px]">
               <label for="voice-search" class="sr-only">Search</label>
               <div class="relative w-full">
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -31,9 +34,6 @@
                 </router-link>
               </div>
         </form>
-    </div>
-
-            <div class="flex flex-row justify-end items-center m-5 my-7">
                 <button class = "mr-2 w-28 h-10 bg-[#9B111E] font-semibold text-gray-100 font-quicksand rounded-md shadow-lg 
                 transition-transform duration-300 transform hover:scale-105" @click="addVenueBtn">
                 Add Venue
@@ -42,7 +42,7 @@
 
         <!--- Venues Table --->
 
-        <div v-if="showTable === 'Venues'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+        <div v-if="showTable === 'Venues'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -71,20 +71,20 @@
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="editVenueBtn(index)"
-                                        title="Edit">
-                                        <img src="/img/update.png" alt="Update" class="w-6 h-6">
+                                        title="Update Venue Info">
+                                        <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                                     </button>
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="showRateModal = true; selectedVenue = venue"
                                         title="Set Rate">
-                                        <img src="/img/rate.png" alt="Set Rate" class="w-6 h-6">
+                                        <img src="/img/rate2.png" alt="Set Rate" class="w-5 h-5">
                                     </button>
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="toggleVenueStatus(venue)"
-                                        title="Set Inactive">
-                                        <img src="/img/inactive.png" alt="Set Inactive" class="w-6 h-6">
+                                        title="Deactivate">
+                                        <img src="/img/inactive2.png" alt="Set Inactive" class="w-5 h-5">
                                     </button>
                                 </div>
                             </td>
@@ -143,8 +143,8 @@
                       <button
                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                         @click="toggleVenueStatus(venue)"
-                        title="Set Active">
-                        <img src="/img/mark.png" alt="Set Active" class="w-6 h-6">
+                        title="Activate">
+                        <img src="/img/active2.png" alt="Set Active" class="w-5 h-5">
                       </button>
                     </td>
                   </tr>
@@ -168,7 +168,7 @@
                 </button>
                 <button 
                   @click="confirmStatusChange" 
-                  class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">
+                  class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">
                   Yes
                 </button>
               </div>
@@ -188,31 +188,31 @@
                 <!-- First Name and Last Name -->
                 
                 <!-- Venue Name -->
-                <div class="mt-5">
-                    <label class="text-xs text-gray-600 ml-2">Venue Name</label>
+                <div class="flex flex-col mt-5">
+                    <label class="text-xs text-gray-600 ml-2 text-start">Venue Name</label>
                     <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="venue_name" placeholder="Venue Name" required>
                 </div>
 
                 <!-- Location -->
-                <div class="mt-5">
-                    <label class="text-xs text-gray-600 ml-2">Location</label>
+                <div class="flex flex-col mt-5">
+                    <label class="text-xs text-gray-600 ml-2 text-start">Location</label>
                     <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="location" placeholder="Location" required>
                 </div>
 
                 <!-- Description -->
-                <div class="mt-5">
-                    <label class="text-xs text-gray-600 ml-2">Description</label>
+                <div class="flex flex-col mt-5">
+                    <label class="text-xs text-gray-600 ml-2 text-start">Description</label>
                     <textarea class="mt-2 ml-2 p-2 w-full h-20 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="description" placeholder="Description" required></textarea>
                 </div>
 
                 <!-- Capacity -->
-                <div class="mt-5">
-                    <label class="text-xs text-gray-600 ml-2">Capacity</label>
+                <div class="flex flex-col mt-5">
+                    <label class="text-xs text-gray-600 ml-2 text-start">Capacity</label>
                     <input type="number" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="venue_capacity" placeholder="Capacity" required>
                 </div>
 
                 <!-- Confirm and Cancel Button -->
-                <div class="flex justify-center items-center mt-10 space-x-2">
+                <div class="flex justify-end items-center mt-10 space-x-2">
                     <button class="w-20 h-10 bg-gray-300 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeAddVenueForm">
                         Cancel
                     </button>
@@ -228,10 +228,7 @@
         <form v-if="editVenueForm" @submit.prevent="updateVenue" class="flex justify-center items-center fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto" @click.self="closeEditVenueForm">
         <div class="bg-white w-[500px] p-5 rounded-lg shadow-lg overflow-y-auto">
             <div class="flex justify-between items-center m-3">
-            <h1 class="font-semibold text-xl font-raleway text-gray-800">Edit Venue</h1>
-            <button class="mt-2 bg-red-500 text-white px-3 py-1 rounded transform-transition duration-300 transform hover:scale-105" @click="closeEditVenueForm">
-                Close
-            </button>
+            <h1 class="font-semibold text-xl font-raleway text-gray-800">Update Venue</h1>
             </div>
 
             <div class="border border-gray-500 mt-5 items-center"></div>
@@ -239,27 +236,34 @@
             <span>{{ errorMessage }}</span>
 
             <!-- Venue Name -->
-            <div class="mt-5">
+            <div class="flex flex-col mt-5">
+              <label class="text-xs text-gray-600 ml-2 text-start">Venue Name</label>
                 <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.venue_name" placeholder="Venue Name" required>
             </div>
 
             <!-- Location -->
-            <div class="mt-5">
+            <div class="flex flex-col mt-5">
+              <label class="text-xs text-gray-600 ml-2 text-start">Location</label>
                 <input type="text" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.location" placeholder="Location" required>
             </div>
 
             <!-- Description -->
-            <div class="mt-5">
+            <div class="flex flex-col mt-5">
+              <label class="text-xs text-gray-600 ml-2 text-start">Description</label>
                 <textarea class="mt-2 ml-2 p-2 w-full h-20 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.description" placeholder="Description" required></textarea>
             </div>
 
             <!-- Capacity -->
-            <div class="mt-5">
+            <div class="flex flex-col mt-5">
+              <label class="text-xs text-gray-600 ml-2 text-start">Capacity</label>
                 <input type="number" class="mt-2 ml-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" v-model="selectedVenue.venue_capacity" placeholder="Capacity" required>
             </div>
 
             <!-- Confirm Button -->
-            <div class="flex justify-center items-center mt-10 space-x-3">
+            <div class="flex justify-end items-center mt-10 space-x-3">
+              <button class="bg-gray-300 text-white w-20 h-10 rounded-lg transform-transition duration-300 transform hover:scale-105 hover:bg-gray-400" @click="closeEditVenueForm">
+                Close
+            </button>
                 <button type="submit" class="w-32 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md transform-transition duration-300 transform hover:scale-105">
                 Save Changes
                 </button>
@@ -284,7 +288,7 @@
               <div class="mt-4 flex justify-end space-x-2">
                
                 <button @click="closeRateModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">Cancel</button>
-                <button @click="saveVenueRate" class="bg-[#9B111E] text-white px-4 py-2 rounded hover:bg-opacity-90">Save</button>
+                <button @click="saveVenueRate" class = "w-20 h-10 bg-blue-500 text-gray-100 font-semibold rounded-lg shadow-md  transform-transition duration-300 transform hover:scale-105">Save</button>
             </div>
             </div>
           </div>

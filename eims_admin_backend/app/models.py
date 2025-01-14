@@ -503,11 +503,8 @@ def create_package(package_data):
             
             # Then link it in event_package_services
             cursor.execute("""
-                INSERT INTO event_package_services (
-                    package_id, package_service_id
-                ) VALUES (
-                    %s, %s
-                )
+                INSERT INTO event_package_services (package_id, package_service_id)
+                VALUES (%s, %s)
             """, (
                 package_id,
                 package_service_id
@@ -517,11 +514,8 @@ def create_package(package_data):
         if 'additional_services' in package_data:
             for service in package_data['additional_services']:
                 cursor.execute("""
-                    INSERT INTO event_package_additional_services (
-                        package_id, add_service_id
-                    ) VALUES (
-                        %s, %s
-                    )
+                    INSERT INTO event_package_additional_services (package_id, add_service_id)
+                    VALUES (%s, %s)
                 """, (
                     package_id,
                     service['add_service_id']
@@ -1374,86 +1368,6 @@ def add_gown_package(gown_package_name, description, outfits):
         cursor.close()
         conn.close()
 
-
-
-def get_all_outfits():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("SELECT outfit_id, outfit_name, outfit_type, outfit_color, outfit_desc, rent_price, status, outfit_img, size, weight FROM outfits")
-        outfits = cursor.fetchall()
-
-        # Transform the result into a list of dictionaries
-        return [
-            {
-                'outfit_id': item[0],
-                'outfit_name': item[1],
-                'outfit_type': item[2],
-                'outfit_color': item[3],
-                'outfit_desc': item[4],
-                'rent_price': item[5],
-                'status': item[6],
-                'outfit_img': item[7],
-                'size': item[8],
-                'weight': item[9]
-            }
-            for item in outfits
-        ]
-    finally:
-        cursor.close()
-        conn.close()
-
-def create_outfit(outfit_data):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        # Insert outfit data
-        cursor.execute("""
-            INSERT INTO outfits (outfit_name, outfit_type, outfit_color, outfit_desc, 
-                               rent_price, status, outfit_img, size, weight)
-            VALUES (%(outfit_name)s, %(outfit_type)s, %(outfit_color)s, %(outfit_desc)s,
-                    %(rent_price)s, %(status)s, %(outfit_img)s, %(size)s, %(weight)s)
-            RETURNING outfit_id
-        """, {
-            'outfit_name': outfit_data.get('outfit_name'),
-            'outfit_type': outfit_data.get('outfit_type'),
-            'outfit_color': outfit_data.get('outfit_color'),
-            'outfit_desc': outfit_data.get('outfit_desc'),
-            'rent_price': float(outfit_data.get('rent_price', 0)),
-            'status': 'Available',  # Default status
-            'outfit_img': outfit_data.get('outfit_img'),
-            'size': outfit_data.get('size'),
-            'weight': float(outfit_data.get('weight', 0))
-        })
-        
-        outfit_id = cursor.fetchone()[0]
-        
-        # Create archive entry
-        archive_data = outfit_data.get('archive', {})
-        cursor.execute("""
-            INSERT INTO outfit_archive (outfit_id, creation_address, creation_date,
-                                      owner, retail_price, usage)
-            VALUES (%s, %s, CURRENT_DATE, %s, %s, 0)
-        """, (
-            outfit_id,
-            archive_data.get('creation_address'),
-            archive_data.get('owner'),
-            float(archive_data.get('retail_price', 0)) if archive_data.get('retail_price') else 0
-        ))
-        
-        conn.commit()
-        return True, outfit_id, "Outfit created successfully"
-        
-    except Exception as e:
-        conn.rollback()
-        logger.error(f"Error creating outfit: {str(e)}")
-        return False, None, str(e)
-    finally:
-        cursor.close()
-        conn.close()
-
 #additional services models
 def create_additional_service(add_service_name, add_service_description):
     conn = get_db_connection()
@@ -1721,93 +1635,139 @@ def create_event_type(event_type_name):
 
 
         
-def add_event_item(userid, event_name, event_type, event_theme, event_color, package_id, suppliers, venues, schedule=None, start_time=None, end_time=None, status='Wishlist', onsite_firstname=None, onsite_lastname=None, onsite_contact=None, onsite_address=None):
+def add_event_item(userid, event_name, event_type, event_theme, event_color, 
+                  package_id, suppliers, schedule=None, start_time=None, 
+                  end_time=None, status='Wishlist', onsite_firstname=None, 
+                  onsite_lastname=None, onsite_contact=None, onsite_address=None, 
+                  total_price=0, outfits=None, services=None, additional_items=None):
+    """Add a new event with its package configuration"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute("BEGIN")
 
-        # Calculate total price from suppliers and venues
-        total_price = 0
-        for supplier in suppliers:
-            if not supplier.get('is_removed'):
-                if supplier.get('external_supplier_price'):
-                    total_price += float(supplier.get('external_supplier_price', 0))
-                else:
-                    total_price += float(supplier.get('price', 0))
-        
-        for venue in venues:
-            if not venue.get('is_removed'):
-                total_price += float(venue.get('price', 0))
+        # Ensure numeric values are properly formatted
+        total_price = float(total_price) if total_price is not None else 0
 
-        # Prepare JSON data for modifications
-        modified_suppliers = {
-            'added': [dict(s) for s in suppliers if s.get('is_added')],
-            'removed': [dict(s) for s in suppliers if s.get('is_removed')],
-            'modified': [dict(s) for s in suppliers if s.get('is_modified')]
-        }
-        
-        modified_venues = {
-            'added': [dict(v) for v in venues if v.get('is_added')],
-            'removed': [dict(v) for v in venues if v.get('is_removed')],
-            'modified': [dict(v) for v in venues if v.get('is_modified')]
-        }
-
-        # Insert into events table with the package_id reference and modifications
+        # Insert into events table
         cursor.execute("""
             INSERT INTO events (
                 userid, event_name, event_type, event_theme, event_color, 
                 package_id, schedule, start_time, end_time, status,
                 onsite_firstname, onsite_lastname, onsite_contact, onsite_address,
-                modified_suppliers, modified_venues, total_price
+                total_price
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
             RETURNING events_id
         """, (
             userid, event_name, event_type, event_theme, event_color, 
             package_id, schedule, start_time, end_time, status,
             onsite_firstname, onsite_lastname, onsite_contact, onsite_address,
-            json.dumps(modified_suppliers),  # Convert dict to JSON string
-            json.dumps(modified_venues),     # Convert dict to JSON string
             total_price
         ))
         events_id = cursor.fetchone()[0]
 
-        # Process suppliers
-        for supplier in suppliers:
-            if not supplier.get('is_removed'):  # Don't add removed suppliers
-                cursor.execute("""
-                    INSERT INTO event_suppliers (
-                        events_id, supplier_id, is_modified,
-                        modified_price, external_supplier_name, 
-                        external_supplier_contact, external_supplier_price
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    events_id,
-                    supplier.get('supplier_id'),
-                    supplier.get('is_modified', False) or supplier.get('is_added', False),
-                    supplier.get('price'),
-                    supplier.get('external_supplier_name'),
-                    supplier.get('external_supplier_contact'),
-                    supplier.get('external_supplier_price')
-                ))
+        # Create package configuration if package_id is provided
+        if package_id:
+            cursor.execute("""
+                INSERT INTO event_package_configurations (events_id, package_id)
+                VALUES (%s, %s)
+                RETURNING config_id
+            """, (events_id, package_id))
+            config_id = cursor.fetchone()[0]
 
-        # Process venues
-        for venue in venues:
-            if not venue.get('is_removed'):  # Don't add removed venues
+            # Store package suppliers
+            if suppliers:
+                for supplier in suppliers:
+                    if not supplier:  # Skip if supplier is None
+                        continue
+                    cursor.execute("""
+                        INSERT INTO event_package_suppliers (
+                            config_id, supplier_id, original_price, modified_price,
+                            is_modified, is_removed, remarks
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        config_id,
+                        supplier.get('supplier_id'),
+                        float(supplier.get('original_price', 0) or 0),
+                        float(supplier.get('modified_price', 0) or 0),
+                        supplier.get('is_modified', False),
+                        supplier.get('is_removed', False),
+                        supplier.get('remarks', '')
+                    ))
+
+            # Store package outfits
+            if outfits:
+                for outfit in outfits:
+                    if not outfit:  # Skip if outfit is None
+                        continue
+                    cursor.execute("""
+                        INSERT INTO event_package_outfits (
+                            config_id, outfit_id, gown_package_id,
+                            original_price, modified_price,
+                            is_modified, is_removed, remarks
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        config_id,
+                        outfit.get('outfit_id'),
+                        outfit.get('gown_package_id'),
+                        float(outfit.get('original_price', 0) or 0),
+                        float(outfit.get('modified_price', 0) or 0),
+                        outfit.get('is_modified', False),
+                        outfit.get('is_removed', False),
+                        outfit.get('remarks', '')
+                    ))
+
+            # Store package services
+            if services:
+                for service in services:
+                    if not service:  # Skip if service is None
+                        continue
+                    if 'package_service_id' in service:
+                        cursor.execute("""
+                            INSERT INTO event_package_services (package_id, package_service_id)
+                            VALUES (%s, %s)
+                        """, (
+                            package_id,
+                            service.get('package_service_id')
+                        ))
+                    else:
+                        cursor.execute("""
+                            INSERT INTO package_service (supplier_id, remarks)
+                            VALUES (%s, %s)
+                            RETURNING package_service_id
+                        """, (
+                            service.get('supplier_id'),
+                            service.get('remarks', '')
+                        ))
+                        package_service_id = cursor.fetchone()[0]
+                        cursor.execute("""
+                            INSERT INTO event_package_services (package_id, package_service_id)
+                            VALUES (%s, %s)
+                        """, (
+                            package_id,
+                            package_service_id
+                        ))
+
+        # Store additional (non-package) items
+        if additional_items:
+            for item in additional_items:
+                if not item:  # Skip if item is None
+                    continue
                 cursor.execute("""
-                    INSERT INTO event_venues (
-                        events_id, venue_id, is_modified,
-                        modified_price
+                    INSERT INTO event_additional_items (
+                        events_id, item_type, item_id, price, remarks
                     )
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s)
                 """, (
                     events_id,
-                    venue['venue_id'],
-                    venue.get('is_modified', False) or venue.get('is_added', False),
-                    venue.get('price')
+                    item.get('item_type'),
+                    item.get('item_id'),
+                    float(item.get('price', 0) or 0),
+                    item.get('remarks', '')
                 ))
 
         cursor.execute("COMMIT")
@@ -1815,27 +1775,136 @@ def add_event_item(userid, event_name, event_type, event_theme, event_color, pac
 
     except Exception as e:
         cursor.execute("ROLLBACK")
-        logger.error(f"Error in add_event_item: {str(e)}")
-        raise
+        print(f"Error in add_event_item: {str(e)}")  # Add debug print
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_event_package_configuration(events_id):
+    """Get all package configuration details for an event"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Get the base configuration
+        cursor.execute("""
+            SELECT config_id, package_id, created_at
+            FROM event_package_configurations
+            WHERE events_id = %s
+        """, (events_id,))
+        config = cursor.fetchone()
+        
+        if not config:
+            return None
+
+        config_id = config[0]
+        
+        # Get configured suppliers
+        cursor.execute("""
+            SELECT s.supplier_id, s.service, u.firstname, u.lastname, u.email,
+                   eps.original_price, eps.modified_price, eps.is_modified, 
+                   eps.is_removed, eps.remarks
+            FROM event_package_suppliers eps
+            JOIN suppliers s ON eps.supplier_id = s.supplier_id
+            JOIN users u ON s.userid = u.userid
+            WHERE eps.config_id = %s
+        """, (config_id,))
+        suppliers = cursor.fetchall()
+
+        # Get configured services
+        cursor.execute("""
+            SELECT s.service_id, s.add_service_name, s.add_service_description,
+                   eps.original_price, eps.modified_price, eps.is_modified,
+                   eps.is_removed, eps.remarks
+            FROM event_package_services eps
+            JOIN additional_services s ON eps.service_id = s.add_service_id
+            WHERE eps.config_id = %s
+        """, (config_id,))
+        services = cursor.fetchall()
+
+        # Get configured outfits
+        cursor.execute("""
+            SELECT o.outfit_id, o.outfit_name, o.outfit_type,
+                   gp.gown_package_id, gp.gown_package_name,
+                   epo.original_price, epo.modified_price, epo.is_modified,
+                   epo.is_removed, epo.remarks
+            FROM event_package_outfits epo
+            LEFT JOIN outfits o ON epo.outfit_id = o.outfit_id
+            LEFT JOIN gown_packages gp ON epo.gown_package_id = gp.gown_package_id
+            WHERE epo.config_id = %s
+        """, (config_id,))
+        outfits = cursor.fetchall()
+
+        # Get additional items
+        cursor.execute("""
+            SELECT item_type, item_id, price, remarks
+            FROM event_additional_items
+            WHERE events_id = %s
+        """, (events_id,))
+        additional_items = cursor.fetchall()
+
+        return {
+            'config_id': config[0],
+            'package_id': config[1],
+            'created_at': config[2],
+            'suppliers': [{
+                'supplier_id': s[0],
+                'service': s[1],
+                'firstname': s[2],
+                'lastname': s[3],
+                'email': s[4],
+                'original_price': float(s[5]) if s[5] else 0,
+                'modified_price': float(s[6]) if s[6] else 0,
+                'is_modified': s[7],
+                'is_removed': s[8],
+                'remarks': s[9]
+            } for s in suppliers],
+            'services': [{
+                'service_id': s[0],
+                'service_name': s[1],
+                'service_description': s[2],
+                'original_price': float(s[3]) if s[3] else 0,
+                'modified_price': float(s[4]) if s[4] else 0,
+                'is_modified': s[5],
+                'is_removed': s[6],
+                'remarks': s[7]
+            } for s in services],
+            'outfits': [{
+                'outfit_id': o[0],
+                'outfit_name': o[1],
+                'outfit_type': o[2],
+                'gown_package_id': o[3],
+                'gown_package_name': o[4],
+                'original_price': float(o[5]) if o[5] else 0,
+                'modified_price': float(o[6]) if o[6] else 0,
+                'is_modified': o[7],
+                'is_removed': o[8],
+                'remarks': o[9]
+            } for o in outfits],
+            'additional_items': [{
+                'item_type': i[0],
+                'item_id': i[1],
+                'price': float(i[2]) if i[2] else 0,
+                'remarks': i[3]
+            } for i in additional_items]
+        }
     finally:
         cursor.close()
         conn.close()
 
 def get_event_details(event_id):
+    """Get complete event details including package configuration"""
     conn = get_db_connection()
     cursor = conn.cursor()
+
     try:
-        # Get event details with package information
+        # Get base event details
         cursor.execute("""
-            SELECT e.*, ep.package_name, ep.capacity, ep.description as package_description,
-                   ep.total_price as package_price, ep.additional_capacity_charges,
-                   ep.charge_unit, gp.gown_package_name, gp.gown_package_price,
-                   u.firstname AS firstname, u.lastname AS lastname, u.contactnumber AS contactnumber,
-                   u.email AS email
+            SELECT e.*, ep.package_name, ep.package_description, ep.package_type,
+                   ep.total_price as package_price
             FROM events e
             LEFT JOIN event_packages ep ON e.package_id = ep.package_id
-            LEFT JOIN gown_package gp ON ep.gown_package_id = gp.gown_package_id
-            LEFT JOIN users u ON e.userid = u.userid
             WHERE e.events_id = %s
         """, (event_id,))
         event = cursor.fetchone()
@@ -1843,87 +1912,32 @@ def get_event_details(event_id):
         if not event:
             return None
 
-        # Get suppliers with modifications
-        cursor.execute("""
-            SELECT es.*, s.firstname, s.lastname, s.service,
-                   s.price as supplier_price, u.email
-            FROM event_suppliers es
-            LEFT JOIN suppliers s ON es.supplier_id = s.supplier_id
-            LEFT JOIN users u ON s.userid = u.userid
-            WHERE es.events_id = %s
-        """, (event_id,))
-        suppliers = cursor.fetchall()
+        # Get package configuration if exists
+        package_config = get_event_package_configuration(event_id)
 
-        # Get venues with modifications
-        cursor.execute("""
-            SELECT ev.*, v.venue_name, v.location,
-                   v.venue_price as original_price
-            FROM event_venues ev
-            LEFT JOIN venues v ON ev.venue_id = v.venue_id
-            WHERE ev.events_id = %s
-        """, (event_id,))
-        venues = cursor.fetchall()
-
-        # Get additional services
-        cursor.execute("""
-            SELECT ads.add_service_id, ads.add_service_name,
-                   ads.add_service_description, ads.add_service_price
-            FROM event_package_additional_services epas
-            JOIN additional_services ads ON epas.add_service_id = ads.add_service_id
-            WHERE epas.package_id = %s
-        """, (event['package_id'],))
-        services = cursor.fetchall()
-
-        # Format the response
-        event_details = {
-            'event_id': event[0],
+        return {
+            'events_id': event[0],
             'userid': event[1],
             'event_name': event[2],
             'event_type': event[3],
             'event_theme': event[4],
             'event_color': event[5],
             'package_id': event[6],
-            'schedule': event[7],
-            'start_time': event[8].strftime('%H:%M') if event[8] else None,
-            'end_time': event[9].strftime('%H:%M') if event[9] else None,
-            'status': event[10],
-            'onsite_firstname': event[11],
-            'onsite_lastname': event[12],
-            'onsite_contact': event[13],
-            'onsite_address': event[14],
-            'total_price': float(event[15]) if event[15] else 0,
-            'package_name': event[16],
-            'package_description': event[17],
-            'capacity': event[18],
-            'package_price': float(event[19]) if event[19] else 0,
-            'additional_capacity_charges': float(event[20]) if event[20] else 0,
-            'charge_unit': event[21],
-            'services': []
+            'package_name': event[7],
+            'package_description': event[8],
+            'package_type': event[9],
+            'package_price': float(event[10]) if event[10] else 0,
+            'schedule': event[11],
+            'start_time': event[12],
+            'end_time': event[13],
+            'status': event[14],
+            'onsite_firstname': event[15],
+            'onsite_lastname': event[16],
+            'onsite_contact': event[17],
+            'onsite_address': event[18],
+            'total_price': float(event[19]) if event[19] else 0,
+            'package_configuration': package_config
         }
-
-        # Format services
-        for service in services:
-            service_detail = {
-                'package_service_id': service[0],
-                'supplier_id': service[1],
-                'external_supplier_name': service[2],
-                'external_supplier_contact': service[3],
-                'external_supplier_price': float(service[4]) if service[4] else 0,
-                'remarks': service[5],
-                'is_modified': service[6],
-                'service': service[7],
-                'supplier_price': float(service[8]) if service[8] else 0,
-                'supplier_firstname': service[9],
-                'supplier_lastname': service[10],
-                'supplier_email': service[11]
-            }
-            event_details['services'].append(service_detail)
-
-        return event_details
-
-    except Exception as e:
-        logger.error(f"Error getting event details: {str(e)}")
-        raise e
     finally:
         cursor.close()
         conn.close()
@@ -2281,12 +2295,12 @@ def initialize_supplier_social_media():
         # Create the table if it doesn't exist
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS supplier_social_media (
-                social_media_id INT AUTO_INCREMENT PRIMARY KEY,
-                supplier_id INT NOT NULL,
-                platform VARCHAR(50) NOT NULL,
-                handle VARCHAR(100) NOT NULL,
+                social_media_id SERIAL PRIMARY KEY,
+                supplier_id INTEGER NOT NULL,
+                platform VARCHAR(100) NOT NULL,
+                handle VARCHAR(255) NOT NULL,
                 url VARCHAR(255),
-                FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+                FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id) ON DELETE CASCADE
             )
         """)
         conn.commit()
@@ -2529,6 +2543,159 @@ def get_package_details_by_id(package_id):
                 'remarks': row[23] if row[23] and row[23][0] is not None else []
             }
         return None
+    finally:
+        cursor.close()
+        conn.close()
+
+def track_outfit_modification(events_id, outfit_id=None, gown_package_id=None, modification_type=None, original_price=None, modified_price=None, remarks=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE events 
+            SET modified_outfits = COALESCE(modified_outfits, '[]'::jsonb) || jsonb_build_object(
+                'outfit_id', outfit_id,
+                'gown_package_id', gown_package_id,
+                'modification_type', modification_type,
+                'original_price', original_price,
+                'modified_price', modified_price,
+                'remarks', remarks,
+                'modified_at', CURRENT_TIMESTAMP
+            )::jsonb
+            WHERE events_id = %s
+            RETURNING modified_outfits
+        """, (events_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error tracking outfit modification: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def track_individual_outfit_modification(events_id, outfit_data):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE events 
+            SET modified_individual_outfit = %s::jsonb
+            WHERE events_id = %s
+            RETURNING modified_individual_outfit
+        """, (json.dumps(outfit_data), events_id))
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error tracking individual outfit modification: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def track_additional_service_modification(events_id, service_id, modification_type, original_price=None, modified_price=None, remarks=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE events 
+            SET modified_additional_services = COALESCE(modified_additional_services, '[]'::jsonb) || jsonb_build_object(
+                'service_id', service_id,
+                'modification_type', modification_type,
+                'original_price', original_price,
+                'modified_price', modified_price,
+                'remarks', remarks,
+                'modified_at', CURRENT_TIMESTAMP
+            )::jsonb
+            WHERE events_id = %s
+            RETURNING modified_additional_services
+        """, (events_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error tracking additional service modification: {str(e)}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_all_outfits():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT outfit_id, outfit_name, outfit_type, outfit_color, outfit_desc, rent_price, status, outfit_img, size, weight FROM outfits")
+        outfits = cursor.fetchall()
+
+        # Transform the result into a list of dictionaries
+        return [
+            {
+                'outfit_id': item[0],
+                'outfit_name': item[1],
+                'outfit_type': item[2],
+                'outfit_color': item[3],
+                'outfit_desc': item[4],
+                'rent_price': item[5],
+                'status': item[6],
+                'outfit_img': item[7],
+                'size': item[8],
+                'weight': item[9]
+            }
+            for item in outfits
+        ]
+    finally:
+        cursor.close()
+        conn.close()
+
+def create_outfit(outfit_data):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert outfit data
+        cursor.execute("""
+            INSERT INTO outfits (outfit_name, outfit_type, outfit_color, outfit_desc, 
+                               rent_price, status, outfit_img, size, weight)
+            VALUES (%(outfit_name)s, %(outfit_type)s, %(outfit_color)s, %(outfit_desc)s,
+                    %(rent_price)s, %(status)s, %(outfit_img)s, %(size)s, %(weight)s)
+            RETURNING outfit_id
+        """, {
+            'outfit_name': outfit_data.get('outfit_name'),
+            'outfit_type': outfit_data.get('outfit_type'),
+            'outfit_color': outfit_data.get('outfit_color'),
+            'outfit_desc': outfit_data.get('outfit_desc'),
+            'rent_price': float(outfit_data.get('rent_price', 0)),
+            'status': 'Available',  # Default status
+            'outfit_img': outfit_data.get('outfit_img'),
+            'size': outfit_data.get('size'),
+            'weight': float(outfit_data.get('weight', 0))
+        })
+        
+        outfit_id = cursor.fetchone()[0]
+        
+        # Create archive entry
+        archive_data = outfit_data.get('archive', {})
+        cursor.execute("""
+            INSERT INTO outfit_archive (outfit_id, creation_address, creation_date,
+                                      owner, retail_price, usage)
+            VALUES (%s, %s, CURRENT_DATE, %s, %s, 0)
+        """, (
+            outfit_id,
+            archive_data.get('creation_address'),
+            archive_data.get('owner'),
+            float(archive_data.get('retail_price', 0)) if archive_data.get('retail_price') else 0
+        ))
+        
+        conn.commit()
+        return True, outfit_id, "Outfit created successfully"
+        
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error creating outfit: {str(e)}")
+        return False, None, str(e)
     finally:
         cursor.close()
         conn.close()

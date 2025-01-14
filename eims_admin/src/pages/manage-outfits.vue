@@ -2,26 +2,20 @@
     <div class="bg-gray-200 w-full h-full">
     <div class="w-full h-[65px] bg-gray-100 mt-2 flex items-center justify-between px-5 shadow-lg">
     <h1 class="font-amaticBold font-extraLight text-3xl">
-    Manage Outfits
+    Booked Outfits
   </h1>
-   <div class ="flex items-center">
-    <select @change="setOutfitDisplay" v-model="selectedOption" class="bg-white font-amaticBold font-semibold border border-gray-100 rounded-md py-2 px-3 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mr-5">
-    <option value ="booked-outfit">Booked Attire</option>
-    <option value="outfits-arch">Outfits Archive</option>
-  </select>
-   </div>
   </div>
 
   <!--Booked Outfits-->
   <div v-if="displayBookedOutfits">
   <div class="flex flex-row items-center m-5 space-x-5">
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-red-400 space-x-5">
-        <img class="w-auto h-12" src="/img/gowns-book.png" alt="Gown Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalBookedGowns() }} <span class = "text-xs antialiased text-gray-600">booked gowns</span></h2>
+     
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalBookedGowns() }} <span class = "text-xs antialiased text-gray-600">gowns</span></h2>
     </div>
     <div class="flex justify-start w-52 h-20 bg-white rounded-lg shadow-lg px-2 items-center border-l-2 border-cyan-400 space-x-5">
-        <img class="w-auto h-12" src="/img/suit.png" alt="Gown Image">
-        <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalBookedGowns() }} <span class = "text-xs antialiased text-gray-600">booked suits</span></h2>
+  
+        <h2 class="font-amaticRegular text-4xl font-bold mb-0"> {{ totalBookedGowns() }} <span class = "text-xs antialiased text-gray-600">suits</span></h2>
     </div>
 </div>
 
@@ -46,7 +40,7 @@
 
 
 <!---Booked Gowns Table-->
-<div v-if="showTable === 'gowns'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+<div v-if="showTable === 'gowns'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -79,8 +73,8 @@
             <td class="px-1 py-3 hidden sm:table-cell">{{ gown.additionalCharges }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">
               <button
-                  class="h-8 w-12 bg-[#9B111E] font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editGownBtn(index)">
-                  Edit
+              class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" @click="editGownBtn(index)">
+                  <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                 </button>
             </td>
           </tr>
@@ -99,7 +93,7 @@
   </div>
 
   <!---Booked Tuxedo Table-->
-  <div v-if="showTable === 'tuxedos'" class="relative shadow-md sm:rounded-xl w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+  <div v-if="showTable === 'tuxedos'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -132,8 +126,8 @@
             <td class="px-1 py-3 hidden sm:table-cell">{{ tuxedo.additionalCharges }}</td>
             <td class="px-1 py-3 hidden sm:table-cell">
               <button
-                  class="h-8 w-12 bg-[#9B111E]font-amaticBold font-medium text-sm rounded-md text-white hover:bg-[#B73A45]" @click="editTuxedoBtn(index)">
-                  Edit
+              class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" @click="editTuxedoBtn(index)">
+              <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                 </button>
             </td>
           </tr>

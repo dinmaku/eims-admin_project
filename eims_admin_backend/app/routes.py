@@ -792,52 +792,60 @@ def init_routes(app):
     @app.route('/wishlist', methods=['POST'])
     @jwt_required()
     def add_wishlist():
-        email = get_jwt_identity()
-        userid = get_user_id_by_email(email)
-
-        if userid is None:
-            return jsonify({'message': 'Failed to retrieve user ID'}), 400
-
-        data = request.json
-
-        # Validate required fields
-        required_fields = [
-            'event_name', 'event_type', 'event_theme', 'event_color', 
-            'package_id', 'suppliers', 'venues',
-            'onsite_firstname', 'onsite_lastname', 'onsite_contact', 'onsite_address'
-        ]
-        if not all(field in data for field in required_fields):
-            return jsonify({'message': 'Missing required fields'}), 400
-
         try:
-            events_id = add_event_item(
-                userid=userid,
-                event_name=data['event_name'],
-                event_type=data['event_type'],
-                event_theme=data['event_theme'],
-                event_color=data['event_color'],
-                package_id=data['package_id'],
-                suppliers=data['suppliers'],
-                venues=data['venues'],
-                schedule=data.get('schedule'),
-                start_time=data.get('start_time'),
-                end_time=data.get('end_time'),
-                status=data.get('status', 'Wishlist'),
-                onsite_firstname=data['onsite_firstname'],
-                onsite_lastname=data['onsite_lastname'],
-                onsite_contact=data['onsite_contact'],
-                onsite_address=data['onsite_address']
-            )
+            # Get user ID from JWT token
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if not userid:
+                return jsonify({
+                    'success': False,
+                    'message': 'Invalid user token'
+                }), 401
+
+            data = request.get_json()
+            
+            # Extract base event data
+            event_data = {
+                'userid': userid,  # Use the userid from JWT token
+                'event_name': data.get('event_name'),
+                'event_type': data.get('event_type'),
+                'event_theme': data.get('event_theme'),
+                'event_color': data.get('event_color'),
+                'package_id': data.get('package_id'),
+                'schedule': data.get('schedule'),
+                'start_time': data.get('start_time'),
+                'end_time': data.get('end_time'),
+                'status': data.get('status', 'Wishlist'),
+                'onsite_firstname': data.get('onsite_firstname'),
+                'onsite_lastname': data.get('onsite_lastname'),
+                'onsite_contact': data.get('onsite_contact'),
+                'onsite_address': data.get('onsite_address'),
+                'total_price': data.get('total_price', 0)
+            }
+
+            # Package configuration data
+            package_config = {
+                'suppliers': data.get('suppliers', []),
+                'outfits': data.get('outfits', []),
+                'services': data.get('services', []),
+                'additional_items': data.get('additional_items', [])
+            }
+
+            # Add event and its configurations
+            events_id = add_event_item(**event_data, **package_config)
 
             return jsonify({
-                'message': 'Event added successfully', 
+                'success': True,
+                'message': 'Wishlist added successfully',
                 'events_id': events_id
-            }), 201
+            })
 
         except Exception as e:
             app.logger.error(f"Error adding wishlist: {str(e)}")
             return jsonify({
-                'message': f'Failed to add event: {str(e)}'
+                'success': False,
+                'message': f'Error adding wishlist: {str(e)}'
             }), 500
 
     @app.route('/available-suppliers', methods=['GET'])
@@ -1171,6 +1179,62 @@ def init_routes(app):
                 return jsonify({'event_outfit_id': event_outfit_id}), 201
             else:
                 return jsonify({'error': 'Failed to add outfit'}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/api/events/<int:events_id>/modify-outfit', methods=['POST'])
+    def modify_event_outfit(events_id):
+        try:
+            data = request.get_json()
+            outfit_id = data.get('outfit_id')
+            gown_package_id = data.get('gown_package_id')
+            modification_type = data.get('modification_type')
+            original_price = data.get('original_price')
+            modified_price = data.get('modified_price')
+            remarks = data.get('remarks')
+
+            success = track_outfit_modification(
+                events_id, outfit_id, gown_package_id,
+                modification_type, original_price,
+                modified_price, remarks
+            )
+
+            if success:
+                return jsonify({'message': 'Outfit modification tracked successfully'}), 200
+            return jsonify({'error': 'Failed to track outfit modification'}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/api/events/<int:events_id>/modify-individual-outfit', methods=['POST'])
+    def modify_individual_outfit(events_id):
+        try:
+            outfit_data = request.get_json()
+            success = track_individual_outfit_modification(events_id, outfit_data)
+
+            if success:
+                return jsonify({'message': 'Individual outfit modification tracked successfully'}), 200
+            return jsonify({'error': 'Failed to track individual outfit modification'}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/api/events/<int:events_id>/modify-additional-service', methods=['POST'])
+    def modify_additional_service(events_id):
+        try:
+            data = request.get_json()
+            service_id = data.get('service_id')
+            modification_type = data.get('modification_type')
+            original_price = data.get('original_price')
+            modified_price = data.get('modified_price')
+            remarks = data.get('remarks')
+
+            success = track_additional_service_modification(
+                events_id, service_id, modification_type,
+                original_price, modified_price, remarks
+            )
+
+            if success:
+                return jsonify({'message': 'Additional service modification tracked successfully'}), 200
+            return jsonify({'error': 'Failed to track additional service modification'}), 500
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
