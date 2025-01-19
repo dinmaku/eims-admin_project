@@ -87,13 +87,13 @@
                 :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
                 class="border-b dark:border-gray-700">
               <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ index + 1 }}</th>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_name }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_theme }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event_color }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue_name }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.bookedBy }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.contactnumber }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">
+              <td class="px-1 py-3">{{ event.event_name }}</td>
+              <td class="px-1 py-3">{{ event.event_theme }}</td>
+              <td class="px-1 py-3">{{ event.event_color }}</td>
+              <td class="px-1 py-3">{{ event.venue_name }}</td>
+              <td class="px-1 py-3">{{ event.bookedBy }}</td>
+              <td class="px-1 py-3">{{ event.contactnumber }}</td>
+              <td class="px-1 py-3">
                 <button
                     @click="openWishlistModal(event)"
                     class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
@@ -1216,106 +1216,133 @@
 
   methods: {
     async fetchBookedWishlist() {
-        try {
-          const token = localStorage.getItem('access_token');
-          if (!token) return;
-
-          const response = await axios.get('http://127.0.0.1:5000/booked-wishlist', {
-            headers: { 'Authorization': `Bearer ${token}` },
-            withCredentials: true
-          });
-
-          this.wishlist = (Array.isArray(response.data) ? response.data : []).map(event => {
-            // Process suppliers
-            const suppliers = Array.isArray(event.suppliers) ? event.suppliers.map(s => ({
-              id: s.supplier_id,
-              name: s.external_supplier_name || `${s.supplier_firstname || ''} ${s.supplier_lastname || ''}`.trim(),
-              service: s.service || '',
-              price: parseFloat(s.external_supplier_price || s.price) || 0,
-              contact: s.external_supplier_contact || s.supplier_email || '',
-              remarks: s.remarks || ''
-            })) : [];
-
-            // Process venues
-            const venues = Array.isArray(event.venues) ? event.venues.map(v => ({
-              id: v.venue_id,
-              name: v.venue_name || '',
-              location: v.location || '',
-              price: parseFloat(v.venue_price) || 0,
-              capacity: parseInt(v.venue_capacity) || 0,
-              description: v.description || ''
-            })) : [];
-
-            // Process services
-            const services = Array.isArray(event.services) ? event.services.map(s => ({
-              id: s.add_service_id,
-              name: s.add_service_name || '',
-              description: s.add_service_description || '',
-              price: parseFloat(s.add_service_price) || 0
-            })) : [];
-
-            // Calculate total price
-            const basePrice = parseFloat(event.total_price) || 0;
-            const venuePrice = venues.reduce((sum, v) => sum + v.price, 0);
-            const gownPrice = parseFloat(event.gown_package_price) || 0;
-            const capacityCharges = parseFloat(event.additional_capacity_charges) || 0;
-            const suppliersTotal = suppliers.reduce((sum, s) => sum + s.price, 0);
-            const servicesTotal = services.reduce((sum, s) => sum + s.price, 0);
-
-            return {
-              events_id: event.events_id,
-              userid: event.userid,
-              event_name: event.event_name || '',
-              event_type: event.event_type || '',
-              event_theme: event.event_theme || '',
-              event_color: event.event_color || '',
-              schedule: event.schedule || '',
-              start_time: event.start_time || '',
-              end_time: event.end_time || '',
-              status: event.status || '',
-              package_id: event.package_id,
-              package_name: event.package_name || '',
-              package_type: event.package_type || '',
-              capacity: event.capacity || 0,
-              package_description: event.package_description || '',
-              package_price: basePrice,
-              total_price: basePrice + venuePrice + gownPrice + capacityCharges + suppliersTotal + servicesTotal,
-              venue_price: venuePrice,
-              firstname: event.firstname || '',
-              lastname: event.lastname || '',
-              contactnumber: event.contactnumber || '',
-              email: event.email || '',
-              bookedBy: `${event.firstname || ''} ${event.lastname || ''}`.trim(),
-              additional_capacity_charges: capacityCharges,
-              charge_unit: event.charge_unit || 'per head',
-              gown_package_name: event.gown_package_name || '',
-              gown_package_price: gownPrice,
-              onsite_firstname: event.onsite_firstname || '',
-              onsite_lastname: event.onsite_lastname || '',
-              onsite_contact: event.onsite_contact || '',
-              onsite_address: event.onsite_address || '',
-              suppliers: suppliers,
-              venues: venues,
-              services: services,
-              modified_suppliers: {
-                added: [],
-                modified: [],
-                removed: []
-              },
-              modified_venues: {
-                added: [],
-                modified: [],
-                removed: []
-              }
-            };
-          });
-
-          console.log('Processed wishlist:', this.wishlist);
-        } catch (error) {
-          console.error('Error:', error);
-          this.wishlist = [];
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
         }
-      },
+
+        console.log('Fetching booked wishlist...');
+        const [wishlistResponse, servicesResponse] = await Promise.all([
+          axios.get('http://127.0.0.1:5000/booked-wishlist', {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          }),
+          axios.get('http://127.0.0.1:5000/additional-services', {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          })
+        ]);
+
+        console.log('Raw wishlist response:', wishlistResponse.data);
+        console.log('Raw services response:', servicesResponse.data);
+
+        if (!Array.isArray(wishlistResponse.data)) {
+          console.error('Invalid wishlist response:', wishlistResponse.data);
+          return;
+        }
+
+        this.wishlist = wishlistResponse.data.map(event => {
+          // Process suppliers
+          const suppliers = Array.isArray(event.suppliers) ? event.suppliers.map(s => ({
+            id: s.supplier_id,
+            name: s.supplier_firstname && s.supplier_lastname ? 
+                  `${s.supplier_firstname} ${s.supplier_lastname}`.trim() : 
+                  s.supplier_email || '',
+            service: s.service || '',
+            price: parseFloat(s.price) || 0,
+            contact: s.supplier_contact || s.supplier_email || '',
+            remarks: s.remarks || ''
+          })) : [];
+
+          // Process venues
+          const venues = Array.isArray(event.venues) ? event.venues.map(v => ({
+            id: v.venue_id,
+            name: v.venue_name || '',
+            location: v.location || '',
+            price: parseFloat(v.venue_price) || 0,
+            capacity: parseInt(v.venue_capacity) || 0,
+            description: v.description || ''
+          })) : [];
+
+          // Process services
+          const services = Array.isArray(event.services) ? event.services.map(s => ({
+            id: s.add_service_id,
+            name: s.add_service_name || '',
+            description: s.add_service_description || '',
+            price: parseFloat(s.add_service_price) || 0,
+            remarks: s.remarks || ''
+          })) : [];
+
+          // Calculate total price
+          const basePrice = parseFloat(event.total_price) || 0;
+          const venuePrice = venues.reduce((sum, v) => sum + v.price, 0);
+          const gownPrice = parseFloat(event.gown_package_price) || 0;
+          const capacityCharges = parseFloat(event.additional_capacity_charges) || 0;
+          const suppliersTotal = suppliers.reduce((sum, s) => sum + s.price, 0);
+          const servicesTotal = services.reduce((sum, s) => sum + s.price, 0);
+
+          const processedEvent = {
+            events_id: event.events_id,
+            event_name: event.event_name || '',
+            event_type: event.event_type || '',
+            event_theme: event.event_theme || '',
+            event_color: event.event_color || '',
+            schedule: event.schedule || '',
+            start_time: event.start_time || '',
+            end_time: event.end_time || '',
+            status: event.status || '',
+            package_name: event.package_name || '',
+            package_type: event.event_type_name || '',
+            capacity: event.capacity || 0,
+            package_description: event.package_description || '',
+            package_price: basePrice,
+            total_price: basePrice + venuePrice + gownPrice + capacityCharges + suppliersTotal + servicesTotal,
+            venue_price: venuePrice,
+            additional_capacity_charges: capacityCharges,
+            charge_unit: event.charge_unit || 'per head',
+            gown_package_name: event.gown_package_name || '',
+            gown_package_price: gownPrice,
+            onsite_firstname: event.onsite_firstname || '',
+            onsite_lastname: event.onsite_lastname || '',
+            onsite_contact: event.onsite_contact || '',
+            onsite_address: event.onsite_address || '',
+            bookedBy: event.bookedBy || '',
+            suppliers: suppliers,
+            venues: venues,
+            services: services,
+            modified_suppliers: {
+              added: [],
+              modified: [],
+              removed: []
+            },
+            modified_venues: {
+              added: [],
+              modified: [],
+              removed: []
+            }
+          };
+          console.log('Processed event:', processedEvent);
+          return processedEvent;
+        });
+
+        this.additionalServices = Array.isArray(servicesResponse.data) ? servicesResponse.data : [];
+        console.log('Final wishlist:', this.wishlist);
+        console.log('Final additional services:', this.additionalServices);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        console.error('Error response:', error.response?.data);
+        this.wishlist = [];
+        this.additionalServices = [];
+      }
+    },
             async fetchAdditionalServices() {
         try {
           const token = localStorage.getItem('access_token');
@@ -1729,4 +1756,4 @@
   opacity: 0;
   transform: translateY(-10px);
 }
-</style> 
+</style>

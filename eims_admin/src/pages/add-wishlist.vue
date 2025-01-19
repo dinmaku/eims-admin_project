@@ -261,7 +261,7 @@
                 </div>
                 <div>
                   <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
-                  <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                  <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     <option selected disabled value="">Select {{ selectedSupplierType }}</option>
                     <option v-for="supplier in filteredSuppliers(selectedSupplierType)" :key="supplier.supplier_id" :value="supplier">
                       {{ supplier.firstname }} {{ supplier.lastname }} - {{ formatPrice(supplier.price) }} php
@@ -330,7 +330,7 @@
                 </div>
                 <div>
                   <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
-                  <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                  <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     <option selected disabled value="">Select Venue</option>
                     <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
                       {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }} php
@@ -356,7 +356,7 @@
                 </div>
                 <div>
                   <label for="outfit" class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
-                  <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                  <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     <option selected disabled value="">Select Outfit Package</option>
                     <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
                       {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }} php
@@ -402,7 +402,7 @@
               <!-- Package Selection -->
               <div v-if="outfitSelectionMode === 'package'">
                 <label class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
-                <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <option selected disabled value="">Select Outfit Package</option>
                   <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
                     {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
@@ -413,7 +413,7 @@
               <!-- Individual Outfit Selection -->
               <div v-if="outfitSelectionMode === 'individual'">
                 <label class="block text-sm font-medium text-gray-700">Select Individual Outfit</label>
-                <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <option selected disabled value="">Select Individual Outfit</option>
                   <option v-for="outfit in outfits" :key="outfit.outfit_id" :value="outfit">
                     {{ outfit.outfit_name }} - {{ outfit.outfit_type }} (Size: {{ outfit.size }}) - {{ formatPrice(outfit.rent_price) }}
@@ -446,7 +446,7 @@
                   </div>
                   <div>
                     <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
-                    <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                    <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                       <option selected disabled value="">Select Additional Service</option>
                       <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
                         {{ service.add_service_name }} - {{ formatPrice(service.add_service_price) }} php
@@ -699,11 +699,9 @@
                                 <label class="block text-sm font-medium text-gray-700">Venue</label>
                                 <select v-model="editingInclusion.data.venue_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     <option value="">Select a venue</option>
-                                    <template v-if="availableVenues && availableVenues.length > 0">
-                                        <option v-for="venue in availableVenues" :key="venue.venue_id" :value="venue.venue_id">
-                                            {{ venue.venue_name || venue.name }} - {{ formatPrice(venue.venue_price) }} php
-                                        </option>
-                                    </template>
+                                    <option v-for="venue in availableVenues" :key="venue.venue_id" :value="venue.venue_id">
+                                        {{ venue.venue_name || venue.name }} - {{ formatPrice(venue.venue_price) }} php
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -928,7 +926,7 @@ export default {
             }
             
             console.log('Fetching booked dates...');
-            const response = await axios.get('http://localhost:5000/api/events/schedules', {
+            const response = await axios.get('http://localhost:5000/schedules', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -1345,7 +1343,7 @@ export default {
   },
     updateSelectedGownPackage() {
         const selectedGownPackage = this.availableGownPackages.find(
-          (gown) => gown.gown_package_id === this.selectedPackage.gown_package_id
+          (gown) => gown.gown_package_id === parseInt(this.selectedPackage.gown_package_id)
         );
         if (selectedGownPackage) {
           this.selectedPackage.gown_package_name = selectedGownPackage.gown_package_name;
@@ -1403,7 +1401,7 @@ export default {
         const serviceData = {
             type: 'service',
             data: {
-                service_id: this.selectedService.add_service_id,
+                add_service_id: this.selectedService.add_service_id,
                 service_name: this.selectedService.add_service_name,
                 price: parseFloat(this.selectedService.add_service_price || 0),
                 service_description: this.selectedService.add_service_description,
@@ -1412,7 +1410,8 @@ export default {
             }
         };
         
-        this.inclusions.push(serviceData);
+        this.inclusions = [...this.inclusions, serviceData];
+
         this.updateTotalPrice();
         this.selectedService = null;
         this.showServiceModal = false;
@@ -1448,10 +1447,6 @@ export default {
             return;
         }
 
-        // Get original package suppliers
-        const originalSuppliers = this.selectedPackage.suppliers || [];
-        const originalSupplierIds = new Set(originalSuppliers.map(s => s.supplier_id));
-
         // Transform suppliers into the new format
         const suppliers = this.inclusions
             .filter(inclusion => inclusion.type === 'supplier')
@@ -1459,46 +1454,17 @@ export default {
                 if (inclusion.data.type === 'external') {
                     return {
                         supplier_id: null,
-                        original_price: 0,
-                        modified_price: inclusion.data.external_supplier_price || 0,
-                        is_modified: true,
-                        is_removed: false,
+                        price: inclusion.data.external_supplier_price || 0,
                         remarks: `External: ${inclusion.data.external_supplier_name} (${inclusion.data.external_supplier_contact})`
                     };
                 } else {
-                    const isOriginal = originalSupplierIds.has(inclusion.data.supplier_id);
-                    const originalSupplier = originalSuppliers.find(s => s.supplier_id === inclusion.data.supplier_id);
-                    const priceModified = originalSupplier && originalSupplier.price !== inclusion.data.price;
-                    
                     return {
                         supplier_id: inclusion.data.supplier_id,
-                        original_price: originalSupplier ? originalSupplier.price : inclusion.data.price,
-                        modified_price: inclusion.data.price,
-                        is_modified: isOriginal && priceModified,
-                        is_removed: false,
+                        price: inclusion.data.price,
                         remarks: inclusion.data.remarks || ''
                     };
                 }
             });
-
-        // Add removed suppliers
-        const currentSupplierIds = new Set(suppliers
-            .filter(s => s.supplier_id)
-            .map(s => s.supplier_id));
-        
-        const removedSuppliers = originalSuppliers
-            .filter(s => !currentSupplierIds.has(s.supplier_id))
-            .map(s => ({
-                supplier_id: s.supplier_id,
-                original_price: s.price,
-                modified_price: s.price,
-                is_modified: false,
-                is_removed: true,
-                remarks: 'Removed from package'
-            }));
-
-        // Combine all suppliers
-        const allSuppliers = [...suppliers, ...removedSuppliers];
 
         // Transform outfits into the new format
         const outfits = this.inclusions
@@ -1506,10 +1472,7 @@ export default {
             .map(inclusion => ({
                 outfit_id: inclusion.data.outfit_id,
                 gown_package_id: inclusion.data.gown_package_id,
-                original_price: inclusion.data.price,
-                modified_price: inclusion.data.modified_price || inclusion.data.price,
-                is_modified: inclusion.data.is_modified || false,
-                is_removed: false,
+                price: inclusion.data.price,
                 remarks: inclusion.data.remarks || ''
             }));
 
@@ -1517,34 +1480,17 @@ export default {
         const services = this.inclusions
             .filter(inclusion => inclusion.type === 'service')
             .map(inclusion => ({
-                service_id: inclusion.data.service_id,
-                original_price: inclusion.data.price,
-                modified_price: inclusion.data.modified_price || inclusion.data.price,
-                is_modified: inclusion.data.is_modified || false,
-                is_removed: false,
+                add_service_id: inclusion.data.add_service_id,
+                price: inclusion.data.price || 0,
                 remarks: inclusion.data.remarks || ''
             }));
 
-        // Transform venues and other items into additional_items
-        const additional_items = [
-            // Add venues as additional items
-            ...this.inclusions
-                .filter(inclusion => inclusion.type === 'venue')
-                .map(inclusion => ({
-                    item_type: 'venue',
-                    item_id: inclusion.data.venue_id,
-                    price: inclusion.data.venue_price,
-                    remarks: inclusion.data.remarks || ''
-                }))
-        ];
-
-        // Prepare the wishlist data in the new format
-        const wishlistData = {
+        // First create the event
+        const eventData = {
             event_name: this.event_name,
             event_type: this.event_type,
             event_theme: this.event_theme,
             event_color: this.event_color,
-            package_id: this.selectedPackage.package_id,
             schedule: this.eventSchedule.date,
             start_time: this.eventSchedule.start_time,
             end_time: this.eventSchedule.end_time,
@@ -1552,40 +1498,68 @@ export default {
             onsite_lastname: this.onsite_lastname,
             onsite_contact: this.onsite_contact,
             onsite_address: this.onsite_address,
+            status: 'Wishlist'
+        };
+
+        // Create event first
+        const eventResponse = await axios.post('http://127.0.0.1:5000/events', eventData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            withCredentials: true
+        });
+
+        if (!eventResponse.data.success) {
+            throw new Error(eventResponse.data.message || 'Failed to create event');
+        }
+
+        // Now create the wishlist package
+        const wishlistData = {
+            events_id: eventResponse.data.events_id,
+            package_name: this.selectedPackage.package_name,
+            capacity: this.selectedPackage.capacity,
+            description: this.selectedPackage.description,
+            venue_id: this.selectedPackage.venue_id,
+            gown_package_id: this.selectedPackage.gown_package_id,
+            additional_capacity_charges: this.selectedPackage.additional_capacity_charges,
+            charge_unit: this.selectedPackage.charge_unit,
             total_price: this.calculatedTotalPrice,
-            
-            // New format data
-            suppliers: allSuppliers,
+            event_type_id: this.selectedPackage.event_type_id,
+            suppliers: suppliers,
             outfits: outfits,
-            services: services,
-            additional_items: additional_items
+            services: services
         };
             
         console.log('Submitting wishlist data:', wishlistData);
 
         // Make API call to save wishlist with authentication
-        const response = await axios.post('http://127.0.0.1:5000/wishlist', wishlistData, {
+        const response = await axios.post('http://127.0.0.1:5000/wishlist-packages', wishlistData, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            withCredentials: true
         });
 
         if (response.data.success) {
             alert('Wishlist submitted successfully!');
             this.$router.push('/manage-events');
         } else {
+            // If wishlist creation fails, delete the event we just created
+            await axios.delete(`http://127.0.0.1:5000/events/${eventResponse.data.events_id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                withCredentials: true
+            });
             throw new Error(response.data.message || 'Failed to create wishlist');
         }
-
     } catch (error) {
         console.error('Error submitting wishlist:', error);
         alert('Failed to create wishlist: ' + (error.response?.data?.message || error.message));
     }
 },
-
-
-    
     addSupplier(type) {
       if (type === 'internal') {
         this.selectedPackage.suppliers.push({
@@ -1686,12 +1660,13 @@ export default {
     },
     addCapacity() {
       if (this.additionalCapacity > 0) {
-        this.selectedPackage.capacity += this.additionalCapacity;
-        this.showCapacityModal = false; // Hide the modal after updating
-        this.additionalCapacity = 0; // Reset the input field
-        alert('Capacity updated successfully!');
+          this.selectedPackage.capacity += this.additionalCapacity;
+          this.updateTotalPrice();
+          this.showCapacityModal = false; // Hide the modal after updating
+          this.additionalCapacity = 0; // Reset the input field
+          alert('Capacity updated successfully!');
       } else {
-        alert('Please enter a valid additional capacity.');
+          alert('Please enter a valid additional capacity.');
       }
     },
     openCapacityModal() {
@@ -1813,7 +1788,7 @@ addSelectedOutfit() {
     
     // Check if this specific outfit type already exists
     const hasExistingOutfit = this.inclusions.some(item => 
-        item.type === 'outfit' && 
+        item.type === 'individual_outfit' && 
         item.data.outfit_id === this.selectedOutfit.outfit_id
     );
     
@@ -1828,15 +1803,13 @@ addSelectedOutfit() {
         outfit_id: this.selectedOutfit.outfit_id,
         outfit_name: this.selectedOutfit.outfit_name,
         outfit_type: this.selectedOutfit.outfit_type,
-        price: parseFloat(this.selectedOutfit.rent_price || 0),
-        size: this.selectedOutfit.size,
-        is_modified: true,
-        remarks: ''
+        rent_price: parseFloat(this.selectedOutfit.rent_price || 0),
+        size: this.selectedOutfit.size
     };
 
     // Add to inclusions with the correct type and data
     this.inclusions = [...this.inclusions, {
-        type: 'outfit',
+        type: 'individual_outfit',
         data: outfitData
     }];
 
@@ -2033,7 +2006,7 @@ addSelectedOutfit() {
               price = parseFloat(inclusion.data.price || 0);
               break;
           case 'service':
-              price = parseFloat(inclusion.data.service_price || 0);
+              price = parseFloat(inclusion.data.price || 0);
               break;
               default:
                   price = 0;
@@ -2052,12 +2025,15 @@ addSelectedOutfit() {
     },
     addCapacity() {
       if (this.additionalCapacity > 0) {
-          this.selectedPackage.additional_capacity = parseInt(this.additionalCapacity);
+          this.selectedPackage.capacity += this.additionalCapacity;
           this.updateTotalPrice();
-          this.showCapacityModal = false;
-          this.additionalCapacity = 0;
+          this.showCapacityModal = false; // Hide the modal after updating
+          this.additionalCapacity = 0; // Reset the input field
+          alert('Capacity updated successfully!');
+      } else {
+          alert('Please enter a valid additional capacity.');
       }
-  },
+    },
     calculateAdditionalCharges() {
         if (!this.additionalCapacity) return 0;
         const chargePerUnit = parseFloat(this.selectedPackage.additional_capacity_charges || 0);

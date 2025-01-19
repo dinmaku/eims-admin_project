@@ -1,37 +1,57 @@
 #routes.py
-from flask import request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+import os
+import logging
+from .db import get_db_connection
 from .models import (
-    check_user, create_user, create_supplier, get_users_by_type, 
+    check_user, create_user, create_supplier, get_users_by_type,
     get_admin_users, get_suppliers_with_users, get_package_services_with_suppliers,
     update_suppliers_and_user, update_staff, delete_user, get_packages,
     create_package, update_package, delete_package, get_user_id_by_email,
-    get_all_booked_wishlist, update_event, get_packages_wedding, create_venue,
-    get_all_venues, delete_venue, update_venue, get_active_venues, get_inactive_venues,
-    toggle_venue_status, update_venue_price, get_gown_packages, get_inactive_packages,
-    toggle_package_status, get_all_gown_packages, add_gown_package, get_all_outfits,
-    create_outfit, create_additional_service, update_additional_service_price,
+    get_all_booked_wishlist, update_event, get_packages_wedding,
+    create_venue, get_all_venues, delete_venue, update_venue,
+    get_active_venues, get_inactive_venues, toggle_venue_status,
+    update_venue_price, get_gown_packages, get_inactive_packages,
+    toggle_package_status, get_all_gown_packages, add_gown_package,
+    create_additional_service, update_additional_service_price,
     get_active_additional_services, get_inactive_additional_services,
-    toggle_additional_service_status, update_additional_service, get_event_types,
-    initialize_event_types, create_event_type, add_event_item, get_event_details,
-    get_available_suppliers, get_available_venues, get_available_gown_packages,
-    get_event_types, get_package_details_by_id, get_user_id_by_email,
+    toggle_additional_service_status, get_all_additional_services,
+    update_additional_service, get_event_types, initialize_event_types,
+    create_event_type, add_event_item, get_event_package_configuration,
     get_event_details, track_service_modification, add_service_customization,
     get_event_modifications, get_all_events, get_events_by_date,
     get_event_types_count, get_events_by_month_and_type, get_inactive_suppliers,
     add_supplier_social_media, get_supplier_social_media, initialize_supplier_social_media,
-    Supplier, toggle_supplier_status
+    get_active_outfits, add_event_outfit, get_event_outfits,
+    toggle_supplier_status, get_available_suppliers, get_available_venues,
+    get_available_gown_packages, get_package_details_by_id,
+    track_outfit_modification, track_individual_outfit_modification,
+    track_additional_service_modification, get_all_outfits, create_outfit,
+    create_wishlist_package, get_wishlist_package, get_event_wishlists,
+    update_wishlist_package, delete_wishlist_package
 )
-import logging
-import jwt
-from functools import wraps
-import os
-from decimal import Decimal
 
-logging.basicConfig(level=logging.DEBUG)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
 
 def init_routes(app):
+    # Initialize CORS with proper configuration
+    CORS(app, resources={
+        r"/api/v1/*": {
+            "origins": ["http://localhost:5173"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "supports_credentials": True
+        }
+    })
+    
     # Initialize tables
     initialize_event_types()
     initialize_supplier_social_media()
@@ -46,7 +66,7 @@ def init_routes(app):
 
             # Check if email and password are provided
             if not email or not password:
-                print("Missing email or password")
+                logger.info("Missing email or password")
                 return jsonify({'message': 'Email and password are required!'}), 400
 
             # Check the user credentials
@@ -61,11 +81,11 @@ def init_routes(app):
                     'user_type': user_type
                 }), 200
             else:
-                print("Invalid credentials or unauthorized user type")
+                logger.info("Invalid credentials or unauthorized user type")
                 return jsonify({'message': '* Invalid email, password, or unauthorized access.'}), 401
 
         except Exception as e:
-            print(f"Error during login: {e}")
+            logger.error(f"Error during login: {e}")
             return jsonify({'message': 'An error occurred during login.'}), 500
 
         
@@ -152,18 +172,18 @@ def init_routes(app):
                         price=data['price']
                     )
                     if supplier_created:
-                        app.logger.info("Supplier data inserted successfully")
+                        logger.info("Supplier data inserted successfully")
                     else:
-                        app.logger.error("Failed to create supplier")
+                        logger.error("Failed to create supplier")
                         return jsonify({"message": "Failed to create supplier"}), 500
-                app.logger.info("User data validated and inserted into the database successfully")
+                logger.info("User data validated and inserted into the database successfully")
                 return jsonify({"message": "User registered successfully"}), 201
             else:
-                app.logger.error(f"User creation failed: {error_message}")
+                logger.error(f"User creation failed: {error_message}")
                 return jsonify({"message": error_message}), 400
 
         except Exception as e:
-            app.logger.error(f"Error processing request: {str(e)}")
+            logger.error(f"Error processing request: {str(e)}")
             return jsonify({"message": "Internal server error"}), 500
 
 
@@ -178,11 +198,10 @@ def init_routes(app):
             users = get_users_by_type()
             return jsonify(users), 200
         except Exception as e:
-            app.logger.error(f"Error fetching users: {e}")
+            logger.error(f"Error fetching users: {e}")
             return jsonify({'message': 'An error occurred while fetching users'}), 500
 
-
-    @app.route('/get_admin', methods=['GET'])
+    @app.route('/get-admin', methods=['GET'])
     @jwt_required()
     def get_admin_list():
         try:
@@ -190,7 +209,7 @@ def init_routes(app):
             users = get_admin_users()
             return jsonify(users), 200
         except Exception as e:
-            app.logger.error(f"Error fetching admin users: {e}")
+            logger.error(f"Error fetching admin users: {e}")
             return jsonify({'message': 'An error occurred while fetching admin users'}), 500
 
 
@@ -203,7 +222,7 @@ def init_routes(app):
             suppliers = get_suppliers_with_users()
             return jsonify(suppliers), 200
         except Exception as e:
-            app.logger.error(f"Error fetching suppliers: {e}")
+            logger.error(f"Error fetching suppliers: {e}")
             return jsonify({'message': 'An error occurred while fetching suppliers'}), 500
 
     @app.route('/package-service-suppliers', methods=['GET'])
@@ -214,7 +233,7 @@ def init_routes(app):
             suppliers = get_package_services_with_suppliers()
             return jsonify(suppliers), 200
         except Exception as e:
-            app.logger.error(f"Error fetching suppliers: {e}")
+            logger.error(f"Error fetching suppliers: {e}")
             return jsonify({'message': 'An error occurred while fetching suppliers'}), 500
         
 
@@ -225,7 +244,7 @@ def init_routes(app):
             gown_packages = get_gown_packages()
             return jsonify(gown_packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching gown packages: {e}")
+            logger.error(f"Error fetching gown packages: {e}")
             return jsonify({'message': 'An error occurred while fetching gown packages'}), 500
         
 
@@ -234,7 +253,7 @@ def init_routes(app):
     def edit_supplier(supplier_id):
         try:
             data = request.get_json()
-            app.logger.info(f"Received data: {data}")  # Log incoming data
+            logger.info(f"Received data: {data}")  # Log incoming data
 
             # Get existing supplier data
             conn = get_db_connection()
@@ -272,7 +291,7 @@ def init_routes(app):
             return jsonify({"message": "Supplier updated successfully"}), 200
 
         except Exception as e:
-            app.logger.error(f"Error in edit_supplier route: {e}")
+            logger.error(f"Error in edit_supplier route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
 
     @app.route('/edit-supplier-rate/<int:supplier_id>', methods=['PUT'])
@@ -300,7 +319,7 @@ def init_routes(app):
             return jsonify({'message': 'Supplier rate updated successfully'}), 200
 
         except Exception as e:
-            app.logger.error(f"Error updating supplier rate: {e}")
+            logger.error(f"Error updating supplier rate: {e}")
             return jsonify({'message': 'An error occurred while updating supplier rate'}), 500
 
     @app.route('/created-users/<int:userid>', methods=['PUT'])
@@ -327,7 +346,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update staff. User not found or database error occurred."}), 404
         except Exception as e:
-            app.logger.error(f"Error in edit_staff route: {e}")
+            logger.error(f"Error in edit_staff route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
 
 
@@ -346,7 +365,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to delete user and related events"}), 404
         except Exception as e:
-            app.logger.error(f"Error in delete_users route: {e}")
+            logger.error(f"Error in delete_users route: {e}")
             return jsonify({"message": "An error occurred while deleting the user"}), 500
 
 
@@ -363,14 +382,14 @@ def init_routes(app):
             packages = get_packages()
             return jsonify(packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching packages: {e}")
+            logger.error(f"Error fetching packages: {e}")
             return jsonify({'message': 'An error occurred while fetching packages'}), 500
 
     @app.route('/create-package', methods=['POST'])
     @jwt_required()
     def create_package_route():
         data = request.get_json()
-        print("Received data:", data)
+        logger.info("Received data:", data)
 
         required_fields = ['package_name', 'event_type_id', 'venue_id', 'capacity', 
                          'additional_capacity_charges', 'charge_unit', 'description', 
@@ -403,7 +422,7 @@ def init_routes(app):
         except ValueError as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
         except Exception as e:
-            app.logger.error(f"Error in create_package_route: {e}")
+            logger.error(f"Error in create_package_route: {e}")
             return jsonify({"error": str(e)}), 500
 
         
@@ -428,7 +447,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update package. Package not found or database error occurred."}), 404
         except Exception as e:
-            app.logger.error(f"Error in edit_package route: {e}")
+            logger.error(f"Error in edit_package route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
             
             
@@ -441,7 +460,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Package not found or could not be deleted"}), 404
         except Exception as e:
-            app.logger.error(f"Error deleting package: {e}")
+            logger.error(f"Error deleting package: {e}")
             return jsonify({"message": "An error occurred while deleting the package"}), 500
 
             
@@ -449,17 +468,36 @@ def init_routes(app):
 
 
 #manage events routes
-    @app.route('/booked-wishlist', methods=['GET'])
+    @app.route('/booked-wishlist', methods=['GET', 'OPTIONS'])
     @jwt_required()
     def get_booked_wishlist_route():
-        try:
-            # Fetch booked wishlist with additional services
-            wishlist_with_services = get_all_booked_wishlist()
-            return jsonify(wishlist_with_services), 200
-        except Exception as e:
-            app.logger.error(f"Error fetching booked wishlist with services: {e}")
-            return jsonify({'message': 'An error occurred while fetching booked wishlist'}), 500
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
 
+        try:
+            # Get all booked wishlists
+            booked_wishlists = get_all_booked_wishlist()
+            logger.info(f"Booked wishlists data: {booked_wishlists}")
+            
+            response = jsonify(booked_wishlists)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        except Exception as e:
+            logger.error(f"Error getting booked wishlist: {str(e)}")
+            response = jsonify({
+                'success': False,
+                'message': str(e)
+            })
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
     @app.route('/booked-wishlist/<int:events_id>', methods=['PUT'])
     @jwt_required()  # Authentication required
@@ -488,7 +526,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update event. Event not found or database error occurred."}), 404
         except Exception as e:
-            app.logger.error(f"Error in update_booked_wishlist route: {e}")
+            logger.error(f"Error in update_booked_wishlist route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
 
 
@@ -504,7 +542,7 @@ def init_routes(app):
             packages = get_packages_wedding()
             return jsonify(packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching packages: {e}")
+            logger.error(f"Error fetching packages: {e}")
             return jsonify({'message': 'An error occurred while fetching packages'}), 500
 
 
@@ -532,7 +570,7 @@ def init_routes(app):
                 return jsonify({'message': 'Failed to add venue'}), 400
 
         except Exception as e:
-            app.logger.error(f"Error adding venue: {e}")
+            logger.error(f"Error adding venue: {e}")
             return jsonify({'message': 'An error occurred while adding the venue'}), 500
 
     @app.route('/venues/<int:venue_id>', methods=['PUT'])
@@ -565,7 +603,7 @@ def init_routes(app):
             packages = get_all_venues()
             return jsonify(packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching packages: {e}")
+            logger.error(f"Error fetching packages: {e}")
             return jsonify({'message': 'An error occurred while fetching packages'}), 500
 
     @app.route('/inactive-venues', methods=['GET'])
@@ -575,7 +613,7 @@ def init_routes(app):
             venues = get_inactive_venues()
             return jsonify(venues), 200
         except Exception as e:
-            app.logger.error(f"Error fetching inactive venues: {e}")
+            logger.error(f"Error fetching inactive venues: {e}")
             return jsonify({'message': 'An error occurred while fetching inactive venues'}), 500
 
     @app.route('/toggle-venue-status/<int:venue_id>', methods=['PUT'])
@@ -591,7 +629,7 @@ def init_routes(app):
             else:
                 return jsonify({'message': result}), 400
         except Exception as e:
-            app.logger.error(f"Error updating venue status: {e}")
+            logger.error(f"Error updating venue status: {e}")
             return jsonify({'message': 'An error occurred while updating venue status'}), 500
 
     @app.route('/update-venue-price/<int:venue_id>', methods=['PUT'])
@@ -610,9 +648,94 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update venue price"}), 400
         except Exception as e:
-            app.logger.error(f"Error updating venue price: {e}")
+            logger.error(f"Error updating venue price: {e}")
             return jsonify({"message": "An error occurred while updating venue price"}), 500
 
+    @app.route('/events', methods=['POST', 'OPTIONS'])
+    @jwt_required()
+    def create_event():
+        if request.method == 'OPTIONS':
+            # Handle preflight request
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        try:
+            # Get user ID from JWT token
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if not userid:
+                response = jsonify({
+                    'success': False,
+                    'message': 'Invalid user token'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 401
+
+            data = request.get_json()
+            
+            # Extract base event data
+            event_data = {
+                'userid': userid,  # Use the userid from JWT token
+                'event_name': data.get('event_name'),
+                'event_type': data.get('event_type'),
+                'event_theme': data.get('event_theme'),
+                'event_color': data.get('event_color'),
+                'package_id': data.get('package_id'),
+                'schedule': data.get('schedule'),
+                'start_time': data.get('start_time'),
+                'end_time': data.get('end_time'),
+                'status': data.get('status', 'Wishlist'),
+                'onsite_firstname': data.get('onsite_firstname'),
+                'onsite_lastname': data.get('onsite_lastname'),
+                'onsite_contact': data.get('onsite_contact'),
+                'onsite_address': data.get('onsite_address'),
+                'total_price': data.get('total_price', 0)
+            }
+
+            # Package configuration data
+            package_config = {
+                'suppliers': data.get('suppliers', []),
+                'outfits': data.get('outfits', []),
+                'services': data.get('services', []),
+                'additional_items': data.get('additional_items', [])
+            }
+
+            # Add event and its configurations
+            events_id = add_event_item(**event_data, **package_config)
+
+            if events_id:
+                response = jsonify({
+                    'success': True,
+                    'message': 'Event created successfully',
+                    'events_id': events_id
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 201
+            else:
+                response = jsonify({
+                    'success': False,
+                    'message': 'Failed to create event'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 500
+
+        except Exception as e:
+            logger.error(f"Error creating event: {str(e)}")
+            response = jsonify({
+                'success': False,
+                'message': f'Error creating event: {str(e)}'
+            })
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
 #routes for outfit packages
 
@@ -624,7 +747,7 @@ def init_routes(app):
             packages = get_all_gown_packages()
             return jsonify(packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching gown packages: {e}")
+            logger.error(f"Error fetching gown packages: {e}")
             return jsonify({'message': 'An error occurred while fetching gown packages'}), 500
         
         
@@ -636,7 +759,7 @@ def init_routes(app):
             outfits = get_all_outfits()
             return jsonify(outfits), 200
         except Exception as e:
-            app.logger.error(f"Error fetching outfits: {e}")
+            logger.error(f"Error fetching outfits: {e}")
             return jsonify({'message': 'An error occurred while fetching outfits'}), 500
 
     @app.route('/outfits', methods=['POST'])
@@ -664,7 +787,7 @@ def init_routes(app):
                 return jsonify({'message': message}), 400
                 
         except Exception as e:
-            logging.error(f"Error in create_new_outfit: {str(e)}")
+            logger.error(f"Error in create_new_outfit: {str(e)}")
             return jsonify({'message': 'An error occurred while creating the outfit'}), 500
 
     @app.route('/add-gown-package', methods=['POST'])
@@ -682,7 +805,7 @@ def init_routes(app):
             gown_package_id = add_gown_package(gown_package_name, description, outfits)
             return jsonify({'message': 'Gown package added successfully', 'gown_package_id': gown_package_id}), 201
         except Exception as e:
-            app.logger.error(f"Error adding gown package: {e}")
+            logger.error(f"Error adding gown package: {e}")
             return jsonify({'message': 'An error occurred while adding the gown package'}), 500
 
     @app.route('/outfits', methods=['GET'])
@@ -746,7 +869,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update service. Service not found or database error occurred."}), 404
         except Exception as e:
-            app.logger.error(f"Error in update_service_details route: {e}")
+            logger.error(f"Error in update_service_details route: {e}")
             return jsonify({"message": f"Error: {str(e)}"}), 500
 
     @app.route('/event-types', methods=['GET'])
@@ -755,7 +878,7 @@ def init_routes(app):
             event_types = get_event_types()
             return jsonify(event_types), 200
         except Exception as e:
-            app.logger.error(f"Error fetching event types: {e}")
+            logger.error(f"Error fetching event types: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route('/create-event-type', methods=['POST'])
@@ -780,7 +903,7 @@ def init_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @app.route('/api/event-types-count', methods=['GET'])
+    @app.route('/event-types-count', methods=['GET'])
     def get_event_types_count_route():
         try:
             result = get_event_types_count()
@@ -839,10 +962,9 @@ def init_routes(app):
                 'success': True,
                 'message': 'Wishlist added successfully',
                 'events_id': events_id
-            })
-
+            }), 201
         except Exception as e:
-            app.logger.error(f"Error adding wishlist: {str(e)}")
+            logger.error(f"Error adding wishlist: {str(e)}")
             return jsonify({
                 'success': False,
                 'message': f'Error adding wishlist: {str(e)}'
@@ -855,7 +977,7 @@ def init_routes(app):
             suppliers = get_available_suppliers()
             return jsonify(suppliers), 200
         except Exception as e:
-            app.logger.error(f"Error fetching available suppliers: {e}")
+            logger.error(f"Error fetching available suppliers: {e}")
             return jsonify({'message': 'An error occurred while fetching available suppliers'}), 500
 
     @app.route('/available-venues', methods=['GET'])
@@ -865,7 +987,7 @@ def init_routes(app):
             venues = get_available_venues()
             return jsonify(venues), 200
         except Exception as e:
-            app.logger.error(f"Error fetching available venues: {e}")
+            logger.error(f"Error fetching available venues: {e}")
             return jsonify({'message': 'An error occurred while fetching available venues'}), 500
 
     @app.route('/available-gown-packages', methods=['GET'])
@@ -875,7 +997,7 @@ def init_routes(app):
             gown_packages = get_available_gown_packages()
             return jsonify(gown_packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching available gown packages: {e}")
+            logger.error(f"Error fetching available gown packages: {e}")
             return jsonify({'message': 'An error occurred while fetching available gown packages'}), 500
 
     @app.route('/packages/<int:package_id>', methods=['GET'])
@@ -887,7 +1009,7 @@ def init_routes(app):
                 return jsonify({'message': 'Package not found'}), 404
             return jsonify(package), 200
         except Exception as e:
-            app.logger.error(f"Error fetching package details: {e}")
+            logger.error(f"Error fetching package details: {e}")
             return jsonify({'message': 'An error occurred while fetching package details'}), 500
 
 
@@ -898,7 +1020,7 @@ def init_routes(app):
             venues = get_all_venues()
             return jsonify(venues), 200
         except Exception as e:
-            app.logger.error(f"Error fetching venues: {e}")
+            logger.error(f"Error fetching venues: {e}")
             return jsonify({'message': 'An error occurred while fetching venues'}), 500
 
     @app.route('/created-suppliers', methods=['GET'])
@@ -908,7 +1030,7 @@ def init_routes(app):
             suppliers = get_suppliers_with_users()
             return jsonify(suppliers), 200
         except Exception as e:
-            app.logger.error(f"Error fetching suppliers: {e}")
+            logger.error(f"Error fetching suppliers: {e}")
             return jsonify({'message': 'An error occurred while fetching suppliers'}), 500
 
     @app.route('/created-gown-packages', methods=['GET'])
@@ -918,7 +1040,7 @@ def init_routes(app):
             packages = get_all_gown_packages()
             return jsonify(packages), 200
         except Exception as e:
-            app.logger.error(f"Error fetching gown packages: {e}")
+            logger.error(f"Error fetching gown packages: {e}")
             return jsonify({'message': 'An error occurred while fetching gown packages'}), 500
 
     @app.route('/booked-wishlist', methods=['GET'])
@@ -934,10 +1056,10 @@ def init_routes(app):
             booked_wishlist = get_all_booked_wishlist()
             return jsonify(booked_wishlist), 200
         except Exception as e:
-            app.logger.error(f"Error fetching booked wishlist: {str(e)}")
+            logger.error(f"Error fetching booked wishlist: {str(e)}")
             return jsonify({'message': f'Error fetching wishlist: {str(e)}'}), 500
 
-    @app.route('/api/events/all', methods=['GET'])
+    @app.route('/events/all', methods=['GET'])
     @jwt_required()
     def get_all_events_route():
         try:
@@ -952,10 +1074,10 @@ def init_routes(app):
                 'status': event['status']
             } for event in events]), 200
         except Exception as e:
-            logging.error(f"Error in get_all_events_route: {str(e)}")
+            logger.error(f"Error in get_all_events_route: {str(e)}")
             return jsonify({'message': 'An error occurred while fetching events'}), 500
 
-    @app.route('/api/events/date/<date>', methods=['GET'])
+    @app.route('/events/date/<date>', methods=['GET'])
     @jwt_required()
     def get_events_by_date_route(date):
         try:
@@ -964,10 +1086,10 @@ def init_routes(app):
                 'events_id': event['events_id']
             } for event in events]), 200
         except Exception as e:
-            logging.error(f"Error in get_events_by_date_route: {str(e)}")
+            logger.error(f"Error in get_events_by_date_route: {str(e)}")
             return jsonify({'message': 'An error occurred while fetching events for date'}), 500
 
-    @app.route('/api/events/<int:event_id>', methods=['GET'])
+    @app.route('/events/<int:event_id>', methods=['GET'])
     @jwt_required()
     def get_event_route(event_id):
         try:
@@ -976,10 +1098,10 @@ def init_routes(app):
                 return jsonify(event_details), 200
             return jsonify({'message': 'Event not found'}), 404
         except Exception as e:
-            logging.error(f"Error in get_event_route: {str(e)}")
+            logger.error(f"Error in get_event_route: {str(e)}")
             return jsonify({'message': 'An error occurred while fetching event details'}), 500
 
-    @app.route('/api/events-by-month', methods=['GET'])
+    @app.route('/events-by-month', methods=['GET'])
     def get_events_by_month_route():
         try:
             result = get_events_by_month_and_type()
@@ -1001,7 +1123,7 @@ def init_routes(app):
                 'new_status': result
             }), 200
         except Exception as e:
-            app.logger.error(f"Error updating supplier status: {e}")
+            logger.error(f"Error updating supplier status: {e}")
             return jsonify({'message': 'An error occurred while updating supplier status'}), 500
 
     @app.route('/inactive-suppliers', methods=['GET'])
@@ -1011,7 +1133,7 @@ def init_routes(app):
             suppliers = get_inactive_suppliers()
             return jsonify(suppliers), 200
         except Exception as e:
-            app.logger.error(f"Error fetching inactive suppliers: {e}")
+            logger.error(f"Error fetching inactive suppliers: {e}")
             return jsonify({'message': 'An error occurred while fetching inactive suppliers'}), 500
 
     @app.route('/inactive-additional-services', methods=['GET'])
@@ -1021,7 +1143,7 @@ def init_routes(app):
             services = get_inactive_additional_services()
             return jsonify(services), 200
         except Exception as e:
-            app.logger.error(f"Error fetching inactive additional services: {e}")
+            logger.error(f"Error fetching inactive additional services: {e}")
             return jsonify({'message': 'An error occurred while fetching inactive additional services'}), 500
 
     @app.route('/toggle-additional-service-status/<int:service_id>', methods=['PUT'])
@@ -1034,7 +1156,7 @@ def init_routes(app):
             else:
                 return jsonify({'message': 'Failed to update additional service status'}), 400
         except Exception as e:
-            app.logger.error(f"Error updating additional service status: {e}")
+            logger.error(f"Error updating additional service status: {e}")
             return jsonify({'message': 'An error occurred while updating additional service status'}), 500
 
     @app.route('/update-additional-service-price/<int:service_id>', methods=['PUT'])
@@ -1053,7 +1175,7 @@ def init_routes(app):
             else:
                 return jsonify({"message": "Failed to update additional service price"}), 400
         except Exception as e:
-            app.logger.error(f"Error updating additional service price: {e}")
+            logger.error(f"Error updating additional service price: {e}")
             return jsonify({"message": "An error occurred while updating additional service price"}), 500
 
     @app.route('/add-supplier-social-media', methods=['POST'])
@@ -1080,21 +1202,21 @@ def init_routes(app):
                 return jsonify({'error': 'Failed to add social media'}), 500
 
         except Exception as e:
-            app.logger.error(f"Error adding social media: {str(e)}")
+            logger.error(f"Error adding social media: {str(e)}")
             return jsonify({'error': 'Failed to add social media'}), 500
 
-    @app.route('/api/supplier/<int:supplier_id>/social-media', methods=['GET'])
+    @app.route('/supplier/<int:supplier_id>/social-media', methods=['GET'])
     @jwt_required()  # Add JWT protection
     def get_supplier_social_media(supplier_id):
         try:
-            app.logger.info(f"Fetching social media for supplier_id: {supplier_id}")
+            logger.info(f"Fetching social media for supplier_id: {supplier_id}")
             # Create a minimal supplier instance just for fetching social media
             supplier = Supplier(supplier_id=supplier_id)
             social_media = supplier.get_social_media()
-            app.logger.info(f"Found social media: {social_media}")
+            logger.info(f"Found social media: {social_media}")
             return jsonify(social_media)
         except Exception as e:
-            app.logger.error(f"Error fetching social media: {str(e)}")
+            logger.error(f"Error fetching social media: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
     @app.route('/inactive-packages', methods=['GET'])
@@ -1124,30 +1246,30 @@ def init_routes(app):
     @jwt_required()
     def get_inactive_gown_packages_route():
         try:
-            app.logger.info("Fetching inactive gown packages")
+            logger.info("Fetching inactive gown packages")
             from . import models  # Import models at function level to avoid circular imports
             packages = models.get_inactive_packages()
-            app.logger.info(f"Found {len(packages)} inactive packages")
+            logger.info(f"Found {len(packages)} inactive packages")
             return jsonify(packages)
         except Exception as e:
-            app.logger.error(f"Error fetching inactive packages: {str(e)}")
+            logger.error(f"Error fetching inactive packages: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
     @app.route('/toggle-gown-package-status/<int:package_id>', methods=['PUT'])
     @jwt_required()
     def toggle_gown_package_status_route(package_id):
         try:
-            app.logger.info(f"Toggling status for package {package_id}")
+            logger.info(f"Toggling status for package {package_id}")
             from . import models  # Import models at function level to avoid circular imports
             success = models.toggle_package_status(package_id)
             if success:
-                app.logger.info(f"Successfully toggled status for package {package_id}")
+                logger.info(f"Successfully toggled status for package {package_id}")
                 return jsonify({'message': 'Package status updated successfully'}), 200
             else:
-                app.logger.error(f"Failed to toggle status for package {package_id}")
+                logger.error(f"Failed to toggle status for package {package_id}")
                 return jsonify({'error': 'Failed to update package status'}), 400
         except Exception as e:
-            app.logger.error(f"Error toggling package status: {str(e)}")
+            logger.error(f"Error toggling package status: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
     @app.route('/event/<int:events_id>/outfits', methods=['GET'])
@@ -1182,7 +1304,7 @@ def init_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @app.route('/api/events/<int:events_id>/modify-outfit', methods=['POST'])
+    @app.route('/events/<int:events_id>/modify-outfit', methods=['POST'])
     def modify_event_outfit(events_id):
         try:
             data = request.get_json()
@@ -1205,7 +1327,7 @@ def init_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @app.route('/api/events/<int:events_id>/modify-individual-outfit', methods=['POST'])
+    @app.route('/events/<int:events_id>/modify-individual-outfit', methods=['POST'])
     def modify_individual_outfit(events_id):
         try:
             outfit_data = request.get_json()
@@ -1217,7 +1339,7 @@ def init_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @app.route('/api/events/<int:events_id>/modify-additional-service', methods=['POST'])
+    @app.route('/events/<int:events_id>/modify-additional-service', methods=['POST'])
     def modify_additional_service(events_id):
         try:
             data = request.get_json()
@@ -1237,5 +1359,157 @@ def init_routes(app):
             return jsonify({'error': 'Failed to track additional service modification'}), 500
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+
+    @app.route('/wishlist-packages', methods=['POST', 'OPTIONS'])
+    @jwt_required()
+    def create_wishlist_package_route():
+        if request.method == 'OPTIONS':
+            # Handle preflight request
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        try:
+            # Get user ID from token
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if userid is None:
+                response = jsonify({
+                    'success': False,
+                    'message': 'User not found'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 404
+
+            data = request.get_json()
+
+            # Create wishlist package and its related data
+            wishlist_id = create_wishlist_package(
+                events_id=data.get('events_id'),
+                package_data=data
+            )
+
+            if wishlist_id:
+                response = jsonify({
+                    'success': True,
+                    'message': 'Wishlist package created successfully',
+                    'wishlist_id': wishlist_id
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 201
+            else:
+                response = jsonify({
+                    'success': False,
+                    'message': 'Failed to create wishlist package'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 500
+
+        except Exception as e:
+            logger.error(f"Error creating wishlist package: {str(e)}")
+            response = jsonify({
+                'success': False,
+                'message': f'Error creating wishlist package: {str(e)}'
+            })
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
+
+    @app.route('/events/schedules', methods=['GET', 'OPTIONS'])
+    @jwt_required()
+    def get_event_schedules():
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        try:
+            events = get_all_events()  # This should return all events with their schedules
+            schedules = []
+            for event in events:
+                if event['schedule']:  # Only include events with schedules
+                    schedules.append({
+                        'date': event['schedule'],
+                        'start_time': event['start_time'],
+                        'end_time': event['end_time']
+                    })
+            response = jsonify(schedules)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+        except Exception as e:
+            logger.error(f"Error fetching event schedules: {str(e)}")
+            response = jsonify({'message': 'An error occurred while fetching event schedules'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
+
+    @app.route('/additional-services', methods=['GET', 'OPTIONS'])
+    @jwt_required()
+    def get_additional_services():
+        conn = None
+        cursor = None
+        
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT 
+                    add_service_id,
+                    add_service_name,
+                    add_service_description,
+                    add_service_price,
+                    status
+                FROM additional_services
+                WHERE status = 'Active'
+                ORDER BY add_service_name
+            """)
+            
+            services = [{
+                'add_service_id': row[0],
+                'add_service_name': row[1],
+                'add_service_description': row[2],
+                'add_service_price': float(row[3]) if row[3] else 0,
+                'status': row[4]
+            } for row in cursor.fetchall()]
+            
+            response = jsonify(services)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        except Exception as e:
+            logger.error(f"Error getting additional services: {str(e)}")
+            response = jsonify({
+                'success': False,
+                'message': str(e)
+            })
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
 
     return app

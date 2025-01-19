@@ -74,3 +74,64 @@ CREATE TABLE IF NOT EXISTS event_additional_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (events_id) REFERENCES events(events_id)
 );
+
+-- Table for storing wishlist packages
+CREATE TABLE IF NOT EXISTS wishlist_packages (
+    wishlist_id SERIAL PRIMARY KEY,
+    events_id INTEGER NOT NULL,
+    package_name character varying NOT NULL,
+    capacity integer,
+    description character varying(225),
+    venue_id integer,
+    gown_package_id integer,
+    additional_capacity_charges numeric(10,2) DEFAULT 0,
+    charge_unit integer DEFAULT 1,
+    total_price numeric(10,2),
+    created_at date DEFAULT CURRENT_DATE,
+    event_type_id integer,
+    status character varying(225),
+    CONSTRAINT fk_wishlist_event FOREIGN KEY (events_id) 
+        REFERENCES events(events_id) ON DELETE CASCADE,
+    CONSTRAINT fk_wishlist_venue FOREIGN KEY (venue_id) 
+        REFERENCES venues(venue_id) ON DELETE SET NULL,
+    CONSTRAINT fk_wishlist_gown_package FOREIGN KEY (gown_package_id) 
+        REFERENCES gown_package(gown_package_id) ON DELETE SET NULL,
+    CONSTRAINT fk_wishlist_event_type FOREIGN KEY (event_type_id) 
+        REFERENCES event_type(event_type_id) ON DELETE SET NULL
+);
+
+-- Table for storing wishlist package services
+CREATE TABLE IF NOT EXISTS wishlist_package_services (
+    wishlist_service_id SERIAL PRIMARY KEY,
+    wishlist_id INTEGER NOT NULL,
+    package_service_id INTEGER NOT NULL,
+    CONSTRAINT idx_wishlist_package_services UNIQUE (wishlist_id, package_service_id),
+    CONSTRAINT fk_wishlist_package FOREIGN KEY (wishlist_id) 
+        REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
+    CONSTRAINT fk_wishlist_package_service FOREIGN KEY (package_service_id) 
+        REFERENCES package_service(package_service_id) ON DELETE CASCADE
+);
+
+-- Table for storing wishlist suppliers
+CREATE TABLE IF NOT EXISTS wishlist_suppliers (
+    id SERIAL PRIMARY KEY,
+    wishlist_id INTEGER NOT NULL,
+    supplier_id INTEGER NOT NULL,
+    price DECIMAL(10,2),
+    remarks TEXT,
+    FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+);
+
+-- Table for storing wishlist outfits
+CREATE TABLE IF NOT EXISTS wishlist_outfits (
+    id SERIAL PRIMARY KEY,
+    wishlist_id INTEGER NOT NULL,
+    outfit_id INTEGER,
+    gown_package_id INTEGER,
+    price DECIMAL(10,2),
+    remarks TEXT,
+    FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
+    FOREIGN KEY (outfit_id) REFERENCES outfits(outfit_id),
+    FOREIGN KEY (gown_package_id) REFERENCES gown_packages(gown_package_id)
+);

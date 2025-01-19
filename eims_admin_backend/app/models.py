@@ -768,166 +768,171 @@ def get_user_id_by_email(email):
     finally:
         cursor.close()
         conn.close()
-       
-        
 
 def get_all_booked_wishlist():
     conn = get_db_connection()
     cursor = conn.cursor()
-
+    
     try:
-        # Comprehensive query to fetch all event details with related package and additional data
+        # First, let's check what statuses we have
+        cursor.execute("SELECT DISTINCT status FROM events")
+        statuses = [row[0] for row in cursor.fetchall()]
+        logger.info(f"Available event statuses: {statuses}")
+        
         cursor.execute("""
-            WITH event_details AS (
-                SELECT 
-                    e.events_id, 
-                    e.userid, 
-                    e.event_name, 
-                    e.event_type, 
-                    e.event_theme, 
-                    e.event_color, 
-                    e.schedule::text as schedule, 
-                    e.start_time::text as start_time, 
-                    e.end_time::text as end_time, 
-                    e.status,
-                    e.onsite_firstname,
-                    e.onsite_lastname,
-                    e.onsite_contact,
-                    e.onsite_address,
-                    ep.package_id, 
-                    ep.package_name, 
-                    et.event_type_name AS package_type, 
-                    ep.capacity, 
-                    ep.description AS package_description,
-                    ep.total_price,
-                    ep.additional_capacity_charges,
-                    ep.charge_unit,
-                    v.venue_id, 
-                    v.venue_name, 
-                    v.location AS venue_location,
-                    v.venue_price,
-                    gp.gown_package_id, 
-                    gp.gown_package_name, 
-                    gp.gown_package_price,
-                    u.firstname AS firstname, 
-                    u.lastname AS lastname, 
-                    u.contactnumber AS contactnumber,
-                    u.email AS email
-                FROM 
-                    events e
-                LEFT JOIN users u ON e.userid = u.userid
-                LEFT JOIN event_packages ep ON e.package_id = ep.package_id
-                LEFT JOIN event_type et ON ep.event_type_id = et.event_type_id
-                LEFT JOIN venues v ON ep.venue_id = v.venue_id
-                LEFT JOIN gown_package gp ON ep.gown_package_id = gp.gown_package_id
-                WHERE 
-                    e.status = 'Wishlist'
-            ),
-            suppliers AS (
-                SELECT 
-                    ep.package_id, 
-                    json_agg(
-                        json_build_object(
-                            'supplier_id', s.supplier_id,
-                            'service', s.service,
-                            'price', s.price,
-                            'supplier_firstname', u.firstname,
-                            'supplier_lastname', u.lastname,
-                            'supplier_email', u.email,
-                            'external_supplier_name', ps.external_supplier_name,
-                            'external_supplier_contact', ps.external_supplier_contact,
-                            'external_supplier_price', ps.external_supplier_price,
-                            'remarks', ps.remarks
-                        )
-                    ) FILTER (WHERE s.supplier_id IS NOT NULL OR ps.external_supplier_name IS NOT NULL) AS suppliers
-                FROM 
-                    event_packages ep
-                LEFT JOIN 
-                    event_package_services eps ON ep.package_id = eps.package_id
-                LEFT JOIN 
-                    package_service ps ON eps.package_service_id = ps.package_service_id
-                LEFT JOIN 
-                    suppliers s ON ps.supplier_id = s.supplier_id
-                LEFT JOIN 
-                    users u ON s.userid = u.userid
-                GROUP BY 
-                    ep.package_id
-            ),
-            event_venues AS (
-                SELECT 
-                    e.events_id,
-                    json_agg(
-                        json_build_object(
-                            'venue_id', v.venue_id,
-                            'venue_name', v.venue_name,
-                            'location', v.location,
-                            'venue_price', v.venue_price,
-                            'venue_capacity', v.venue_capacity,
-                            'description', v.description
-                        )
-                    ) FILTER (WHERE v.venue_id IS NOT NULL) AS venues
-                FROM 
-                    events e
-                LEFT JOIN 
-                    event_venues ev ON e.events_id = ev.events_id
-                LEFT JOIN 
-                    venues v ON ev.venue_id = v.venue_id
-                WHERE 
-                    e.status = 'Wishlist'
-                GROUP BY 
-                    e.events_id
-            ),
-            package_additional_services AS (
-                SELECT 
-                    ep.package_id, 
-                    json_agg(
-                        json_build_object(
-                            'add_service_id', ads.add_service_id,
-                            'add_service_name', ads.add_service_name,
-                            'add_service_description', ads.add_service_description,
-                            'add_service_price', ads.add_service_price
-                        )
-                    ) FILTER (WHERE ads.add_service_id IS NOT NULL) AS additional_services
-                FROM 
-                    event_packages ep
-                LEFT JOIN 
-                    event_package_additional_services epas ON ep.package_id = epas.package_id
-                LEFT JOIN 
-                    additional_services ads ON epas.add_service_id = ads.add_service_id
-                GROUP BY 
-                    ep.package_id
-            )
             SELECT 
-                ed.*,
-                COALESCE(ev.venues, '[]'::json) AS venues,
-                COALESCE(s.suppliers, '[]'::json) AS suppliers,
-                COALESCE(pas.additional_services, '[]'::json) AS additional_services
-            FROM 
-                event_details ed
-            LEFT JOIN 
-                event_venues ev ON ed.events_id = ev.events_id
-            LEFT JOIN 
-                suppliers s ON ed.package_id = s.package_id
-            LEFT JOIN 
-                package_additional_services pas ON ed.package_id = pas.package_id
+                e.events_id, e.event_name, e.event_type, e.event_theme, e.event_color,
+                e.schedule, e.start_time, e.end_time, e.status,
+                e.onsite_firstname, e.onsite_lastname, e.onsite_contact, e.onsite_address,
+                e.total_price, e.userid,
+                wp.wishlist_id, wp.package_name, wp.capacity, wp.description as package_description,
+                wp.additional_capacity_charges, wp.charge_unit,
+                v.venue_id, v.venue_name, v.location, v.description as venue_description,
+                v.venue_price, v.venue_capacity,
+                gp.gown_package_id, gp.gown_package_name, gp.gown_package_price,
+                et.event_type_id, et.event_type_name,
+                u.firstname, u.lastname, u.email, u.contactnumber
+            FROM events e
+            LEFT JOIN wishlist_packages wp ON e.events_id = wp.events_id
+            LEFT JOIN venues v ON wp.venue_id = v.venue_id
+            LEFT JOIN gown_package gp ON wp.gown_package_id = gp.gown_package_id
+            LEFT JOIN event_types et ON wp.event_type_id = et.event_type_id
+            LEFT JOIN users u ON e.userid = u.userid
+            WHERE LOWER(e.status) = 'wishlist'
+            ORDER BY e.schedule DESC
         """)
-        
-        # Fetch results
-        results = cursor.fetchall()
-        
-        # Get column names
-        columns = [desc[0] for desc in cursor.description]
-        
-        # Convert to list of dicts
-        wishlist = []
-        for row in results:
-            item = dict(zip(columns, row))
-            wishlist.append(item)
+        events = []
+        for row in cursor.fetchall():
+            event = {
+                'events_id': row[0],
+                'event_name': row[1],
+                'event_type': row[2],
+                'event_theme': row[3],
+                'event_color': row[4],
+                'schedule': row[5].strftime('%Y-%m-%d') if row[5] else None,
+                'start_time': row[6].strftime('%H:%M') if row[6] else None,
+                'end_time': row[7].strftime('%H:%M') if row[7] else None,
+                'status': row[8],
+                'onsite_firstname': row[9],
+                'onsite_lastname': row[10],
+                'onsite_contact': row[11],
+                'onsite_address': row[12],
+                'total_price': float(row[13]) if row[13] else 0,
+                'userid': row[14],
+                'wishlist_id': row[15],
+                'package_name': row[16],
+                'capacity': row[17],
+                'package_description': row[18],
+                'additional_capacity_charges': float(row[19]) if row[19] else 0,
+                'charge_unit': row[20],
+                'venue_id': row[21],
+                'venue_name': row[22],
+                'venue_location': row[23],
+                'venue_description': row[24],
+                'venue_price': float(row[25]) if row[25] else 0,
+                'venue_capacity': row[26],
+                'gown_package_id': row[27],
+                'gown_package_name': row[28],
+                'gown_package_price': float(row[29]) if row[29] else 0,
+                'event_type_id': row[30],
+                'event_type_name': row[31],
+                'firstname': row[32],
+                'lastname': row[33],
+                'email': row[34],
+                'contactnumber': row[35],
+                'bookedBy': f"{row[32] or ''} {row[33] or ''}".strip(),
+                'suppliers': [],
+                'services': [],
+                'venues': [],
+                'outfits': []
+            }
             
-        return wishlist
+            # Add venue to venues array if it exists
+            if event['venue_id']:
+                event['venues'] = [{
+                    'venue_id': event['venue_id'],
+                    'venue_name': event['venue_name'],
+                    'location': event['venue_location'],
+                    'description': event['venue_description'],
+                    'venue_price': event['venue_price'],
+                    'venue_capacity': event['venue_capacity']
+                }]
+            
+            # Get suppliers for this event
+            cursor.execute("""
+                SELECT 
+                    ws.supplier_id, s.service, ws.price, ws.remarks,
+                    u.firstname as supplier_firstname, u.lastname as supplier_lastname,
+                    u.email as supplier_email, u.contactnumber as supplier_contact
+                FROM wishlist_suppliers ws
+                LEFT JOIN suppliers s ON ws.supplier_id = s.supplier_id
+                LEFT JOIN users u ON s.userid = u.userid
+                WHERE ws.wishlist_id = %s
+            """, (event['wishlist_id'],))
+            
+            suppliers = cursor.fetchall()
+            event['suppliers'] = [{
+                'supplier_id': s[0],
+                'service': s[1],
+                'price': float(s[2]) if s[2] else 0,
+                'remarks': s[3],
+                'supplier_firstname': s[4],
+                'supplier_lastname': s[5],
+                'supplier_email': s[6],
+                'supplier_contact': s[7]
+            } for s in suppliers]
+
+            # Get services for this event - first check if the table exists
+            cursor.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'wishlist_additional_services'
+                );
+            """)
+            table_exists = cursor.fetchone()[0]
+            
+            if table_exists:
+                cursor.execute("""
+                    SELECT 
+                        wps.add_service_id, wps.price, wps.remarks,
+                        a.add_service_name, a.add_service_description
+                    FROM wishlist_additional_services wps
+                    LEFT JOIN additional_services a ON wps.add_service_id = a.add_service_id
+                    WHERE wps.wishlist_id = %s
+                """, (event['wishlist_id'],))
+                
+                services = cursor.fetchall()
+                event['services'] = [{
+                    'add_service_id': s[0],
+                    'price': float(s[1]) if s[1] else 0,
+                    'remarks': s[2],
+                    'add_service_name': s[3],
+                    'add_service_description': s[4]
+                } for s in services]
+            else:
+                # Create the table if it doesn't exist
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS wishlist_additional_services (
+                        id SERIAL PRIMARY KEY,
+                        wishlist_id INTEGER NOT NULL,
+                        add_service_id INTEGER NOT NULL,
+                        price DECIMAL(10,2),
+                        remarks TEXT,
+                        FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages (wishlist_id) ON DELETE CASCADE,
+                        FOREIGN KEY (add_service_id) REFERENCES additional_services (add_service_id) ON DELETE CASCADE
+                    )
+                """)
+                conn.commit()
+                event['services'] = []
+            
+            events.append(event)
+            logger.info(f"Added event to list: {event['event_name']} (ID: {event['events_id']})")
+        
+        logger.info(f"Total events found: {len(events)}")
+        return events
     except Exception as e:
-        logging.error(f"Error in get_all_booked_wishlist: {str(e)}")
-        raise e
+        logger.error(f"Error getting booked wishlist: {str(e)}")
+        raise
     finally:
         cursor.close()
         conn.close()
@@ -2696,6 +2701,302 @@ def create_outfit(outfit_data):
         conn.rollback()
         logger.error(f"Error creating outfit: {str(e)}")
         return False, None, str(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+def create_wishlist_package(events_id, package_data):
+    """Create a new wishlist package for an event"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Insert the main wishlist package
+        cursor.execute("""
+            INSERT INTO wishlist_packages (
+                events_id, package_name, capacity, description, venue_id,
+                gown_package_id, additional_capacity_charges, charge_unit,
+                total_price, event_type_id, status
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            ) RETURNING wishlist_id
+        """, (
+            events_id,
+            package_data.get('package_name'),
+            package_data.get('capacity'),
+            package_data.get('description'),
+            package_data.get('venue_id'),
+            package_data.get('gown_package_id'),
+            package_data.get('additional_capacity_charges', 0),
+            package_data.get('charge_unit', 1),
+            package_data.get('total_price', 0),
+            package_data.get('event_type_id'),
+            package_data.get('status', 'Active')
+        ))
+        
+        wishlist_id = cursor.fetchone()[0]
+        
+        # Add services if provided
+        if package_data.get('services'):
+            for service in package_data['services']:
+                cursor.execute("""
+                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks)
+                    VALUES (%s, %s, %s, %s)
+                """, (
+                    wishlist_id, 
+                    service['add_service_id'],
+                    service.get('price', 0),
+                    service.get('remarks', '')
+                ))
+        
+        # Add suppliers if provided
+        if package_data.get('suppliers'):
+            for supplier in package_data['suppliers']:
+                cursor.execute("""
+                    INSERT INTO wishlist_suppliers (wishlist_id, supplier_id, price, remarks)
+                    VALUES (%s, %s, %s, %s)
+                """, (
+                    wishlist_id,
+                    supplier['supplier_id'],
+                    supplier.get('price'),
+                    supplier.get('remarks')
+                ))
+        
+        # Add outfits if provided
+        if package_data.get('outfits'):
+            for outfit in package_data['outfits']:
+                cursor.execute("""
+                    INSERT INTO wishlist_outfits (wishlist_id, outfit_id, gown_package_id, price, remarks)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    wishlist_id,
+                    outfit.get('outfit_id'),
+                    outfit.get('gown_package_id'),
+                    outfit.get('price'),
+                    outfit.get('remarks')
+                ))
+        
+        conn.commit()
+        return wishlist_id
+        
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error creating wishlist package: {str(e)}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_wishlist_package(wishlist_id):
+    """Get complete details of a wishlist package"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get main package details
+        cursor.execute("""
+            SELECT wp.*, v.venue_name, gp.gown_package_name, et.event_type_name
+            FROM wishlist_packages wp
+            LEFT JOIN venues v ON wp.venue_id = v.venue_id
+            LEFT JOIN gown_package gp ON wp.gown_package_id = gp.gown_package_id
+            LEFT JOIN event_type et ON wp.event_type_id = et.event_type_id
+            WHERE wp.wishlist_id = %s
+        """, (wishlist_id,))
+        
+        package = cursor.fetchone()
+        if not package:
+            return None
+            
+        result = {
+            'wishlist_id': package[0],
+            'events_id': package[1],
+            'package_name': package[2],
+            'capacity': package[3],
+            'description': package[4],
+            'venue_id': package[5],
+            'venue_name': package[13],  # from JOIN
+            'gown_package_id': package[6],
+            'gown_package_name': package[14],  # from JOIN
+            'additional_capacity_charges': float(package[7]) if package[7] else 0,
+            'charge_unit': package[8],
+            'total_price': float(package[9]) if package[9] else 0,
+            'created_at': package[10],
+            'event_type_id': package[11],
+            'event_type_name': package[15],  # from JOIN
+            'status': package[12],
+            'services': [],
+            'suppliers': [],
+            'outfits': []
+        }
+        
+        # Get services
+        cursor.execute("""
+            SELECT wps.*, ps.service_name
+            FROM wishlist_additional_services wps
+            JOIN package_service ps ON wps.add_service_id = ps.package_service_id
+            WHERE wps.wishlist_id = %s
+        """, (wishlist_id,))
+        result['services'] = [{
+            'wishlist_service_id': row[0],
+            'package_service_id': row[2],
+            'service_name': row[3]
+        } for row in cursor.fetchall()]
+        
+        # Get suppliers
+        cursor.execute("""
+            SELECT ws.*, s.service, u.firstname, u.lastname
+            FROM wishlist_suppliers ws
+            JOIN suppliers s ON ws.supplier_id = s.supplier_id
+            JOIN users u ON s.userid = u.userid
+            WHERE ws.wishlist_id = %s
+        """, (wishlist_id,))
+        result['suppliers'] = [{
+            'id': row[0],
+            'supplier_id': row[2],
+            'price': float(row[3]) if row[3] else 0,
+            'remarks': row[4],
+            'service': row[5],
+            'supplier_name': f"{row[6]} {row[7]}"
+        } for row in cursor.fetchall()]
+        
+        # Get outfits
+        cursor.execute("""
+            SELECT wo.*, o.outfit_name, gp.gown_package_name
+            FROM wishlist_outfits wo
+            LEFT JOIN outfits o ON wo.outfit_id = o.outfit_id
+            LEFT JOIN gown_package gp ON wo.gown_package_id = gp.gown_package_id
+            WHERE wo.wishlist_id = %s
+        """, (wishlist_id,))
+        result['outfits'] = [{
+            'id': row[0],
+            'outfit_id': row[2],
+            'gown_package_id': row[3],
+            'price': float(row[4]) if row[4] else 0,
+            'remarks': row[5],
+            'outfit_name': row[6],
+            'gown_package_name': row[7]
+        } for row in cursor.fetchall()]
+        
+        return result
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_event_wishlists(events_id):
+    """Get all wishlist packages for an event"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT wishlist_id FROM wishlist_packages 
+            WHERE events_id = %s
+        """, (events_id,))
+        
+        wishlist_ids = cursor.fetchall()
+        return [get_wishlist_package(wid[0]) for wid in wishlist_ids]
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_wishlist_package(wishlist_id, package_data):
+    """Update an existing wishlist package"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Update main package details
+        cursor.execute("""
+            UPDATE wishlist_packages SET
+                package_name = %s,
+                capacity = %s,
+                description = %s,
+                venue_id = %s,
+                gown_package_id = %s,
+                additional_capacity_charges = %s,
+                charge_unit = %s,
+                total_price = %s,
+                event_type_id = %s,
+                status = %s
+            WHERE wishlist_id = %s
+        """, (
+            package_data.get('package_name'),
+            package_data.get('capacity'),
+            package_data.get('description'),
+            package_data.get('venue_id'),
+            package_data.get('gown_package_id'),
+            package_data.get('additional_capacity_charges', 0),
+            package_data.get('charge_unit', 1),
+            package_data.get('total_price', 0),
+            package_data.get('event_type_id'),
+            package_data.get('status', 'Active'),
+            wishlist_id
+        ))
+        
+        # Update services
+        if 'services' in package_data:
+            cursor.execute("DELETE FROM wishlist_additional_services WHERE wishlist_id = %s", (wishlist_id,))
+            for service in package_data['services']:
+                cursor.execute("""
+                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks)
+                    VALUES (%s, %s, %s, %s)
+                """, (wishlist_id, service['add_service_id'], service.get('price', 0), service.get('remarks', '')))
+        
+        # Update suppliers
+        if 'suppliers' in package_data:
+            cursor.execute("DELETE FROM wishlist_suppliers WHERE wishlist_id = %s", (wishlist_id,))
+            for supplier in package_data['suppliers']:
+                cursor.execute("""
+                    INSERT INTO wishlist_suppliers (wishlist_id, supplier_id, price, remarks)
+                    VALUES (%s, %s, %s, %s)
+                """, (
+                    wishlist_id,
+                    supplier['supplier_id'],
+                    supplier.get('price'),
+                    supplier.get('remarks')
+                ))
+        
+        # Update outfits
+        if 'outfits' in package_data:
+            cursor.execute("DELETE FROM wishlist_outfits WHERE wishlist_id = %s", (wishlist_id,))
+            for outfit in package_data['outfits']:
+                cursor.execute("""
+                    INSERT INTO wishlist_outfits (wishlist_id, outfit_id, gown_package_id, price, remarks)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    wishlist_id,
+                    outfit.get('outfit_id'),
+                    outfit.get('gown_package_id'),
+                    outfit.get('price'),
+                    outfit.get('remarks')
+                ))
+        
+        conn.commit()
+        return True
+        
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error updating wishlist package: {str(e)}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def delete_wishlist_package(wishlist_id):
+    """Delete a wishlist package and all related data"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM wishlist_packages WHERE wishlist_id = %s", (wishlist_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error deleting wishlist package: {str(e)}")
+        return False
     finally:
         cursor.close()
         conn.close()
