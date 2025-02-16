@@ -32,7 +32,7 @@ from .models import (
     track_outfit_modification, track_individual_outfit_modification,
     track_additional_service_modification, get_all_outfits, create_outfit,
     create_wishlist_package, get_wishlist_package, get_event_wishlists,
-    update_wishlist_package, delete_wishlist_package
+    update_wishlist_package, delete_wishlist_package, Supplier
 )
 
 # Configure logging
@@ -201,16 +201,30 @@ def init_routes(app):
             logger.error(f"Error fetching users: {e}")
             return jsonify({'message': 'An error occurred while fetching users'}), 500
 
-    @app.route('/get-admin', methods=['GET'])
+    @app.route('/get_admin', methods=['GET', 'OPTIONS'])
     @jwt_required()
     def get_admin_list():
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
         try:
             # Fetch users with user_type 'Admin'
             users = get_admin_users()
-            return jsonify(users), 200
+            response = jsonify(users)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
         except Exception as e:
             logger.error(f"Error fetching admin users: {e}")
-            return jsonify({'message': 'An error occurred while fetching admin users'}), 500
+            response = jsonify({'message': 'An error occurred while fetching admin users'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
 
 
@@ -1205,19 +1219,31 @@ def init_routes(app):
             logger.error(f"Error adding social media: {str(e)}")
             return jsonify({'error': 'Failed to add social media'}), 500
 
-    @app.route('/supplier/<int:supplier_id>/social-media', methods=['GET'])
+    @app.route('/api/supplier/<int:supplier_id>/social-media', methods=['GET', 'OPTIONS'])
     @jwt_required()  # Add JWT protection
-    def get_supplier_social_media(supplier_id):
+    def get_supplier_social_media_route(supplier_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
         try:
             logger.info(f"Fetching social media for supplier_id: {supplier_id}")
-            # Create a minimal supplier instance just for fetching social media
-            supplier = Supplier(supplier_id=supplier_id)
-            social_media = supplier.get_social_media()
+            social_media = get_supplier_social_media(supplier_id)
             logger.info(f"Found social media: {social_media}")
-            return jsonify(social_media)
+            response = jsonify(social_media)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
         except Exception as e:
             logger.error(f"Error fetching social media: {str(e)}")
-            return jsonify({'error': str(e)}), 500
+            response = jsonify({'error': str(e)})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
     @app.route('/inactive-packages', methods=['GET'])
     @jwt_required()

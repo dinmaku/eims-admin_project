@@ -70,16 +70,16 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
 <!--- Supplier Table --->
 <div v-if="showTable === 'Suppliers'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30 table-fixed">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                    <th scope="col" class="px-2 py-3">#</th>
-                    <th scope="col" class="px-2 py-3">Name</th>
-                    <th scope="col" class="px-2 py-3">Email</th>
-                    <th scope="col" class="px-2 py-3">Contact</th>
-                    <th scope="col" class="px-2 py-3">Service</th>
-                    <th scope="col" class="px-2 py-3">Rate</th>
-                    <th scope="col" class="px-2 py-3">Action</th>
+                    <th scope="col" class="w-16 px-2 py-3">#</th>
+                    <th scope="col" class="w-48 px-2 py-3">Name</th>
+                    <th scope="col" class="w-48 px-2 py-3">Email</th>
+                    <th scope="col" class="w-36 px-2 py-3">Contact</th>
+                    <th scope="col" class="w-36 px-2 py-3">Service</th>
+                    <th scope="col" class="w-28 px-2 py-3">Rate</th>
+                    <th scope="col" class="w-36 px-2 py-3">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,13 +87,13 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     v-for="(supplier, index) in paginatedSuppliers"
                     :key="supplier.no"
                     class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ supplier.dummyIndex }}</th>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.fullName }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.email }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.contact }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ supplier.service }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(supplier.price) }} php</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">
+                    <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ supplier.dummyIndex }}</th>
+                    <td class="w-48 px-2 py-3 truncate">{{ supplier.fullName }}</td>
+                    <td class="w-48 px-2 py-3 truncate">{{ supplier.email }}</td>
+                    <td class="w-36 px-2 py-3 truncate">{{ supplier.contact }}</td>
+                    <td class="w-36 px-2 py-3 truncate">{{ supplier.service }}</td>
+                    <td class="w-28 px-2 py-3 truncate">{{ formatPrice(supplier.price) }} php</td>
+                    <td class="w-36 px-2 py-3">
                         <div class="flex items-center space-x-1">
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
@@ -138,15 +138,15 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
   <!--- Staff Table--->
   <div v-if="showTable === 'Staffs'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30 table-fixed">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
-          <th scope="col" class="px-2 py-3">#</th>
-          <th scope="col" class="px-2 py-3">Name</th>
-          <th scope="col" class="px-2 py-3">Email</th>
-          <th scope="col" class="px-2 py-3">Contact</th>
-          <th scope="col" class="px-2 py-3">Position</th>
-          <th scope="col" class="px-2 py-3">Action</th>
+          <th scope="col" class="w-16 px-2 py-3">#</th>
+          <th scope="col" class="w-52 px-2 py-3">Name</th>
+          <th scope="col" class="w-52 px-2 py-3">Email</th>
+          <th scope="col" class="w-40 px-2 py-3">Contact</th>
+          <th scope="col" class="w-36 px-2 py-3">Position</th>
+          <th scope="col" class="w-28 px-2 py-3">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -154,13 +154,13 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
             v-for="(staff, index) in paginatedStaffs"
             :key="staff.no"
             class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-          <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ staff.dummyIndex }}</th>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.fullName }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.email }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.contact }}</td>
-          <td class="px-1 py-3 hidden sm:table-cell">{{ staff.position }}</td>
+          <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ staff.dummyIndex }}</th>
+          <td class="w-52 px-2 py-3 truncate">{{ staff.fullName }}</td>
+          <td class="w-52 px-2 py-3 truncate">{{ staff.email }}</td>
+          <td class="w-40 px-2 py-3 truncate">{{ staff.contact }}</td>
+          <td class="w-36 px-2 py-3 truncate">{{ staff.position }}</td>
 
-          <td class="px-1 py-3 hidden sm:table-cell">
+          <td class="w-28 px-2 py-3">
             <button class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" 
             @click="editStaffBtn(index)" 
             title="Update Staff Info">
@@ -190,25 +190,25 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
   <!-- Admin Table -->
 <div v-if="showTable === 'Admin'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30 table-fixed">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                    <th scope="col" class="px-2 py-3">#</th>
-                    <th scope="col" class="px-2 py-3">Name</th>
-                    <th scope="col" class="px-2 py-3">Email</th>
-                    <th scope="col" class="px-2 py-3">Contact</th>
-                    <th scope="col" class="px-2 py-3">User Type</th>
-                    <th scope="col" class="px-2 py-3">Action</th>
+                    <th scope="col" class="w-16 px-2 py-3">#</th>
+                    <th scope="col" class="w-52 px-2 py-3">Name</th>
+                    <th scope="col" class="w-52 px-2 py-3">Email</th>
+                    <th scope="col" class="w-40 px-2 py-3">Contact</th>
+                    <th scope="col" class="w-36 px-2 py-3">User Type</th>
+                    <th scope="col" class="w-28 px-2 py-3">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(admin, index) in paginatedAdmins" :key="admin.userid" class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ admin.dummyIndex }}</th>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.fullName }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.email }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.contactnumber }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">{{ admin.user_type }}</td>
-                    <td class="px-1 py-3 hidden sm:table-cell">
+                    <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ admin.dummyIndex }}</th>
+                    <td class="w-52 px-1 py-3 truncate">{{ admin.fullName }}</td>
+                    <td class="w-52 px-1 py-3 truncate">{{ admin.email }}</td>
+                    <td class="w-40 px-1 py-3 truncate">{{ admin.contactnumber }}</td>
+                    <td class="w-36 px-1 py-3 truncate">{{ admin.user_type }}</td>
+                    <td class="w-28 px-1 py-3">
                         <button class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200" @click="editAdminBtn(index)" title = "Update Admin Info">
                           <img src="/img/update2.png" alt="Update" class="w-5 h-5">
                           </button>
@@ -431,7 +431,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                     <option value="">Select Platform</option>
                     <option value="Facebook">Facebook</option>
                     <option value="Instagram">Instagram</option>
-                    <option value="Twitter">Twitter</option>
+                    <option value="Twitter">X</option>
                     <option value="LinkedIn">LinkedIn</option>
                     <option value="TikTok">TikTok</option>
                     <option value="YouTube">YouTube</option>
@@ -489,27 +489,27 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
           <!-- Input Fields Section - Left Side -->
           <div class="w-3/5 space-y-5">
             <div>
-              <label class="text-xs text-gray-600 block">Full Name</label>
+              <label class="text-xs text-left text-gray-600 block">Full Name</label>
               <input type="text" v-model="selectedSupplier.fullName" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
             </div>
 
             <div>
-              <label class="text-xs text-gray-600 block">Username</label>
+              <label class="text-xs text-left text-gray-600 block">Username</label>
               <input type="text" v-model="selectedSupplier.username" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
             </div>
 
             <div>
-              <label class="text-xs text-gray-600 block">Email</label>
+              <label class="text-xs text-left text-gray-600 block">Email</label>
               <input type="text" v-model="selectedSupplier.email" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" required>
             </div>
 
             <div>
-              <label class="text-xs text-gray-600 block">Contact</label>
+              <label class="text-xs text-left text-gray-600 block">Contact</label>
               <input type="text" v-model="selectedSupplier.contact" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700" placeholder="Contact Number" required>
             </div>
 
             <div>
-              <label class="text-xs text-gray-600 block">Service Type</label>
+              <label class="text-xs text-left text-gray-600 block">Service Type</label>
               <select v-model="selectedSupplier.service" class="mt-2 p-2 w-full h-10 rounded-lg shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                 <option value="" class="text-gray-700" disabled selected>Select Service Type</option>
                 <option value="Catering">Catering</option>
@@ -552,7 +552,7 @@ transition-transform duration-300 transform hover:scale-105" @click="addUserBtn"
                         <span class="text-gray-500">{{ social.handle }}</span>
                       </div>
                       <a v-if="social.url" :href="social.url" target="_blank" 
-                         class="text-sm text-blue-600 hover:text-blue-800 break-all">
+                         class="text-sm flex justify-start text-blue-600 hover:text-blue-800 break-all">
                         {{ social.url }}
                       </a>
                     </div>

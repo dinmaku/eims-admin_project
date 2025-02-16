@@ -42,14 +42,14 @@
 
         <div v-if="showTable === 'Services'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30 table-fixed">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th scope="col" class="px-2 py-3">#</th>
-                            <th scope="col" class="px-2 py-3">Inclsusion Name</th>
-                            <th scope="col" class="px-2 py-3">Description</th>
-                            <th scope="col" class="px-2 py-3">Price</th>
-                            <th scope="col" class="px-2 py-3">Action</th>
+                            <th scope="col" class="w-16 px-2 py-3">#</th>
+                            <th scope="col" class="w-52 px-2 py-3">Inclusion Name</th>
+                            <th scope="col" class="w-96 px-2 py-3">Description</th>
+                            <th scope="col" class="w-36 px-2 py-3">Price</th>
+                            <th scope="col" class="w-28 px-2 py-3">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,11 +57,11 @@
                             v-for="(service, index) in paginatedServices"
                             :key="service.add_service_id"
                             class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                            <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ service.dummyIndex }}</th>
-                            <td class="px-1 py-3 hidden sm:table-cell">{{ service.add_service_name }}</td>
-                            <td class="px-1 py-3 hidden sm:table-cell">{{ service.add_service_description }}</td>
-                            <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(service.add_service_price) }} php</td>
-                            <td class="px-1 py-3 hidden sm:table-cell">
+                            <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ service.dummyIndex }}</th>
+                            <td class="w-52 px-2 py-3 truncate">{{ service.add_service_name }}</td>
+                            <td class="w-96 px-2 py-3 truncate">{{ service.add_service_description }}</td>
+                            <td class="w-36 px-2 py-3 truncate">{{ formatPrice(service.add_service_price) }} php</td>
+                            <td class="w-28 px-2 py-3">
                                 <div class="flex items-center space-x-2">
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"

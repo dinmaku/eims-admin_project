@@ -198,27 +198,27 @@
            <div class="grid grid-cols-4 gap-4 mb-4">
             <button type = "button"
               @click.prevent="openInclusionModal('supplier')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
               Suppliers
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('venue')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
              
              Venues
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('outfit')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
               
              Outfits
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('service')" 
-              class="flex items-center justify-center bg-blue-500 text-white px-3 py-2 h-[50px] rounded-md hover:bg-blue-600"
+              class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >  
             
               Inclusions
@@ -269,7 +269,7 @@
                   </select>
                 </div>
                 <div class="flex justify-center mt-4">
-                  <button type="button" @click="addSelectedSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+                  <button type="button" @click="addSelectedSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
                 </div>
               </div>
             </div>
@@ -312,7 +312,7 @@
                     </div>
                     <div class="flex justify-end mt-4 space-x-2">
                         <button type = "button" @click="closeExternalSupplierModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-                        <button type = "button" @click="addExternalSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add External Supplier</button>
+                        <button type = "button" @click="addExternalSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add External Supplier</button>
                     </div>
                 </div>
             </div>
@@ -338,7 +338,7 @@
                   </select>
                 </div>
                 <div class="flex justify-center mt-4">
-                  <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+                  <button type="button" @click="addSelectedVenue" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
                 </div>
               </div>
             </div>
@@ -364,7 +364,7 @@
                   </select>
                 </div>
                 <div class="flex justify-center mt-4">
-                  <button type="button" @click="addSelectedOutfit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+                  <button type="button" @click="addSelectedOutfit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
                 </div>
               </div>
             </div>
@@ -425,7 +425,7 @@
                 <button 
                   type="button" 
                   @click="outfitSelectionMode === 'package' ? addSelectedOutfitPackage() : addSelectedOutfit()" 
-                  class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
                   Add
                 </button>
@@ -454,7 +454,7 @@
                     </select>
                   </div>
                   <div class="flex justify-center mt-4">
-                    <button type="button" @click="addSelectedService" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+                    <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
                   </div>
                 </div>
               </div>
@@ -536,9 +536,9 @@
 
 
               <div class="mb-5 mt-5">
-              <h3 class="text-lg font-semibold mb-2">Capacity Cap</h3>
+              <h3 class="text-lg font-semibold mb-2">Capacity Pax</h3>
               <p class="w-full p-2 border rounded bg-gray-100">
-                  Package Capacity: 
+                  Package Pax: 
                   <span class="font-semibold">
                       {{ selectedPackage.capacity + (selectedPackage.additional_capacity || 0) }} persons
                   </span>
@@ -547,16 +547,16 @@
               </p>
               <button type = "button"
                   @click="showCapacityModal = true"
-                  class="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
+                  class="mt-2 bg-[#9B111E] hover:bg-[#B73A45] text-white py-2 px-4 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
               >
                   Add Capacity
               </button>
           </div>
               <!-- Capacity Modal -->
-              <div v-if="showCapacityModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+              <div v-if="showCapacityModal" @click.self="showCapacityModal = false" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
                   <div class="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
                       <div class="flex justify-between items-center mb-4">
-                          <h3 class="text-lg font-semibold">Add Additional Capacity</h3>
+                          <h3 class="text-lg font-semibold">Add Additional Pax</h3>
                           <button type = "button" @click="showCapacityModal = false" class="text-gray-500 hover:text-gray-700">
                               <span class="text-2xl">&times;</span>
                           </button>
@@ -564,17 +564,17 @@
 
                       <div class="space-y-4">
                           <div>
-                              <label class="block text-sm font-medium text-gray-700">Current Package Capacity</label>
+                              <label class="block text-sm font-medium text-gray-700">Current Package Pax</label>
                               <p class="text-sm">{{ selectedPackage.capacity }} persons</p>
                           </div>
 
                           <div>
-                              <label class="block text-sm font-medium text-gray-700">Additional Charge per {{ selectedPackage.charge_unit }} person(s)</label>
+                              <label class="block text-sm font-medium text-gray-700">Additional Charge per {{ selectedPackage.charge_unit }} pax</label>
                               <p class="text-sm">{{ formatPrice(selectedPackage.additional_capacity_charges) }}</p>
                           </div>
 
                           <div>
-                              <label class="block text-sm font-medium text-gray-700">Additional Capacity</label>
+                              <label class="block text-sm font-medium text-gray-700">Additional Pax</label>
                               <input 
                                   type="number" 
                                   v-model.number="additionalCapacity" 

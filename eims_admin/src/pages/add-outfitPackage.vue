@@ -39,14 +39,14 @@
             <!-- Gown Packages Table -->
                 <div v-if="showTable === 'GownPackages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 max-h-30 table-fixed">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">#</th>
-                                    <th scope="col" class="px-4 py-3">Package Name</th>
-                                    <th scope="col" class="px-4 py-3">Description</th>
-                                    <th scope="col" class="px-4 py-3">Price</th>
-                                    <th scope="col" class="px-4 py-3">Action</th>
+                                    <th scope="col" class="w-16 px-2 py-3">#</th>
+                                    <th scope="col" class="w-52 px-2 py-3">Package Name</th>
+                                    <th scope="col" class="w-96 px-2 py-3">Description</th>
+                                    <th scope="col" class="w-36 px-2 py-3">Price</th>
+                                    <th scope="col" class="w-28 px-2 py-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,11 +54,11 @@
                                     v-for="(gownPackage, index) in paginatedGownPackages"
                                     :key="gownPackage.gown_package_id"
                                     class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ gownPackage.dummyIndex }}</th>
-                                    <td class="px-1 py-3 hidden sm:table-cell">{{ gownPackage.gown_package_name }}</td>
-                                    <td class="px-1 py-3 hidden sm:table-cell">{{ gownPackage.description }}</td>
-                                    <td class="px-1 py-3 hidden sm:table-cell">{{ formatPrice(gownPackage.gown_package_price) }} php</td> 
-                                    <td class="px-1 py-3 hidden sm:table-cell">
+                                    <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ gownPackage.dummyIndex }}</th>
+                                    <td class="w-52 px-2 py-3 truncate">{{ gownPackage.gown_package_name }}</td>
+                                    <td class="w-96 px-2 py-3 truncate">{{ gownPackage.description }}</td>
+                                    <td class="w-36 px-2 py-3 truncate">{{ formatPrice(gownPackage.gown_package_price) }} php</td> 
+                                    <td class="w-28 px-2 py-3">
                                     <div class="flex items-center space-x-2">
                                         <button
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
@@ -318,21 +318,21 @@
 
                     <!-- Combined Outfits Table -->
                     <div style="max-height: 300px; overflow-y: auto;">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-sm table-fixed">
                         <thead class="bg-gray-50 sticky top-0 z-10">
                             <tr>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Type</th>
-                                <th class="px-4 py-2">Price</th>
-                                <th class="px-4 py-2">Action</th>
+                                <th scope="col" class="w-16 px-4 py-2">Name</th>
+                                <th scope="col" class="w-52 px-4 py-2">Type</th>
+                                <th scope="col" class="w-96 px-4 py-2">Price</th>
+                                <th scope="col" class="w-28 px-4 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="outfit in filteredOutfits" :key="outfit.outfit_id">
-                            <td class="px-4 py-2">{{ outfit.outfit_name }}</td>
-                            <td class="px-4 py-2 capitalize">{{ outfit.outfit_type }}</td>
-                            <td class="px-4 py-2">₱{{ formatPrice(outfit.rent_price) }}</td>
-                            <td class="px-4 py-2">
+                            <td class="w-16 px-4 py-2">{{ outfit.outfit_name }}</td>
+                            <td class="w-52 px-4 py-2 capitalize">{{ outfit.outfit_type }}</td>
+                            <td class="w-96 px-4 py-2">₱{{ formatPrice(outfit.rent_price) }}</td>
+                            <td class="w-28 px-4 py-2">
                                 <button
                                     @click="toggleOutfitSelection(outfit)"
                                     class="rounded p-1"
@@ -654,28 +654,28 @@
     <!-- Outfits Table -->
         <div class="h-[400px] flex flex-col">
             <div class="overflow-x-auto flex-grow">
-                <table class="w-full text-sm text-left">
+                <table class="w-full text-sm text-left table-fixed">
                     <thead class="text-xs uppercase bg-gray-50 sticky top-0">
                         <tr>
-                            <th class="px-6 py-3">#</th>
-                            <th class="px-6 py-3">Name</th>
-                            <th class="px-6 py-3">Type</th>
-                            <th class="px-6 py-3">Color</th>
-                            <th class="px-6 py-3">Size</th>
-                            <th class="px-6 py-3">Price</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3">Image</th>
+                            <th scope="col" class="w-16 px-6 py-3">#</th>
+                            <th scope="col" class="w-52 px-6 py-3">Name</th>
+                            <th scope="col" class="w-96 px-6 py-3">Type</th>
+                            <th scope="col" class="w-36 px-6 py-3">Color</th>
+                            <th scope="col" class="w-36 px-6 py-3">Size</th>
+                            <th scope="col" class="w-36 px-6 py-3">Price</th>
+                            <th scope="col" class="w-28 px-6 py-3">Status</th>
+                            <th scope="col" class="w-28 px-6 py-3">Image</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="outfit in paginatedOutfits" :key="outfit.outfit_id" class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">{{ outfit.dummyIndex }}</td>
-                            <td class="px-6 py-4">{{ outfit.outfit_name }}</td>
-                            <td class="px-6 py-4 capitalize">{{ outfit.outfit_type }}</td>
-                            <td class="px-6 py-4">{{ outfit.outfit_color }}</td>
-                            <td class="px-6 py-4">{{ outfit.size }}</td>
-                            <td class="px-6 py-4">{{ formatPrice(outfit.rent_price) }} php</td>
-                            <td class="px-6 py-4">
+                            <td class="w-16 px-6 py-4">{{ outfit.dummyIndex }}</td>
+                            <td class="w-52 px-6 py-4 truncate">{{ outfit.outfit_name }}</td>
+                            <td class="w-96 px-6 py-4 capitalize">{{ outfit.outfit_type }}</td>
+                            <td class="w-36 px-6 py-4">{{ outfit.outfit_color }}</td>
+                            <td class="w-36 px-6 py-4">{{ outfit.size }}</td>
+                            <td class="w-36 px-6 py-4">{{ formatPrice(outfit.rent_price) }} php</td>
+                            <td class="w-28 px-6 py-4">
                                 <span 
                                     :class="outfit.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                                     class="px-2 py-1 rounded-full text-xs font-medium"
@@ -683,7 +683,7 @@
                                     {{ outfit.status }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="w-28 px-6 py-4">
                                 <img 
                                     :src="outfit.outfit_img" 
                                     :alt="outfit.outfit_name"
@@ -1139,24 +1139,7 @@
             async handleSubmit() {
                 try {
                     const token = localStorage.getItem('access_token');
-                    if (!token) {
-                        this.errorMessage = 'Authentication required';
-                        return;
-                    }
-
-                    // Create FormData object
-                    const outfitData = {
-                        ...this.newOutfit,
-                        status: 'Available',  // Set default status
-                        archive: {
-                            ...this.outfitArchive,
-                            creation_date: new Date().toISOString().split('T')[0],  // Set current date
-                            usage: 0  // Set initial usage
-                        }
-                    };
-
-                    // Make API request
-                    const response = await axios.post('http://127.0.0.1:5000/outfits', outfitData, {
+                    const response = await axios.post('http://127.0.0.1:5000/outfits', this.newOutfit, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
@@ -1207,255 +1190,149 @@
             },
             closeOutfitModal() {
                 this.showOutfitModal = false;
+                this.searchQuery = '';
             },
-            getOutfits() {
-                return this.currentOutfitType === 'gown' ? this.gowns : this.tuxedos;
-            },
-      
-            addOutfitToPackage() {
-                // Logic to push selected outfits into the inclusion table
-                console.log('Selected Outfits:', this.selectedOutfits);
-                this.closeOutfitModal();
-            },
-
-            openModal(type) {
-                this.modalType = type;
-                this.showModal = true;
-            },
-
-            closeModal() {
-                this.showModal = false;
-                this.modalType = null;
-            },
-
-            getOutfits(type) {
-                // Map the outfits to have a consistent structure
-                const outfits = type === 'gown' ? this.gowns : this.tuxedos;
-                return outfits.map(outfit => ({
-                    id: outfit.outfit_id,
-                    name: outfit.outfit_name,
-                    price: outfit.rent_price,
-                    type: type
-                }));
-            },
-
-            addInclusion(outfit) {
-                // Check if outfit is already included
-                const exists = this.inclusions.some(item => item.id === outfit.id);
-                if (!exists) {
-                    this.inclusions.push({
-                        id: outfit.id,
-                        name: outfit.name,
-                        price: Number(outfit.price), // Convert to number
-                        type: this.modalType
-                    });
-                }
-                this.closeModal();
-            },
-            removeInclusion(outfitId) {
-                // Remove from packageInclusions
-                const index = this.packageInclusions.findIndex(item => item.outfit_id === outfitId);
-                if (index !== -1) {
-                    this.packageInclusions.splice(index, 1);
-                }
-                
-                // Remove from selectedOutfits
-                const selectedIndex = this.selectedOutfits.findIndex(item => item.outfit_id === outfitId);
-                if (selectedIndex !== -1) {
-                    this.selectedOutfits.splice(selectedIndex, 1);
-                }
-                
-                // Update total
-                this.calculateTotal();
-            },
-
-            closePackageForm() {
-                this.showOutfitPackageForm = false;
-                this.packageDetails = {
-                    name: '',
-                    description: '',
-                    discount: 0
-                };
-                this.packageInclusions = [];
-                this.selectedOutfits = [];
-            },
-
-            calculateSubtotal() {
-                return this.packageInclusions.reduce((total, item) => total + Number(item.rent_price), 0);
-            },
-
-            calculateDiscount() {
-                const subtotal = this.calculateSubtotal();
-                return (subtotal * (this.packageDetails.discount || 0)) / 100;
-            },
-
-            calculateTotal() {
-                return this.calculateSubtotal() - this.calculateDiscount();
-            },
-                    
-
-            formatPrice(price) {
-                return Number(price).toFixed(2);
-            },
-
-
-        formatPrice(price) {
-            if (price === null || price === undefined || typeof price === 'object' || isNaN(price)) {
-                return 'N/A'; // Return a fallback if price is invalid
-            }
-            // Ensure price is treated as a number, round to 2 decimal places, and format with commas
-            return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        },
-
-        openOutfitSelection() {
-        this.showOutfitModal = true;
-        this.fetchOutfits();
-    },
-    closeOutfitModal() {
-        this.showOutfitModal = false;
-        this.searchQuery = '';
-    },
    
  
-    isOutfitSelected(outfitId) {
-        return this.selectedOutfits.some(outfit => outfit.outfit_id === outfitId);
-    },
-    toggleOutfitSelection(outfit) {
-        const index = this.selectedOutfits.findIndex(item => item.outfit_id === outfit.outfit_id);
-        if (index === -1) {
-            // Add to selectedOutfits array
-            this.selectedOutfits.push(outfit);
-            
-            // Add to package inclusions
-            this.packageInclusions.push({
-                outfit_id: outfit.outfit_id,
-                outfit_name: outfit.outfit_name,
-                outfit_type: outfit.outfit_type,
-                rent_price: outfit.rent_price,
-                quantity: 1
-            });
-            
-            // Update total
-            this.calculateTotal();
-            
-            // Close the modal
-            this.closeOutfitModal();
-        } else {
-            // Remove from selectedOutfits array
-            this.selectedOutfits.splice(index, 1);
-            
-            // Remove from package inclusions
-            const inclusionIndex = this.packageInclusions.findIndex(item => item.outfit_id === outfit.outfit_id);
-            if (inclusionIndex !== -1) {
-                this.packageInclusions.splice(inclusionIndex, 1);
-            }
-            
-            // Update total
-            this.calculateTotal();
-        }
-    },
-    
-    async togglePackageStatus(packages) {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await axios.put(
-                `http://127.0.0.1:5000/toggle-package-status/${packages.gown_package_id}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+            isOutfitSelected(outfitId) {
+                return this.selectedOutfits.some(outfit => outfit.outfit_id === outfitId);
+            },
+            toggleOutfitSelection(outfit) {
+                const index = this.selectedOutfits.findIndex(item => item.outfit_id === outfit.outfit_id);
+                if (index === -1) {
+                    // Add to selectedOutfits array
+                    this.selectedOutfits.push(outfit);
+                    
+                    // Add to package inclusions
+                    this.packageInclusions.push({
+                        outfit_id: outfit.outfit_id,
+                        outfit_name: outfit.outfit_name,
+                        outfit_type: outfit.outfit_type,
+                        rent_price: outfit.rent_price,
+                        quantity: 1
+                    });
+                    
+                    // Update total
+                    this.calculateTotal();
+                    
+                    // Close the modal
+                    this.closeOutfitModal();
+                } else {
+                    // Remove from selectedOutfits array
+                    this.selectedOutfits.splice(index, 1);
+                    
+                    // Remove from package inclusions
+                    const inclusionIndex = this.packageInclusions.findIndex(item => item.outfit_id === outfit.outfit_id);
+                    if (inclusionIndex !== -1) {
+                        this.packageInclusions.splice(inclusionIndex, 1);
                     }
+                    
+                    // Update total
+                    this.calculateTotal();
                 }
-            );
-
-            if (response.status === 200) {
-                alert("Package status updated successfully!");
-                await this.fetchPackages();
-                await this.fetchInactivePackages();
-                if (this.showInactivePackagesModal) {
-                    this.closeInactivePackagesModal();
-                }
-            }
-        } catch (error) {
-            console.error('Error toggling package status:', error);
-            alert('Failed to update package status. Please try again.');
-        }
-    },
-
-    async fetchInactivePackages() {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await axios.get('http://127.0.0.1:5000/inactive-gown-packages', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            this.inactivePackages = response.data;
-        } catch (error) {
-            console.error('Error fetching inactive packages:', error);
-        }
-    },
-
-
-    openStatusConfirmModal(gownPackage, newStatus) {
-        this.selectedPackage = gownPackage;
-        this.pendingStatus = newStatus;
-        this.showStatusConfirmModal = true;
-    },
-
-    async togglePackageStatus() {
-        if (!this.selectedPackage) return;
-        
-        try {
-            const token = localStorage.getItem('access_token');
-            await axios.put(`http://127.0.0.1:5000/toggle-gown-package-status/${this.selectedPackage.gown_package_id}`, {}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            // Refresh both active and inactive packages
-            await this.fetchGownPackages();
-            await this.fetchInactivePackages();
-            this.closeStatusConfirmModal();
-        } catch (error) {
-            console.error('Error toggling package status:', error);
-        }
-    },
-
-    closeStatusConfirmModal() {
-        this.showStatusConfirmModal = false;
-        this.selectedPackage = null;
-        this.pendingStatus = '';
-    },
-
-    async confirmStatusChange() {
-        if (this.selectedPackage) {
-            await this.togglePackageStatus(this.selectedPackage);
-            this.closeStatusConfirmModal();
-        }
-    },
-
-    showInactivePackagesModal() {
-        this.fetchInactivePackages();
-        this.isInactivePackagesModalVisible = true;
-    },
-    closeInactivePackagesModal() {
-        this.isInactivePackagesModalVisible = false;
-    },
+            },
     
-    showOutfitsModalFn() {
-        this.showOutfitsModal = true;
-        this.fetchOutfits();
-    },
-    closeOutfitsModal() {
-        this.showOutfitsModal = false;
-        this.outfitSearchQuery = '';
-        this.outfitTypeFilter = '';
-        this.currentPage = 1; // Reset pagination
-    },
+            async togglePackageStatus(packages) {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await axios.put(
+                        `http://127.0.0.1:5000/toggle-package-status/${packages.gown_package_id}`,
+                        {},
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                    if (response.status === 200) {
+                        alert("Package status updated successfully!");
+                        await this.fetchPackages();
+                        await this.fetchInactivePackages();
+                        if (this.showInactivePackagesModal) {
+                            this.closeInactivePackagesModal();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error toggling package status:', error);
+                    alert('Failed to update package status. Please try again.');
+                }
+            },
+
+            async fetchInactivePackages() {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await axios.get('http://127.0.0.1:5000/inactive-gown-packages', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    this.inactivePackages = response.data;
+                } catch (error) {
+                    console.error('Error fetching inactive packages:', error);
+                }
+            },
+
+
+            openStatusConfirmModal(gownPackage, newStatus) {
+                this.selectedPackage = gownPackage;
+                this.pendingStatus = newStatus;
+                this.showStatusConfirmModal = true;
+            },
+
+            async togglePackageStatus() {
+                if (!this.selectedPackage) return;
+                
+                try {
+                    const token = localStorage.getItem('access_token');
+                    await axios.put(`http://127.0.0.1:5000/toggle-gown-package-status/${this.selectedPackage.gown_package_id}`, {}, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    // Refresh both active and inactive packages
+                    await this.fetchGownPackages();
+                    await this.fetchInactivePackages();
+                    this.closeStatusConfirmModal();
+                } catch (error) {
+                    console.error('Error toggling package status:', error);
+                }
+            },
+
+            closeStatusConfirmModal() {
+                this.showStatusConfirmModal = false;
+                this.selectedPackage = null;
+                this.pendingStatus = '';
+            },
+
+            async confirmStatusChange() {
+                if (this.selectedPackage) {
+                    await this.togglePackageStatus(this.selectedPackage);
+                    this.closeStatusConfirmModal();
+                }
+            },
+
+            showInactivePackagesModal() {
+                this.fetchInactivePackages();
+                this.isInactivePackagesModalVisible = true;
+            },
+            closeInactivePackagesModal() {
+                this.isInactivePackagesModalVisible = false;
+            },
+    
+            showOutfitsModalFn() {
+                this.showOutfitsModal = true;
+                this.fetchOutfits();
+            },
+            closeOutfitsModal() {
+                this.showOutfitsModal = false;
+                this.outfitSearchQuery = '';
+                this.outfitTypeFilter = '';
+                this.currentPage = 1; // Reset pagination
+            },
 
     
     

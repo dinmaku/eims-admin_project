@@ -25,16 +25,16 @@
         
         <div v-if="showTable === 'packages'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-auto ml-5 mt-2 font-amaticBold mb-10">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 table-fixed">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <th scope="col" class="px-4 py-3">#</th>
-                        <th scope="col" class="px-4 py-3">Package Name</th>
-                        <th scope="col" class="px-4 py-3">Package Type</th>
-                        <th scope="col" class="px-4 py-3">Venue</th>
-                        <th scope="col" class="px-4 py-3">Price</th>
-                        <th scope="col" class="px-4 py-3">Capacity</th>
-                        <th scope="col" class="px-4 py-3">Action</th>
+                        <th scope="col" class="w-16 px-2 py-3">#</th>
+                        <th scope="col" class="w-52 px-2 py-3">Package Name</th>
+                        <th scope="col" class="w-40 px-2 py-3">Package Type</th>
+                        <th scope="col" class="w-52 px-2 py-3">Venue</th>
+                        <th scope="col" class="w-36 px-2 py-3">Price</th>
+                        <th scope="col" class="w-28 px-2 py-3">Capacity</th>
+                        <th scope="col" class="w-28 px-2 py-3">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,13 +42,13 @@
                         v-for="(packageItem, index) in paginatedPackages"
                         :key="packageItem.packageId"
                         class="border-b dark:border-gray-700 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
-                        <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ packageItem.dummyIndex }}</th>
-                        <td class="px-4 py-3">{{ packageItem.package_name }}</td>
-                        <td class="px-4 py-3">{{ getEventTypeName(packageItem.event_type_id) }}</td>
-                        <td class="px-4 py-3">{{ packageItem.venue_name }}</td>
-                        <td class="px-4 py-3">{{ formatPrice(packageItem.total_price) }} php</td>
-                        <td class="px-4 py-3">{{ packageItem.capacity }}</td>
-                        <td class="px-4 py-3">
+                        <th scope="row" class="w-16 px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ packageItem.dummyIndex }}</th>
+                        <td class="w-52 px-2 py-3 truncate">{{ packageItem.package_name }}</td>
+                        <td class="w-40 px-2 py-3 truncate">{{ getEventTypeName(packageItem.event_type_id) }}</td>
+                        <td class="w-52 px-2 py-3 truncate">{{ packageItem.venue_name }}</td>
+                        <td class="w-36 px-2 py-3 truncate">{{ formatPrice(packageItem.total_price) }} php</td>
+                        <td class="w-28 px-2 py-3 truncate">{{ packageItem.capacity }}</td>
+                        <td class="w-28 px-2 py-3">
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                 @click="editPackageBtn(index)"> 
@@ -1002,8 +1002,6 @@ export default {
             venuesData = response.data.data;
           }
         }
-
-      
 
         // Map venues and format prices
         this.venues = venuesData.map(venue => ({
