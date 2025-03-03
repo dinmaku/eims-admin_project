@@ -91,12 +91,22 @@
               <td class="px-1 py-3 truncate">{{ event.venue_name || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.onsite_contact || event.contactnumber || 'Not provided' }}</td>
-              <td class="px-1 py-3">
+              <td class="px-1 py-3 flex justify-start">
                 <button
                     @click="openWishlistModal(event)"
                     class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                    <img src="/img/update2.png" alt="Update" class="w-5 h-5">
+                    <img src="/img/update3.png" alt="Update" class="w-5 h-5">
                 </button>
+                <button
+                  @click="goToInvoice()"
+                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                <img src="/img/invoice.png" alt="Update" class="w-5 h-5">
+               </button>
+               <button
+                class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                <img src="/img/approve.png" alt="Update" class="w-5 h-5">
+               </button>
+               
               </td>
             </tr>
           </tbody>
@@ -112,37 +122,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Event Details Modal -->
-    <div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-          <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl overflow-auto max-h-[90vh]">
-            <h2 class="text-2xl font-semibold mb-4">Event Details</h2>
-            <div class="mb-4">
-              <p class="text-lg"><strong>Event Name:</strong> {{ selectedEvent.event_name }}</p>
-              <p class="text-lg"><strong>Event Type:</strong> {{ selectedEvent.event_type }}</p>
-              <p class="text-lg"><strong>Theme:</strong> {{ selectedEvent.event_theme }}</p>
-              <p class="text-lg"><strong>Color:</strong> {{ selectedEvent.event_color }}</p>
-              <p class="text-lg"><strong>Venue:</strong> {{ selectedEvent.venue_name }}</p>
-              <p class="text-lg"><strong>Booked By:</strong> {{ selectedEvent.bookedBy }}</p>
-              <p class="text-lg"><strong>Contact Number:</strong> {{ selectedEvent.contactnumber }}</p>
-              <p class="text-lg"><strong>Total Price:</strong> {{ selectedEvent.total_price }}</p>
-              <p class="text-lg"><strong>Gown Package:</strong> {{ selectedEvent.gown_package_name }}</p>
-              <p class="text-lg"><strong>Price:</strong> {{ selectedEvent.gown_package_price }}</p>
-            </div>
-            <div class="mb-4">
-              <h3 class="text-xl font-semibold">Suppliers</h3>
-              <div v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="mb-2">
-                <p class="text-lg"><strong>Name:</strong> {{ supplier.name }}</p>
-                <p class="text-lg"><strong>Service:</strong> {{ supplier.service }}</p>
-                <p class="text-lg"><strong>Price:</strong> {{ supplier.price }}</p>
-              </div>
-            </div>
-            <div class="flex justify-end">
-              <button @click="closeEventModal" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Close</button>
-            </div>
-          </div>
-        </div>
-      
 
     <!--Upcoming Events Table-->
     <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
@@ -276,6 +255,11 @@
           </div>
         </div>
 
+        <div class = "mb-4">
+            <p class = "text-md font-medium font-poppins text-gray-500">(* Click the buttons to Add items to the list )</p>
+          </div>
+
+
         <!-- Inclusion Buttons -->
         <div class="grid grid-cols-4 gap-4 mb-4">
             <button 
@@ -297,14 +281,14 @@
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
               <img alt="Outfit Icon" class="mr-2 w-[20px] h-[20px]" src="/img/costume.png">
-             Outfit Package
+             Outfits
             </button>
             <button 
               @click.prevent="openInclusionModal('service')" 
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
               <img alt="Service Icon" class="mr-2 w-[20px] h-[20px]" src="/img/additionals.png">
-              Additionals
+              Other Inclusions
             </button>
           </div>
 
@@ -322,18 +306,18 @@
                   <tr>
                     <th class="px-2 py-1">Name</th>
                     <th class="px-2 py-1">Location</th>
-                    <th class="px-2 py-1">Price</th>
+                    <th class="px-2 py-1">Rate</th>
                     <th class ="px-1 py-1">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0">
+                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0" class="bg-yellow-100">
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].venue_name }}</td>
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].location }}</td>
-                    <td class="px-2 py-1">{{ formatPrice(selectedEvent.venues[0].venue_price) }} php</td>
+                    <td class="px-2 py-1">{{ formatPrice(selectedEvent.venues[0].venue_price) }}</td>
                     <td class="px-2 py-1">
                       <div class="flex justify-start items-center space-x-2">
-                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <div @click="removeInclusion('venues', 0)" class="inline-block cursor-pointer">
                     <img 
                       alt="Delete Icon" 
                       class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
@@ -350,51 +334,52 @@
 
           <!-- Suppliers Table -->
           <div>
-          <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">Suppliers</h3>
-          <table class="table-auto w-full text-left text-sm">
-            <thead class="bg-gray-200">
-              <tr>
-                <th class="px-2 py-1">Name</th>
-                <th class="px-2 py-1">Service</th>
-                <th class="px-2 py-1">Price</th>
-                <th class="px-2 py-1">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index">
-                <td class="px-2 py-1 bg-#FFEB3B">{{ supplier.supplier_firstname }} {{ supplier.supplier_lastname }}</td>
-                <td class="px-2 py-1">{{ supplier.service }}</td>
-                <td class="px-2 py-1">{{ formatPrice(supplier.price) }}</td>
-                <td class="px-2 py-1">
-                   <div class = "flex justify-start items-center space-x-2">
-                    <div class="inline-block cursor-pointer">
-                    <img 
-                      alt="Approve Icon" 
-                      class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
-                      src="/img/mark.png" 
-                    >
-                  </div>
-                  <button type = "button" @click="editInclusion(index)" class="inline-block cursor-pointer">
-                              <img 
-                                alt="Edit Icon" 
-                                class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
-                                src="/img/edit.png" 
-                              >
+            <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">Suppliers</h3>
+            <table class="table-auto w-full text-left text-sm">
+              <thead class="bg-gray-200">
+                <tr>
+                  <th class="px-2 py-1">Name</th>
+                  <th class="px-2 py-1">Service</th>
+                  <th class="px-2 py-1">Rate</th>
+                  <th class="px-2 py-1">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="bg-yellow-100">
+                  <td class="px-2 py-1">
+                    {{ supplier.name || supplier.supplier_name || (supplier.supplier_firstname && supplier.supplier_lastname ? supplier.supplier_firstname + ' ' + supplier.supplier_lastname : 'Unknown Supplier') }}
+                  </td>
+                  <td class="px-2 py-1">{{ supplier.service_type || supplier.service }}</td>
+                  <td class="px-2 py-1">{{ formatPrice(supplier.price) }}</td>
+                  <td class="px-2 py-1">
+                    <div class="flex justify-start items-center space-x-2">
+                      <div class="inline-block cursor-pointer">
+                        <img 
+                          alt="Approve Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/mark.png" 
+                        >
+                      </div>
+                      <button type="button" @click="editInclusion(index)" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Edit Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/edit.png" 
+                        >
                       </button>
-                 
-                  <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
-                  <img 
-                    alt="Delete Icon" 
-                    class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
-                    src="/img/delete.png" 
-                  >
-                </div>
-                 </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                      <div @click="removeInclusion('suppliers', index)" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Delete Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/delete.png" 
+                        >
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
 
           <!-- Outfit Package Table -->
@@ -405,17 +390,17 @@
                 <thead class="bg-gray-200">
                   <tr>
                     <th class="px-2 py-1">Outfit Name</th>
-                    <th class="px-2 py-1">Price</th>
+                    <th class="px-2 py-1">Rate</th>
                     <th class="px-2 py-1">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr class = "bg-yellow-100">
                     <td class="px-2 py-1">{{ selectedEvent?.gown_package_name || 'N/A' }}</td>
                     <td class="px-2 py-1">{{ formatPrice(selectedEvent?.gown_package_price || 0) }}</td>
                     <td class="px-2 py-1">
                     <div class = "flex justify-start items-center space-x-2">
-                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <div @click="removeInclusion('outfits', 0)" class="inline-block cursor-pointer">
                     <img 
                       alt="Delete Icon" 
                       class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
@@ -439,18 +424,18 @@
                 <tr>
                   <th class="px-2 py-1">Inclusion Name</th>
                   <th class="px-2 py-1">Description</th>
-                  <th class="px-2 py-1">Price</th>
+                  <th class="px-2 py-1">Rate</th>
                   <th class="px-2 py-1">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(service, index) in selectedEvent.services" :key="index">
+                <tr v-for="(service, index) in selectedEvent.services" :key="index" class = "bg-yellow-100">
                   <td class="px-2 py-1">{{ service.add_service_name }}</td>
                   <td class="px-2 py-1">{{ service.add_service_description }}</td>
                   <td class="px-2 py-1">{{ formatPrice(service.price) }}</td>
                   <td class="px-2 py-1">
                     <div class = "flex justify-start items-center space-x-2">
-                    <div @click="removeInclusion(index)" class="inline-block cursor-pointer">
+                    <div @click="removeInclusion('services', index)" class="inline-block cursor-pointer">
                     <img 
                       alt="Delete Icon" 
                       class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
@@ -490,18 +475,18 @@
                       </div>
 
                       <div class="space-y-4">
-                          <div class="bg-gray-50 p-3 rounded">
+                          <div class="bg-gray-50 p-3 rounded text-start">
                               <label class="block text-sm font-medium text-gray-700 mb-1">Current Event Pax</label>
                               <p class="text-lg font-semibold">{{ selectedEvent.capacity }} persons</p>
                           </div>
 
-                          <div class="bg-gray-50 p-3 rounded">
+                          <div class="bg-gray-50 p-3 rounded text-start">
                               <label class="block text-sm font-medium text-gray-700 mb-1">Additional Charge Rate</label>
                               <p class="text-lg font-semibold">{{ formatPrice(selectedEvent.additional_capacity_charges) }} per {{ selectedEvent.charge_unit }} person(s)</p>
                           </div>
 
                           <div>
-                              <label class="block text-sm font-medium text-gray-700 mb-2">Additional Pax</label>
+                              <label class="block text-sm font-medium text-gray-700 mb-2 text-start">Additional Pax</label>
                               <div class="flex items-center space-x-2">
                                   <input 
                                       type="number" 
@@ -958,6 +943,216 @@
 
 
 
+ <!-- Add these modals to your template section, right before the closing </template> tag -->
+
+<!-- Inclusion Modal for Selecting Supplier Type -->
+<div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Supplier Type</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 gap-2">
+      <button type="button" v-for="serviceType in supplierTypes" :key="serviceType" @click="selectSupplierType(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
+        {{ serviceType }}
+      </button>
+      <button type="button" @click="showExternalSupplierModal = true" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add External Supplier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Specific Supplier -->
+<div v-if="showSupplierModal" @click.self="closeSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Supplier</h2>
+      <button type="button" @click="closeSupplierModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
+      <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select {{ selectedSupplierType }}</option>
+        <option v-for="supplier in filteredSuppliers(selectedSupplierType)" :key="supplier.supplier_id" :value="supplier">
+          {{ displaySupplierName(supplier) }} - {{ formatPrice(supplier.price) }} php
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- External Supplier Modal -->
+<div v-if="showExternalSupplierModal" @click.self="closeExternalSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Add External Supplier</h2>
+      <button type="button" @click="closeExternalSupplierModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Service Type</label>
+        <select v-model="selectedExternalSupplierType" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+          <option value="">Select Service Type</option>
+          <option v-for="type in supplierTypes" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Supplier Name</label>
+        <input type="text" v-model="externalSupplierData.name" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter supplier name">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Contact</label>
+        <input type="text" v-model="externalSupplierData.contact" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter contact details">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Price</label>
+        <input type="number" v-model="externalSupplierData.price" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter price">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Remarks</label>
+        <textarea v-model="externalSupplierData.remarks" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" rows="3" placeholder="Enter remarks"></textarea>
+      </div>
+    </div>
+    <div class="flex justify-end mt-4 space-x-2">
+      <button type="button" @click="closeExternalSupplierModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+      <button type="button" @click="addExternalSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add External Supplier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Venue -->
+<div v-if="showInclusionModal && selectedInclusionType === 'venue'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Venue</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
+      <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Venue</option>
+        <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
+          {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }} php
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedVenue" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Outfit -->
+<div v-if="showInclusionModal && selectedInclusionType === 'outfit'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Outfit</h2>
+      <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Toggle between package and individual -->
+    <div class="mb-4">
+      <div class="flex space-x-4">
+        <div 
+          @click.prevent="outfitSelectionMode = 'package'"
+          :class="['px-4 py-2 rounded-md cursor-pointer', outfitSelectionMode === 'package' ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+        >
+          Outfit Package
+        </div>
+        <div 
+          @click.prevent="outfitSelectionMode = 'individual'"
+          :class="['px-4 py-2 rounded-md cursor-pointer', outfitSelectionMode === 'individual' ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+        >
+          Individual Outfit
+        </div>
+      </div>
+    </div>
+
+    <!-- Package Selection -->
+    <div v-if="outfitSelectionMode === 'package'">
+      <label class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
+      <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Outfit Package</option>
+        <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
+          {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Individual Outfit Selection -->
+    <div v-if="outfitSelectionMode === 'individual'">
+      <label class="block text-sm font-medium text-gray-700">Select Individual Outfit</label>
+      <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Individual Outfit</option>
+        <option v-for="outfit in outfits" :key="outfit.outfit_id" :value="outfit">
+          {{ outfit.outfit_name }} - {{ outfit.outfit_type }} (Size: {{ outfit.size }}) - {{ formatPrice(outfit.rent_price) }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex justify-center mt-4">
+      <button 
+        type="button" 
+        @click="outfitSelectionMode === 'package' ? addSelectedOutfitPackage() : addSelectedIndividualOutfit()" 
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+      >
+        Add
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Additional Service -->
+<div v-if="showInclusionModal && selectedInclusionType === 'service'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Additional Service</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
+      <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Additional Service</option>
+        <option v-for="service in filteredAdditionalServices()" :key="service.add_service_id" :value="service">
+          {{ service.add_service_name }} - ₱{{ formatPrice(service.add_service_price) }}
+        </option>
+
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+
+
 
   </template>
  
@@ -981,21 +1176,6 @@
       currentFinishedPage: 1,
       rowsPerFinishedPage: 5,
       selectedIndex: null,
-      selectedEvent: null,
-      event: null,
-      upcomingEventDetailsModal: false,
-      enableEditDetails: false,
-      editVendorDetails: false,
-      editServiceDetails: false,
-      additionalCapacity: 0,
-
-      bookedEvents: [],
-      wishlist: [],
-      inclusions: [],
-      additionalServices: [],
-
-      showEventModal: false,
-      showWishlistModal: false,
       selectedEvent: {
         event_name: '',
         event_theme: '',
@@ -1009,6 +1189,12 @@
         venues: [],
         inclusions: [],
       },
+      event: null,
+      upcomingEventDetailsModal: false,
+      enableEditDetails: false,
+      editVendorDetails: false,
+      editServiceDetails: false,
+      additionalCapacity: 0,
       showCapacityModal: false,
       capacityList: [
         { capacity: '50-100', charges: 1000, unit: 'per head' },
@@ -1021,6 +1207,13 @@
         unit: 'per head'
       },
 
+      bookedEvents: [],
+      wishlist: [],
+      inclusions: [],
+      additionalServices: [],
+
+      showEventModal: false,
+      showWishlistModal: false,
       showInclusionModal: false,
       showSupplierModal: false,
       showVenueModal: false,
@@ -1032,6 +1225,18 @@
       selectedVenue: null,
       selectedOutfit: null,
       selectedService: null,
+      outfitSelectionMode: 'package', // 'package' or 'individual'
+      externalSupplierData: {
+        name: '',
+        contact: '',
+        price: 0,
+        remarks: ''
+      },
+      selectedExternalSupplierType: '',
+      availableSuppliers: [],
+      venues: [],
+      gownPackages: [],
+      outfits: [],
       supplierTypes: [
         'Catering',
         'Photographer',
@@ -1045,6 +1250,32 @@
         'Hair Stylist',
         'Makeup Artist',
       ],
+
+
+      showInclusionModal: false,
+      selectedInclusionType: null,
+      showSupplierModal: false,
+      showExternalSupplierModal: false,
+      selectedSupplierType: '',
+      outfitSelectionMode: 'package',
+      supplierTypes: ['Catering',
+        'Photographer',
+        'Videographer',
+        'Entertainment',
+        'Sound and Lighting',
+        'Transportation',
+        'Host',
+        'Invitations',
+        'Favors and Gifts',
+        'Hair Stylist',
+        'Makeup Artist',],
+      externalSupplierData: {
+        name: '',
+        contact: '',
+        price: 0,
+        remarks: ''
+      },
+      selectedExternalSupplierType: '',
   
 
      //Dummy rani!!
@@ -1184,17 +1415,6 @@
         this.selectedEvent.lastname = rest.join(' ') || '';
       }
     },
-    filteredSuppliers() {
-      return this.suppliers.filter(supplier => 
-        supplier.service === this.selectedSupplierType
-      );
-    },
-    
-    filteredAdditionalServices() {
-      return this.additionalServices.filter(service => 
-        !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id)
-      );
-    },
     allInclusions() {
         const inclusions = [];
         const uniqueItems = new Map();
@@ -1202,10 +1422,11 @@
         // Add suppliers
         if (this.selectedEvent && Array.isArray(this.selectedEvent.suppliers)) {
           this.selectedEvent.suppliers.forEach(supplier => {
-            const key = `${supplier.id}_${supplier.service}`;
+            const serviceType = supplier.service_type || supplier.service;
+            const key = `${supplier.supplier_id}_${serviceType}`;
             if (!uniqueItems.has(key)) {
               uniqueItems.set(key, {
-                name: `${supplier.name} (${supplier.service})`,
+                name: `${this.displaySupplierName(supplier)} (${serviceType})`,
                 type: 'Supplier',
                 price: supplier.price
               });
@@ -1245,14 +1466,92 @@
     },
     totalCapacity() {
     return Number(this.selectedEvent.capacity || 0) + Number(this.additionalCapacity || 0);
-  }
-},
-
+  },
+  },
 
   methods: {
+    formatPrice(price) {
+      const numPrice = Number(price) || 0;
+      return numPrice.toLocaleString('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    },
     updateAdditionalCapacity(value) {
       this.additionalCapacity = parseInt(value) || 0;
     },
+    
+    filteredSuppliers(serviceType) {
+      if (!this.availableSuppliers || !serviceType) {
+        console.log('Cannot filter suppliers: missing availableSuppliers or serviceType');
+        return [];
+      }
+      
+      console.log('Filtering suppliers for service type:', serviceType);
+      console.log('Available suppliers count:', this.availableSuppliers.length);
+      
+      // Log a few suppliers for debugging
+      if (this.availableSuppliers.length > 0) {
+        console.log('Sample supplier data:', this.availableSuppliers[0]);
+      }
+      
+      const filtered = this.availableSuppliers.filter(supplier => {
+        const matchesServiceType = 
+          (supplier.service_type && supplier.service_type.toLowerCase() === serviceType.toLowerCase()) || 
+          (supplier.supplier_type && supplier.supplier_type.toLowerCase() === serviceType.toLowerCase()) ||
+          (supplier.service && supplier.service.toLowerCase() === serviceType.toLowerCase());
+        
+        if (matchesServiceType) {
+          console.log('Matched supplier:', supplier);
+        }
+        
+        return matchesServiceType;
+      });
+      
+      console.log('Filtered suppliers count:', filtered.length);
+      return filtered;
+    },
+    
+    filteredAdditionalServices() {
+      if (!this.additionalServices) return [];
+      return this.additionalServices.filter(service => 
+        !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id)
+      );
+    },
+    
+    async fetchAdditionalServices() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
+
+        const response = await axios.get('http://127.0.0.1:5000/additional-services', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        this.additionalServices = response.data.map(service => ({
+          add_service_id: service.service_id,
+          add_service_name: service.service_name,
+          add_service_type: service.service_type,
+          add_service_description: service.description,
+          add_service_price: parseFloat(service.price) || 0,
+          add_service_status: service.status
+        }));
+        
+        console.log('Processed additional services:', this.additionalServices);
+      } catch (error) {
+        console.error('Error fetching additional services:', error);
+        this.additionalServices = []; // Reset on error
+      }
+    },
+
     async fetchBookedWishlist() {
       try {
         const token = localStorage.getItem('access_token');
@@ -1268,15 +1567,15 @@
           },
           credentials: 'include'
         });
-        
+
         const data = await response.json();
         console.log('Raw response:', data);
-        
+
         this.wishlist = data.map(event => {
           // Get venue data directly from the event object
           const venue_name = event.venue_name || null;
           console.log('Event:', event.event_name, 'Venue:', venue_name);
-          
+
           return {
             ...event,
             venue_name: venue_name
@@ -1287,21 +1586,130 @@
         this.wishlist = [];
       }
     },
-            async fetchAdditionalServices() {
-        try {
-          const token = localStorage.getItem('access_token');
-          const response = await axios.get('http://127.0.0.1:5000/additional-services', {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          this.additionalServices = response.data.additional_services;
-        } catch (error) {
-          console.error('Error fetching additional services:', error);
+
+    async fetchAvailableSuppliers() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
         }
-      },
+        
+        console.log('Fetching available suppliers...');
+        const response = await axios.get('http://127.0.0.1:5000/available-suppliers', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('Raw supplier data:', response.data);
+        
+        if (!response.data || !Array.isArray(response.data)) {
+          console.error('Invalid supplier data format:', response.data);
+          return;
+        }
+        
+        this.availableSuppliers = response.data.map(supplier => ({
+          ...supplier,
+          supplier_name: supplier.supplier_name || `${supplier.firstname || ''} ${supplier.lastname || ''}`.trim(),
+          service_type: supplier.service_type || supplier.supplier_type
+        }));
+        
+        console.log('Processed suppliers:', this.availableSuppliers);
+        
+        // Log a few suppliers for debugging
+        if (this.availableSuppliers.length > 0) {
+          console.log('Sample supplier:', this.availableSuppliers[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching available suppliers:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+        }
+      }
+    },
 
+    async fetchAvailableVenues() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
+        
+        const response = await axios.get('http://127.0.0.1:5000/available-venues', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('Raw venue data:', response.data);
+        this.venues = response.data;
+        console.log('Processed venues:', this.venues);
+      } catch (error) {
+        console.error('Error fetching available venues:', error);
+        this.venues = []; // Reset on error
+      }
+    },
 
+    async fetchAvailableGownPackages() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
+        
+        const response = await axios.get('http://127.0.0.1:5000/available-gown-packages', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('Raw outfit data:', response.data);
+        this.gownPackages = response.data;
+        console.log('Processed outfits:', this.gownPackages);
+      } catch (error) {
+        console.error('Error fetching available gown packages:', error);
+        this.gownPackages = []; // Reset on error
+      }
+    },
+
+    async fetchOutfits() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
+
+        const response = await axios.get('http://127.0.0.1:5000/outfits', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        this.outfits = response.data.map(outfit => ({
+          outfit_id: outfit.outfit_id,
+          outfit_name: outfit.outfit_name,
+          outfit_type: outfit.outfit_type,
+          outfit_color: outfit.outfit_color,
+          outfit_desc: outfit.outfit_desc,
+          rent_price: parseFloat(outfit.rent_price) || 0,
+          status: outfit.status,
+          size: outfit.size
+        }));
+        
+        console.log('Processed outfits:', this.outfits);
+      } catch (error) {
+        console.error('Error fetching outfits:', error);
+        this.outfits = []; // Reset on error
+      }
+    },
 
     prevPage() {
       if (this.currentPage > 1) {
@@ -1424,18 +1832,58 @@
     },
 
   addSelectedSupplier() {
-    if (this.selectedSupplier) {
-      const existingSupplier = this.selectedEvent.suppliers.find(
-        s => s.supplier_id === this.selectedSupplier.supplier_id
+    if (this.selectedSupplier && this.selectedSupplierType) {
+      console.log('Adding supplier:', this.selectedSupplier, 'for service type:', this.selectedSupplierType);
+      console.log('Supplier name:', this.selectedSupplier.supplier_name);
+      console.log('Supplier firstname:', this.selectedSupplier.firstname);
+      console.log('Supplier lastname:', this.selectedSupplier.lastname);
+      
+      // Make sure suppliers array exists
+      if (!this.selectedEvent.suppliers) {
+        this.selectedEvent.suppliers = [];
+      }
+      
+      // Check if there's already a supplier with the same service type
+      const existingSupplierIndex = this.selectedEvent.suppliers.findIndex(
+        s => s.service_type === this.selectedSupplierType || s.service === this.selectedSupplierType
       );
       
-      if (!existingSupplier) {
-        this.selectedEvent.suppliers.push({
-          ...this.selectedSupplier,
-          price: this.selectedSupplier.price || 0
-        });
+      // If found, replace it
+      if (existingSupplierIndex >= 0) {
+        this.selectedEvent.suppliers.splice(existingSupplierIndex, 1);
       }
+      
+      // Add the new supplier
+      let supplierName = 'Unknown Supplier';
+      
+      if (this.selectedSupplier.supplier_name) {
+        supplierName = this.selectedSupplier.supplier_name;
+      } else if (this.selectedSupplier.firstname || this.selectedSupplier.lastname) {
+        supplierName = `${this.selectedSupplier.firstname || ''} ${this.selectedSupplier.lastname || ''}`.trim();
+      }
+      
+      console.log('Selected supplier object:', this.selectedSupplier);
+      console.log('Computed supplier name:', supplierName);
+      
+      this.selectedEvent.suppliers.push({
+        supplier_id: this.selectedSupplier.supplier_id,
+        name: supplierName,
+        supplier_name: supplierName,
+        firstname: this.selectedSupplier.firstname || '',
+        lastname: this.selectedSupplier.lastname || '',
+        service_type: this.selectedSupplierType,
+        service: this.selectedSupplierType, // Add service field for compatibility
+        price: parseFloat(this.selectedSupplier.price || 0),
+        type: 'internal'
+      });
+      
+      console.log('Updated suppliers list:', this.selectedEvent.suppliers);
+      
+      this.selectedSupplier = null;
+      this.selectedSupplierType = null;
       this.closeSupplierModal();
+    } else {
+      console.warn('Cannot add supplier: missing supplier or supplier type');
     }
   },
 
@@ -1473,8 +1921,10 @@
       
       if (!existingService) {
         this.selectedEvent.services.push({
-          ...this.selectedService,
-          price: this.selectedService.price || 0
+          add_service_id: this.selectedService.add_service_id,
+          add_service_name: this.selectedService.add_service_name,
+          add_service_description: this.selectedService.add_service_description,
+          price: parseFloat(this.selectedService.add_service_price) || 0
         });
       }
       this.closeServiceModal();
@@ -1497,133 +1947,133 @@
     this.selectedEvent.outfit = null;
   },
 
-  openInclusionModal(type) {
-    this.selectedInclusionType = type;
-    this.showInclusionModal = true;
-    if (type === 'venue') {
-      this.showVenueModal = true;
-    } else if (type === 'outfit') {
-      this.showOutfitModal = true;
-    } else if (type === 'service') {
-      this.showServiceModal = true;
-    }
+  openCapacityModal() {
+    this.showCapacityModal = true;
   },
 
-  closeInclusionModal() {
-    this.showInclusionModal = false;
-    this.selectedInclusionType = '';
-  },
-
-  closeSupplierModal() {
-    this.showSupplierModal = false;
-    this.selectedSupplier = null;
-  },
-
-  closeVenueModal() {
-    this.showVenueModal = false;
-    this.selectedVenue = null;
-  },
-
-  closeOutfitModal() {
-    this.showOutfitModal = false;
-    this.selectedOutfit = null;
-  },
-
-  closeServiceModal() {
-    this.showServiceModal = false;
-    this.selectedService = null;
-  },
-
-  selectSupplierType(type) {
-    this.selectedSupplierType = type;
-    this.showInclusionModal = false;
-    this.showSupplierModal = true;
-  },
-    getPackagePrice(packageName) {
-        const Package = this.packageDeal.find(pkg => pkg.packageName === packageName);
-        return Package ? Package.price : 'Price not available';
-    },
-    formatPrice(price) {
-      const numPrice = Number(price) || 0;
-      return numPrice.toLocaleString('en-PH', {
-        style: 'currency',
-        currency: 'PHP',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    },
-
-  openWishlistModal(event) {
-    this.selectedEvent = {
-      ...this.selectedEvent, // Keep default values for undefined fields
-      ...event,
-      suppliers: event.suppliers || [], // Initialize suppliers array
-      gown_package_name: event.gown_package_name || 'N/A',
-      gown_package_price: event.gown_package_price || 0,
-      firstname: event.firstname || '',
-      lastname: event.lastname || '',
-      contactnumber: event.contactnumber || ''
+  closeCapacityModal() {
+    this.showCapacityModal = false;
+    this.newCapacity = {
+      capacity: '',
+      charges: 0,
+      unit: 'per head'
     };
-    this.showWishlistModal = true;
   },
-  addInclusion(type) {
-      // Add a new inclusion based on the type
-      const name = prompt('Enter inclusion name:');
-      const price = parseFloat(prompt('Enter price:')) || 0;
-      if (name) {
-        const category = this.inclusions.find((cat) => cat.type === type);
-        category.items.push({ name, price });
+
+  addCapacity() {
+    if (!this.newCapacity.capacity) {
+      alert('Please enter capacity range.');
+      return;
+    }
+      
+    if (!this.newCapacity.charges) {
+      alert('Please enter charges.');
+      return;
+    }
+      
+    this.capacityList.push({
+      capacity: this.newCapacity.capacity,
+      charges: parseFloat(this.newCapacity.charges),
+      unit: this.newCapacity.unit
+    });
+      
+    this.closeCapacityModal();
+  },
+
+  removeCapacity(index) {
+    this.capacityList.splice(index, 1);
+  },
+  directToOnsiteBooking(){
+      this.$router.push('/add-wishlist');
+    },
+  addSelectedIndividualOutfit() {
+      if (this.selectedOutfit) {
+        // Check if outfit already exists
+        const hasExistingOutfit = this.selectedEvent.outfits.some(outfit => 
+          outfit.outfit_id === this.selectedOutfit.outfit_id
+        );
+
+        if (hasExistingOutfit) {
+          alert('This outfit is already added.');
+        } else {
+          this.selectedEvent.outfits.push({
+            type: 'individual',
+            outfit_id: this.selectedOutfit.outfit_id,
+            outfit_name: this.selectedOutfit.outfit_name,
+            outfit_type: this.selectedOutfit.outfit_type,
+            size: this.selectedOutfit.size,
+            rent_price: this.selectedOutfit.rent_price
+          });
+          this.closeOutfitModal();
+        }
+      } else {
+        alert('Please select an outfit.');
       }
     },
-    editInclusion(type, index) {
-        // Convert type to lowercase and match with the correct array
-        const inclusionTypes = {
-          'suppliers': 'suppliers',
-          'venues': 'venues',
-          'outfits': 'outfits',
-          'additional services': 'services'
-        };
 
-        const arrayType = inclusionTypes[type.toLowerCase()];
-        if (arrayType) {
-          // Open a modal or perform edit logic
-          // For example:
-          this.editingInclusion = this.selectedEvent[arrayType][index];
-          this.showInclusionModal = true;
+    addSelectedOutfitPackage() {
+      if (this.selectedOutfit) {
+        // Check if outfit package already exists
+        const hasExistingPackage = this.selectedEvent.outfits.some(outfit => 
+          outfit.gown_package_id === this.selectedOutfit.gown_package_id
+        );
+
+        if (hasExistingPackage) {
+          alert('This outfit package is already added.');
+        } else {
+          this.selectedEvent.outfits.push({
+            type: 'package',
+            gown_package_id: this.selectedOutfit.gown_package_id,
+            gown_package_name: this.selectedOutfit.gown_package_name,
+            gown_package_price: this.selectedOutfit.gown_package_price
+          });
+          this.closeOutfitModal();
         }
-      },
-      removeInclusion(type, index) {
-        const inclusionTypes = {
-          'suppliers': 'suppliers',
-          'venues': 'venues',
-          'outfits': 'outfits',
-          'additional services': 'services'
-        };
+      } else {
+        alert('Please select an outfit package.');
+      }
+    },
 
-        const arrayType = inclusionTypes[type.toLowerCase()];
-        if (arrayType) {
-          // Remove the inclusion from the specific array
-          this.selectedEvent[arrayType].splice(index, 1);
-        }
-      },
+    addExternalSupplier() {
+      if (!this.selectedExternalSupplierType) {
+        alert('Please select a service type.');
+        return;
+      }
+      
+      if (!this.externalSupplierData.name) {
+        alert('Please enter supplier name.');
+        return;
+      }
+      
+      this.selectedEvent.suppliers.push({
+        type: 'external',
+        service: this.selectedExternalSupplierType,
+        external_supplier_name: this.externalSupplierData.name,
+        external_supplier_contact: this.externalSupplierData.contact,
+        price: parseFloat(this.externalSupplierData.price) || 0,
+        remarks: this.externalSupplierData.remarks
+      });
+      
+      this.closeExternalSupplierModal();
+    },
 
-    saveChanges() {
-      // Save changes logic
-      alert('Changes saved!');
+    closeExternalSupplierModal() {
+      this.showExternalSupplierModal = false;
+      this.externalSupplierData = {
+        name: '',
+        contact: '',
+        price: 0,
+        remarks: ''
+      };
+      this.selectedExternalSupplierType = '';
     },
-    closeWishlistModal() {
-      // Close modal logic
-      this.showWishlistModal = false;
-    },
-    viewEvent(event) {
-      // Deep clone the event to prevent direct mutation
-      this.selectedEvent = JSON.parse(JSON.stringify(event)); 
-      this.upcomingEventDetailsModal = true; 
-    },
+
     openInclusionModal(type) {
       this.selectedInclusionType = type;
       this.showInclusionModal = true;
-      if (type === 'venue') {
+      if (type === 'supplier') {
+        this.showSupplierModal = true;
+      } else if (type === 'venue') {
         this.showVenueModal = true;
       } else if (type === 'outfit') {
         this.showOutfitModal = true;
@@ -1631,69 +2081,115 @@
         this.showServiceModal = true;
       }
     },
+
     closeInclusionModal() {
       this.showInclusionModal = false;
       this.selectedInclusionType = '';
     },
-    closeSupplierModal() {
-      this.showSupplierModal = false;
-      this.selectedSupplier = '';
+    openWishlistModal(event) {
+      this.selectedEvent = {
+        ...this.selectedEvent, // Keep default values for undefined fields
+        ...event,
+        suppliers: event.suppliers || [], // Initialize suppliers array
+        services: event.services || [], // Initialize services array
+        outfits: event.outfits || [], // Initialize outfits array
+        venues: event.venues || [], // Initialize venues array
+        inclusions: event.inclusions || [], // Initialize inclusions array
+        gown_package_name: event.gown_package_name || 'N/A',
+        gown_package_price: event.gown_package_price || 0,
+        firstname: event.firstname || '',
+        lastname: event.lastname || '',
+        contactnumber: event.contactnumber || ''
+      };
+      console.log('Selected event for editing:', this.selectedEvent);
+      
+      // Check the structure of suppliers in the selected event
+      if (this.selectedEvent.suppliers && this.selectedEvent.suppliers.length > 0) {
+        console.log('Suppliers in selected event:', this.selectedEvent.suppliers);
+        this.selectedEvent.suppliers.forEach((supplier, index) => {
+          console.log(`Supplier ${index}:`, supplier);
+        });
+      } else {
+        console.log('No suppliers in selected event');
+      }
+      
+      this.showWishlistModal = true;
     },
-    closeVenueModal() {
-      this.showVenueModal = false;
-      this.selectedVenue = '';
+
+    closeWishlistModal() {
+      this.showWishlistModal = false;
     },
-    closeOutfitModal() {
-      this.showOutfitModal = false;
-      this.selectedOutfit = '';
+    removeInclusion(type, index) {
+      const inclusionTypes = {
+        'suppliers': 'suppliers',
+        'venues': 'venues',
+        'outfits': 'outfits',
+        'additional services': 'services'
+      };
+
+      const arrayType = inclusionTypes[type.toLowerCase()];
+      if (arrayType) {
+        // Remove the inclusion from the specific array
+        this.selectedEvent[arrayType].splice(index, 1);
+      }
     },
-    closeServiceModal() {
-      this.showServiceModal = false;
-      this.selectedService = '';
+    editInclusion(index) {
+      // This is a placeholder for editing inclusions
+      // You would typically open a modal with the inclusion details for editing
+      alert('Edit functionality will be implemented in a future update.');
     },
-    selectSupplierType(type) {
-      this.selectedSupplierType = type;
+    selectSupplierType(serviceType) {
+      this.selectedSupplierType = serviceType;
       this.showInclusionModal = false;
       this.showSupplierModal = true;
     },
-    addSelectedSupplier() {
-      if (this.selectedSupplier) {
-        // Add supplier logic here
-        this.closeSupplierModal();
-      }
-    },
-    addSelectedVenue() {
-      if (this.selectedVenue) {
-        // Add venue logic here
-        this.closeVenueModal();
-      }
-    },
-    addSelectedOutfit() {
-      if (this.selectedOutfit) {
-        // Add outfit logic here
-        this.closeOutfitModal();
-      }
-    },
-    addSelectedService() {
-      if (this.selectedService) {
-        // Add service logic here
-        this.closeServiceModal();
-      }
-    },
 
-    directToOnsiteBooking(){
-      this.$router.push('/add-wishlist');
-    }
-  
-
+      closeSupplierModal() {
+        this.showSupplierModal = false;
+      },
+    displaySupplierName(supplier) {
+      console.log('Displaying supplier:', JSON.stringify(supplier));
+      if (!supplier) {
+        console.log('Supplier is null or undefined');
+        return 'Unknown';
+      }
+      
+      if (supplier.name) {
+        console.log('Using supplier.name:', supplier.name);
+        return supplier.name;
+      }
+      
+      if (supplier.supplier_name) {
+        console.log('Using supplier.supplier_name:', supplier.supplier_name);
+        return supplier.supplier_name;
+      }
+      
+      const firstName = supplier.firstname || '';
+      const lastName = supplier.lastname || '';
+      console.log('First name:', firstName, 'Last name:', lastName);
+      
+      if (firstName || lastName) {
+        const fullName = `${firstName} ${lastName}`.trim();
+        console.log('Using firstname/lastname:', fullName);
+        return fullName;
+      }
+      
+      console.log('No name found in supplier object');
+      return 'Unknown Supplier';
+    },
+    goToInvoice() {
+      this.$router.push({ name: 'Invoice' });
+    },
   },
 
-    mounted() {
-        this.fetchBookedWishlist();
-        console.log(this.paginatedWishlist);
-        this.fetchAdditionalServices(); 
-         
-    },
+  mounted() {
+      this.fetchBookedWishlist();
+      this.fetchAdditionalServices();
+      this.fetchAvailableSuppliers();
+      this.fetchAvailableVenues();
+      this.fetchAvailableGownPackages();
+      this.fetchOutfits();
+  },
 
 
   

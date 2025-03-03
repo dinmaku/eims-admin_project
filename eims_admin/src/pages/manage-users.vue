@@ -42,20 +42,20 @@
   <div class = "flex">
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-gray-800 text-white ': showTable === 'Suppliers', 'bg-white text-teal-800': showTable !== 'Suppliers' } 
+    { 'bg-gray-800 text-white ': showTable === 'Suppliers', 'bg-white': showTable !== 'Suppliers' } 
   ]" @click="showTable = 'Suppliers'">
     Suppliers
   </button>
   
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-gray-800 text-white': showTable === 'Staffs', 'bg-white text-teal-800': showTable !== 'Staffs' } 
+    { 'bg-gray-800 text-white': showTable === 'Staffs', 'bg-white': showTable !== 'Staffs' } 
   ]" @click="showTable = 'Staffs'">
     Staff
   </button>
   <button :class="[ 
     'flex justify-center items-center w-28 h-10 m-2 font-raleway font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105', 
-    { 'bg-gray-800 text-white': showTable === 'Admin', 'bg-white text-teal-800': showTable !== 'Admin' } 
+    { 'bg-gray-800 text-white': showTable === 'Admin', 'bg-white': showTable !== 'Admin' } 
   ]" @click="showTable = 'Admin'">
     Admin
   </button>

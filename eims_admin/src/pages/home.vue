@@ -24,17 +24,15 @@
     </div>
       <div class = "flex flex-col space-y-2">
       <router-link to = "/manage-events">
-    <div class="border border-gray-300 w-80 h-32 rounded-lg bg-blue-100 flex flex-col justify-start items-start pt-2 pl-4 shadow-lg">
-      <img class="w-[48px] h-[48px] mb-0" src="/img/events-booked-w.png">
-      <h2 class="font-quicksand text-3xl font-bold">7</h2>
-      <p class="font-quicksand text-sm text-gray-500 font-bold">No. Wishlist </p>
+    <div class="border border-gray-300 w-80 h-32 rounded-lg bg-blue-100 flex justify-start items-center pt-2 pl-4 shadow-lg space-x-2">
+      <h2 class="text-6xl font-bold indent-7">7</h2>
+      <p class="text-sm text-gray-500 font-bold mt-7">Number of Wishlist </p>
     </div>
       </router-link>
       <router-link to = "/manage-users">
-    <div class="border border-gray-300 w-80 h-32 rounded-lg bg-blue-100 flex flex-col justify-start items-start pt-2 pl-4 shadow-md">
-      <img class="w-[48px] h-[48px] mb-0" src="/img/vendor.png">
-      <h2 class="font-quicksand text-3xl font-bold">45</h2>
-      <p class="font-quicksand text-sm text-gray-500 font-bold">No. Suppliers </p>
+    <div class="border border-gray-300 w-80 h-32 rounded-lg bg-blue-100 flex justify-start items-center pt-2 pl-4 shadow-md space-x-2">
+      <h2 class=" text-6xl font-bold indent-7">21</h2>
+      <p class=" text-sm text-gray-500 font-semibold mt-7">Number of Suppliers </p>
     </div>
     </router-link>
   </div>

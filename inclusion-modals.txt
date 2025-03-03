@@ -1,0 +1,239 @@
+<!-- Add these modals to your template section, right before the closing </template> tag -->
+
+<!-- Inclusion Modal for Selecting Supplier Type -->
+<div v-if="showInclusionModal && selectedInclusionType === 'supplier'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Supplier Type</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 gap-2">
+      <button type="button" v-for="serviceType in supplierTypes" :key="serviceType" @click="selectSupplierType(serviceType)" class="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-md transition duration-150">
+        {{ serviceType }}
+      </button>
+      <button type="button" @click="showExternalSupplierModal = true" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add External Supplier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Specific Supplier -->
+<div v-if="showSupplierModal" @click.self="closeSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Supplier</h2>
+      <button type="button" @click="closeSupplierModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="supplier" class="block text-sm font-medium text-gray-700">Select Supplier</label>
+      <select v-model="selectedSupplier" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select {{ selectedSupplierType }}</option>
+        <option v-for="supplier in filteredSuppliers" :key="supplier.supplier_id" :value="supplier">
+          {{ supplier.firstname }} {{ supplier.lastname }} - {{ formatPrice(supplier.price) }} php
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- External Supplier Modal -->
+<div v-if="showExternalSupplierModal" @click.self="closeExternalSupplierModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Add External Supplier</h2>
+      <button type="button" @click="closeExternalSupplierModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Service Type</label>
+        <select v-model="selectedExternalSupplierType" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+          <option value="">Select Service Type</option>
+          <option v-for="type in supplierTypes" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Supplier Name</label>
+        <input type="text" v-model="externalSupplierData.name" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter supplier name">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Contact</label>
+        <input type="text" v-model="externalSupplierData.contact" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter contact details">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Price</label>
+        <input type="number" v-model="externalSupplierData.price" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter price">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Remarks</label>
+        <textarea v-model="externalSupplierData.remarks" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" rows="3" placeholder="Enter remarks"></textarea>
+      </div>
+    </div>
+    <div class="flex justify-end mt-4 space-x-2">
+      <button type="button" @click="closeExternalSupplierModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+      <button type="button" @click="addExternalSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add External Supplier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Venue -->
+<div v-if="showInclusionModal && selectedInclusionType === 'venue'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Venue</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="venue" class="block text-sm font-medium text-gray-700">Select Venue</label>
+      <select v-model="selectedVenue" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Venue</option>
+        <option v-for="venue in venues" :key="venue.venue_id" :value="venue">
+          {{ venue.venue_name }} ({{ venue.location }}) - {{ formatPrice(venue.venue_price) }} php
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedVenue" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Outfit -->
+<div v-if="showInclusionModal && selectedInclusionType === 'outfit'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Outfit</h2>
+      <button @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Toggle between package and individual -->
+    <div class="mb-4">
+      <div class="flex space-x-4">
+        <div 
+          @click.prevent="outfitSelectionMode = 'package'"
+          :class="['px-4 py-2 rounded-md cursor-pointer', outfitSelectionMode === 'package' ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+        >
+          Outfit Package
+        </div>
+        <div 
+          @click.prevent="outfitSelectionMode = 'individual'"
+          :class="['px-4 py-2 rounded-md cursor-pointer', outfitSelectionMode === 'individual' ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+        >
+          Individual Outfit
+        </div>
+      </div>
+    </div>
+
+    <!-- Package Selection -->
+    <div v-if="outfitSelectionMode === 'package'">
+      <label class="block text-sm font-medium text-gray-700">Select Outfit Package</label>
+      <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Outfit Package</option>
+        <option v-for="gownPackage in gownPackages" :key="gownPackage.gown_package_id" :value="gownPackage">
+          {{ gownPackage.gown_package_name }} - {{ formatPrice(gownPackage.gown_package_price) }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Individual Outfit Selection -->
+    <div v-if="outfitSelectionMode === 'individual'">
+      <label class="block text-sm font-medium text-gray-700">Select Individual Outfit</label>
+      <select v-model="selectedOutfit" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Individual Outfit</option>
+        <option v-for="outfit in outfits" :key="outfit.outfit_id" :value="outfit">
+          {{ outfit.outfit_name }} - {{ outfit.outfit_type }} (Size: {{ outfit.size }}) - {{ formatPrice(outfit.rent_price) }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex justify-center mt-4">
+      <button 
+        type="button" 
+        @click="outfitSelectionMode === 'package' ? addSelectedOutfitPackage() : addSelectedIndividualOutfit()" 
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+      >
+        Add
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion Modal for Selecting Additional Service -->
+<div v-if="showInclusionModal && selectedInclusionType === 'service'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Select Additional Service</h2>
+      <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
+      <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <option selected disabled value="">Select Additional Service</option>
+        <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
+          {{ service.add_service_name }} - {{ formatPrice(service.add_service_price) }} php
+        </option>
+      </select>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add these data properties to your data() section -->
+showInclusionModal: false,
+selectedInclusionType: null,
+showSupplierModal: false,
+showExternalSupplierModal: false,
+selectedSupplierType: '',
+outfitSelectionMode: 'package',
+supplierTypes: ['Photographer', 'Videographer', 'Caterer', 'Florist', 'DJ', 'Makeup Artist', 'Decorator', 'Coordinator'],
+externalSupplierData: {
+  name: '',
+  contact: '',
+  price: 0,
+  remarks: ''
+},
+selectedExternalSupplierType: '',
+
+<!-- Add these methods to your methods section -->
+selectSupplierType(serviceType) {
+  this.selectedSupplierType = serviceType;
+  this.showInclusionModal = false;
+  this.showSupplierModal = true;
+  
+  // Filter suppliers based on the selected type
+  this.filteredSuppliers = this.availableSuppliers.filter(supplier => 
+    supplier.service_type === serviceType || 
+    supplier.supplier_type === serviceType
+  );
+},
+
+closeSupplierModal() {
+  this.showSupplierModal = false;
+}

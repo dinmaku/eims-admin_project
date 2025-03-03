@@ -194,34 +194,38 @@
           <h2 class="text-xl font-bold mb-3">{{ selectedPackage.package_name }}</h2>
           <h2 class="text-xl font-bold mb-3">{{ formatPrice(calculatedTotalPrice) }} php</h2>
 
+          <div class = "mb-4">
+            <p class = "text-md font-medium font-poppins text-gray-500">(* Click the buttons to Add items to the list )</p>
+          </div>
+
            <!-- Inclusion Buttons -->
            <div class="grid grid-cols-4 gap-4 mb-4">
             <button type = "button"
               @click.prevent="openInclusionModal('supplier')" 
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
-              Suppliers
+              + Suppliers
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('venue')" 
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
              
-             Venues
+             + Venues
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('outfit')" 
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >
               
-             Outfits
+             + Outfits
             </button>
             <button type = "button"
               @click.prevent="openInclusionModal('service')" 
               class="flex items-center justify-center bg-[#9B111E] text-white px-3 py-2 h-[50px] rounded-md hover:bg-[#B73A45]"
             >  
             
-              Inclusions
+              + Inclusions
             </button>
           </div>
 
@@ -472,7 +476,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Details
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Price
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -482,13 +486,13 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                       <tr v-for="(inclusion, index) in inclusions" :key="index">
-                        <td class="px-6 text-sm py-4 whitespace-nowrap">
+                        <td class="px-6 text-sm py-4 whitespace-nowrap text-start">
                           <span class="capitalize">{{ inclusion.type }}</span>
                           <span v-if="inclusion.type === 'supplier'" class="text-xs text-gray-500">
                             ({{ inclusion.serviceType }})
                           </span>
                         </td>
-                        <td class="px-6 text-sm py-4 whitespace-nowrap">
+                        <td class="px-6 text-sm py-4 whitespace-nowrap text-start">
                           {{ getInclusionName(inclusion) }}
                         </td>
                         <td class="px-6 text-sm py-4 whitespace-nowrap">
@@ -549,12 +553,12 @@
                   @click="showCapacityModal = true"
                   class="mt-2 bg-[#9B111E] hover:bg-[#B73A45] text-white py-2 px-4 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
               >
-                  Add Capacity
+                 + Capacity
               </button>
           </div>
               <!-- Capacity Modal -->
               <div v-if="showCapacityModal" @click.self="showCapacityModal = false" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-                  <div class="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+                  <div class="relative text-left bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
                       <div class="flex justify-between items-center mb-4">
                           <h3 class="text-lg font-semibold">Add Additional Pax</h3>
                           <button type = "button" @click="showCapacityModal = false" class="text-gray-500 hover:text-gray-700">
@@ -570,7 +574,7 @@
 
                           <div>
                               <label class="block text-sm font-medium text-gray-700">Additional Charge per {{ selectedPackage.charge_unit }} pax</label>
-                              <p class="text-sm">{{ formatPrice(selectedPackage.additional_capacity_charges) }}</p>
+                              <p class="text-sm">{{ formatPrice(selectedPackage.additional_capacity_charges) }} php</p>
                           </div>
 
                           <div>
@@ -789,7 +793,7 @@
 
             <div class = "flex justify-center mb-5">
                 <button type = "button" @click="submitWishlist" class="mt-5 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                  Add to Wishlist
+                  Save Wishlist
                 </button>
             </div>
           
@@ -2165,6 +2169,13 @@ addSelectedOutfit() {
         this.selectedOutfit = null;
         this.closeOutfitModal();
     },
+    filteredSuppliers(serviceType) {
+        if (!this.availableSuppliers) return [];
+        return this.availableSuppliers.filter(supplier => 
+          supplier.service_type === serviceType || 
+          supplier.supplier_type === serviceType
+        );
+      },
   },
 
   computed: {
@@ -2183,17 +2194,6 @@ addSelectedOutfit() {
       });
     };
   },
-  filteredSuppliers() {
-        return (serviceType) => {
-            console.log('Filtering suppliers for type:', serviceType);
-            console.log('Available suppliers:', this.availableSuppliers);
-            const filtered = this.availableSuppliers.filter(supplier => 
-                supplier.service === serviceType // Changed to match the service property
-            );
-            console.log('Filtered suppliers:', filtered);
-            return filtered;
-        };
-    },
 
   filteredAdditionalServices() {
     if (!this.additionalServices) return [];
