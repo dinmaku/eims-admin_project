@@ -64,14 +64,14 @@
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                             @click="editGownPackageBtn(index)"
                                             title="Update">
-                                            <img src="/img/update2.png" alt="Update" class="w-5 h-5">
+                                            <img src="/img/update3.png" alt="Update" class="w-5 h-5">
                                         </button>
                                         <button
                                             class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                             @click="openStatusConfirmModal(gownPackage, (gownPackage.status || 'Active') === 'Active' ? 'Inactive' : 'Active')"
                                             :title="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'">
                                             <img 
-                                                :src="(gownPackage.status || 'Active') === 'Active' ? '/img/inactive2.png' : '/img/active2.png'" 
+                                                :src="(gownPackage.status || 'Active') === 'Active' ? '/img/deactivate.png' : '/img/active2.png'" 
                                                 :alt="(gownPackage.status || 'Active') === 'Active' ? 'Set Inactive' : 'Set Active'" 
                                                 class="w-5 h-5">
                                         </button>

@@ -35,7 +35,7 @@
     <button
       :class="[
         'w-[90px] h-[45px] border border-solid rounded-md shadow-md transition-transform transform hover:scale-105',
-        { 'bg-gray-800 text-gray-400 hover:bg-gray-900': showTable !== 'wishlist', 'bg-white': showTable === 'wishlist' }
+        { 'bg-gray-800 text-white hover:bg-gray-900': showTable !== 'wishlist', 'bg-white': showTable === 'wishlist' }
       ]"
       @click="showTable = 'wishlist'"
     >
@@ -44,7 +44,7 @@
     <button
       :class="[
         'w-[140px] h-[45px] border border-solid rounded-md shadow-md transition-transform transform hover:scale-105',
-        { 'bg-gray-800 text-gray-400 hover:bg-gray-900': showTable !== 'events', 'bg-white': showTable === 'events' }
+        { 'bg-gray-800 text-white hover:bg-gray-900': showTable !== 'events', 'bg-white': showTable === 'events' }
       ]"
       @click="showTable = 'events'"
     >
@@ -53,7 +53,7 @@
     <button
       :class="[
         'w-[90px] h-[45px] border border-solid rounded-md shadow-md transition-transform transform hover:scale-105',
-        { 'bg-gray-800 text-gray-400 hover:bg-gray-900': showTable !== 'finished-events', 'bg-white': showTable === 'finished-events' }
+        { 'bg-gray-800 text-white hover:bg-gray-900': showTable !== 'finished-events', 'bg-white': showTable === 'finished-events' }
       ]"
       @click="showTable = 'finished-events'"
     >
@@ -103,8 +103,9 @@
                 <img src="/img/invoice.png" alt="Update" class="w-5 h-5">
                </button>
                <button
+                @click="updateEventStatus(event)"
                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                <img src="/img/approve.png" alt="Update" class="w-5 h-5">
+                <img src="/img/approve.png" alt="Update" class="w-5 h-5" title="Upcoming Event">
                </button>
                
               </td>
@@ -123,6 +124,28 @@
       </div>
     </div>
 
+    <!-- Status Update Confirmation Modal -->
+    <div v-if="showStatusConfirmationModal" @click.self="closeStatusConfirmationModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+      <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+        <div class="flex flex-col items-center">
+          <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
+          <p class="mb-6 text-center">Are you sure you want to move this event to Upcoming Events?</p>
+          <div class="flex space-x-4">
+            <button 
+              @click="closeStatusConfirmationModal" 
+              class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+              Cancel
+            </button>
+            <button 
+              @click="confirmUpdateStatus" 
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--Upcoming Events Table-->
     <div v-if="showTable === 'events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
       <div class="overflow-x-auto">
@@ -130,31 +153,36 @@
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" class="px-2 py-3">#</th>
-              <th scope="col" class="px-2 py-3">Event</th>
               <th scope="col" class="px-2 py-3">Event Name</th>
-              <th scope="col" class="px-2 py-3">Package Deal</th>
+              <th scope="col" class="px-2 py-3">Event Theme</th>
               <th scope="col" class="px-2 py-3">Venue</th>
-              <th scope="col" class="px-2 py-3">Schedule</th>
-              <th scope="col" class="px-2 py-3">Start Time</th>
-              <th scope="col" class="px-2 py-3">End Time</th>
+              <th scope="col" class="px-2 py-3">Booked By</th>
+              <th scope="col" class="px-2 py-3">Contact</th>
               <th scope="col" class="px-2 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="event in paginatedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-              <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.eventName }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.venue }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.schedule }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.startTime }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">{{ event.endTime }}</td>
-              <td class="px-1 py-3 hidden sm:table-cell">
+            <tr
+                v-for="(event, index) in paginatedUpcomingEvents"
+                :key="event.events_id"
+                :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
+                class="border-b dark:border-gray-700">
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
+              <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
+              <td class="px-1 py-3 truncate">{{ event.event_theme }}</td>
+              <td class="px-1 py-3 truncate">{{ event.venue_name || 'Not assigned' }}</td>
+              <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
+              <td class="px-1 py-3 truncate">{{ event.onsite_contact || event.contactnumber || 'Not provided' }}</td>
+              <td class="px-1 py-3 flex justify-start">
                 <button
-                @click="viewEvent(event)"
-                    class="h-8 w-12 mr-2 bg-blue-900 font-amaticBold font-medium text-sm rounded-md text-white hover:bg-blue-600">
-                    View
+                    @click="openWishlistModal(event)"
+                    class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                    <img src="/img/update3.png" alt="Update" class="w-5 h-5">
+                </button>
+                <button
+                  @click="goToInvoice()"
+                  class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                  <img src="/img/invoice.png" alt="Update" class="w-5 h-5">
                   </button>
               </td>
             </tr>
@@ -162,12 +190,19 @@
         </table>
 
         <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
-          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
-          <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{'bg-blue-900': currentPage === page, 'bg-gray-300': currentPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+        <div class="flex justify-center space-x-2 mt-4 mb-6">
+          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+          <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{'bg-[#9B111E]': currentPage === page, 'bg-gray-300': currentPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
             {{ page }}
           </button>
-          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
+          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
+        </div>
+        
+        <!-- Debug Button -->
+        <div class="flex justify-center mb-4">
+          <button @click="debugUpcomingEvents" class="px-4 py-2 bg-blue-500 text-white rounded">
+            Debug Upcoming Events
+          </button>
         </div>
       </div>
     </div>
@@ -300,27 +335,47 @@
           <!-- Venue Table -->
           <div>
             <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">Venue</h3>
-            <div class="bg-gray-50 p-3 rounded">
               <table class="table-auto w-full text-left text-sm">
                 <thead class="bg-gray-200">
                   <tr>
                     <th class="px-2 py-1">Name</th>
                     <th class="px-2 py-1">Location</th>
                     <th class="px-2 py-1">Rate</th>
-                    <th class ="px-1 py-1">Action</th>
+                    <th class="px-2 py-1">Status</th>
+                    <th class="px-2 py-1">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0" class="bg-yellow-100">
+                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0">
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].venue_name }}</td>
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].location }}</td>
-                    <td class="px-2 py-1">{{ formatPrice(selectedEvent.venues[0].venue_price) }}</td>
+                    <td class="px-2 py-1">₱{{ formatPrice(selectedEvent.venues[0].venue_price) }}</td>
+                    <td class="px-2 py-1">
+                      <span :class="{'text-yellow-600': !selectedEvent.venues[0].status || selectedEvent.venues[0].status === 'Pending', 'text-green-600': selectedEvent.venues[0].status === 'Approved'}">
+                        {{ selectedEvent.venues[0].status || 'Pending' }}
+                      </span>
+                    </td>
                     <td class="px-2 py-1">
                       <div class="flex justify-start items-center space-x-2">
+                        <div class="inline-block cursor-pointer">
+                        <img 
+                          alt="Approve Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/mark.png" 
+                            @click="approveInclusion('venues', 0)"
+                        >
+                      </div>
+                        <button type="button" @click="editInclusion('venues', 0)" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Edit Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/edit.png" 
+                        >
+                      </button>
                     <div @click="removeInclusion('venues', 0)" class="inline-block cursor-pointer">
                     <img 
                       alt="Delete Icon" 
-                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
+                            class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
                       src="/img/delete.png" 
                     >
                   </div>
@@ -329,7 +384,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
           </div>
 
           <!-- Suppliers Table -->
@@ -340,27 +394,33 @@
                 <tr>
                   <th class="px-2 py-1">Name</th>
                   <th class="px-2 py-1">Service</th>
-                  <th class="px-2 py-1">Rate</th>
+                  <th class="px-2 py-1">Price</th>
+                  <th class="px-2 py-1">Status</th>
                   <th class="px-2 py-1">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index" class="bg-yellow-100">
+                <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index">
                   <td class="px-2 py-1">
                     {{ supplier.name || supplier.supplier_name || (supplier.supplier_firstname && supplier.supplier_lastname ? supplier.supplier_firstname + ' ' + supplier.supplier_lastname : 'Unknown Supplier') }}
                   </td>
                   <td class="px-2 py-1">{{ supplier.service_type || supplier.service }}</td>
-                  <td class="px-2 py-1">{{ formatPrice(supplier.price) }}</td>
+                  <td class="px-2 py-1">₱{{ formatPrice(supplier.price) }}</td>
+                  <td class="px-2 py-1">
+                    <span :class="{'text-yellow-600': !supplier.status || supplier.status === 'Pending', 'text-green-600': supplier.status === 'Approved'}">
+                      {{ supplier.status || 'Pending' }}
+                    </span>
+                  </td>
                   <td class="px-2 py-1">
                     <div class="flex justify-start items-center space-x-2">
-                      <div class="inline-block cursor-pointer">
+                      <div class="inline-block cursor-pointer" @click="approveInclusion('suppliers', index)">
                         <img 
                           alt="Approve Icon" 
                           class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
                           src="/img/mark.png" 
                         >
                       </div>
-                      <button type="button" @click="editInclusion(index)" class="inline-block cursor-pointer">
+                      <button type="button" @click="editInclusion('suppliers', index)" class="inline-block cursor-pointer">
                         <img 
                           alt="Edit Icon" 
                           class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
@@ -385,60 +445,110 @@
           <!-- Outfit Package Table -->
           <div>
             <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">Outfits</h3>
-            <div class="bg-gray-50 p-3 rounded">
-              <table class="table-auto w-full text-left text-sm">
-                <thead class="bg-gray-200">
-                  <tr>
-                    <th class="px-2 py-1">Outfit Name</th>
-                    <th class="px-2 py-1">Rate</th>
-                    <th class="px-2 py-1">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class = "bg-yellow-100">
-                    <td class="px-2 py-1">{{ selectedEvent?.gown_package_name || 'N/A' }}</td>
-                    <td class="px-2 py-1">{{ formatPrice(selectedEvent?.gown_package_price || 0) }}</td>
-                    <td class="px-2 py-1">
-                    <div class = "flex justify-start items-center space-x-2">
-                    <div @click="removeInclusion('outfits', 0)" class="inline-block cursor-pointer">
-                    <img 
-                      alt="Delete Icon" 
-                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
-                      src="/img/delete.png" 
-                    >
-                  </div>
-                  </div>
+            <table class="table-auto w-full text-left text-sm">
+              <thead class="bg-gray-200">
+                <tr>
+                  <th class="px-2 py-1">Outfit Name</th>
+                  <th class="px-2 py-1">Rate</th>
+                  <th class="px-2 py-1">Status</th>
+                  <th class="px-2 py-1">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(outfit, index) in selectedEvent.outfits" :key="index">
+                  <td class="px-2 py-1">{{ outfit.gown_package_name || outfit.outfit_name }}</td>
+                  <td class="px-2 py-1">₱{{ formatPrice(outfit.gown_package_price || outfit.price || outfit.rent_price) }}</td>
+                  <td class="px-2 py-1">
+                    <span :class="{'text-yellow-600': !outfit.status || outfit.status === 'Pending', 'text-green-600': outfit.status === 'Approved'}">
+                      {{ outfit.status || 'Pending' }}
+                    </span>
                   </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                  <td class="px-2 py-1">
+                    <div class="flex justify-start items-center space-x-2">
+                      <div class="inline-block cursor-pointer">
+                        <img 
+                          alt="Approve Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/mark.png" 
+                          @click="approveInclusion('outfits', index)"
+                        >
+                      </div>
+                      <button type="button" @click="editInclusion('outfits', index)" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Edit Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/edit.png" 
+                        >
+                      </button>
+                      <button 
+                        v-if="!outfit.is_initialized"
+                        @click="removeInclusion('outfits', index)" 
+                        class="inline-block cursor-pointer"
+                      >
+                        <img 
+                          alt="Delete Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/delete.png" 
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+</div>
 
 
           <!-- Additional Services Table -->
           <div>
-            <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">Other Inclusions</h3>
+            <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">
+              Other Inclusions 
+              <button @click="debugServices" class="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">Debug</button>
+            </h3>
             <table class="table-auto w-full text-left text-sm">
               <thead class="bg-gray-200">
                 <tr>
                   <th class="px-2 py-1">Inclusion Name</th>
                   <th class="px-2 py-1">Description</th>
                   <th class="px-2 py-1">Rate</th>
+                  <th class="px-2 py-1">Status</th>
                   <th class="px-2 py-1">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(service, index) in selectedEvent.services" :key="index" class = "bg-yellow-100">
-                  <td class="px-2 py-1">{{ service.add_service_name }}</td>
-                  <td class="px-2 py-1">{{ service.add_service_description }}</td>
-                  <td class="px-2 py-1">{{ formatPrice(service.price) }}</td>
+                <tr v-if="!selectedEvent.services || selectedEvent.services.length === 0">
+                  <td colspan="5" class="px-2 py-4 text-center text-gray-500">No services added yet</td>
+                </tr>
+                <tr v-for="(service, index) in selectedEvent.services" :key="index">
+                  <td class="px-2 py-1">{{ service?.add_service_name || 'N/A' }}</td>
+                  <td class="px-2 py-1">{{ service?.add_service_description || 'N/A' }}</td>
+                  <td class="px-2 py-1">₱{{ formatPrice(service?.add_service_price || 0) }}</td>
                   <td class="px-2 py-1">
-                    <div class = "flex justify-start items-center space-x-2">
+                    <span :class="{'text-yellow-600': !service?.status || service?.status === 'Pending', 'text-green-600': service?.status === 'Approved'}">
+                      {{ service?.status || 'Pending' }}
+                    </span>
+                  </td>
+                  <td class="px-2 py-1">
+                    <div class="flex justify-start items-center space-x-2">
+                      <div class="inline-block cursor-pointer">
+                        <img 
+                          alt="Approve Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/mark.png" 
+                          @click="approveInclusion('services', index)"
+                        >
+                      </div>
+                      <button type="button" @click="editInclusion('services', index)" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Edit Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/edit.png" 
+                        >
+                      </button>
                     <div @click="removeInclusion('services', index)" class="inline-block cursor-pointer">
                     <img 
                       alt="Delete Icon" 
-                      class="w-[17px] h-[17px] ml-2 transition-transform transform hover:scale-110 hover:brightness-90" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
                       src="/img/delete.png" 
                     >
                   </div>
@@ -730,7 +840,7 @@
   
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Hair and Makeup Artist. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Hair and Makeup Artist. *</label>
       <select v-model="selectedGlam" id="catering-service" class="w-80 h-9 ml-[75px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value ="glam1">Glamour Heights</option>
         <option value="glam2">Radiant Luxe Studio</option>
@@ -742,7 +852,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Event Host. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Event Host. *</label>
       <select v-model="selectedHost" id="catering-service" class="w-80 h-9 ml-[153px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value = "host1">Boy Semilia</option>
         <option value = "host2">Edward Backward</option>
@@ -754,7 +864,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Sound and Lighting. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Sound and Lighting. *</label>
       <select v-model="selectedAudioVisual" id="catering-service" class="w-80 h-9 m-3 ml-[97px] rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value = "audiovisual1">Jadiel Walton</option>
         <option value = "audiovisual2">Korbyn Norton</option>
@@ -766,7 +876,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Music and Entertainment. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Music and Entertainment. *</label>
       <select v-model="selectedEntertainment" id="catering-service" class="w-80 h-9 ml-[62px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value = "entertainment1">Jovit Baldemonyo</option>
         <option value = "entertainment2">November Revenue</option>
@@ -778,7 +888,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Transportation. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Transportation. *</label>
       <select v-model="selectedTransportation" id="catering-service" class="w-80 h-9 ml-[130px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value="transportation1">Limousine Service Co.</option>
         <option value="transportation2">Vintage Car Rentals</option>
@@ -790,7 +900,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Invitations and Stationery. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Invitations and Stationery. *</label>
       <select v-model="selectedInvitations" id="catering-service" class="w-80 h-9 ml-[60px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value="invitations1">Custom Invitations Studio</option>
         <option value="invitations2">Digital Invitations Co.</option>
@@ -802,7 +912,7 @@
 
   <div class="flex mx-5 mt-3">
     <div class="row text-start">
-      <label for="catering-service" class="text-sm font-semibold font-raleway text-gray-600">Favors and Gifts. *</label>
+      <label class="text-sm font-semibold text-gray-600" for="catering-service">Favors and Gifts. *</label>
       <select v-model="selectedGifts" id="catering-service" class="w-80 h-9 ml-[122px] m-3 rounded-lg text-sm font-bold bg-[#fefff6]" :disabled="!editVendorDetails">
         <option value="gifts1">Personalized Keepsakes Co.</option>
         <option value="gifts2">Edible Favors Bakery</option>
@@ -1004,27 +1114,27 @@
     </div>
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700">Service Type</label>
+        <label class="block text-sm font-medium text-gray-700 text-left">Service Type</label>
         <select v-model="selectedExternalSupplierType" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
           <option value="">Select Service Type</option>
           <option v-for="type in supplierTypes" :key="type" :value="type">{{ type }}</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Supplier Name</label>
-        <input type="text" v-model="externalSupplierData.name" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter supplier name">
+        <label class="block text-sm font-medium text-gray-700 text-left">Supplier Name</label>
+        <input type="text" v-model="externalSupplierData.name" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Contact</label>
-        <input type="text" v-model="externalSupplierData.contact" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter contact details">
+        <label class="block text-sm font-medium text-gray-700 text-left">Contact</label>
+        <input type="text" v-model="externalSupplierData.contact" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Price</label>
-        <input type="number" v-model="externalSupplierData.price" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter price">
+        <label class="block text-sm font-medium text-gray-700 text-left">Price</label>
+        <input type="number" v-model="externalSupplierData.price" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Remarks</label>
-        <textarea v-model="externalSupplierData.remarks" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" rows="3" placeholder="Enter remarks"></textarea>
+        <label class="block text-sm font-medium text-gray-700 text-left">Remarks</label>
+        <textarea v-model="externalSupplierData.remarks" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" rows="3"></textarea>
       </div>
     </div>
     <div class="flex justify-end mt-4 space-x-2">
@@ -1128,7 +1238,7 @@
 <div v-if="showInclusionModal && selectedInclusionType === 'service'" @click.self="closeInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
   <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold">Select Additional Service</h2>
+      <h2 class="text-lg font-semibold">{{ isEditingInclusion ? 'Edit' : 'Select' }} Additional Service</h2>
       <button type="button" @click="closeInclusionModal" class="text-red-500 hover:text-red-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -1139,24 +1249,129 @@
       <label for="service" class="block text-sm font-medium text-gray-700">Select Additional Service</label>
       <select v-model="selectedService" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
         <option selected disabled value="">Select Additional Service</option>
-        <option v-for="service in filteredAdditionalServices()" :key="service.add_service_id" :value="service">
-          {{ service.add_service_name }} - ₱{{ formatPrice(service.add_service_price) }}
+        <option v-for="service in filteredAdditionalServices" :key="service.add_service_id" :value="service">
+          {{ service.add_service_name }} - ₱{{ service.add_service_price ? formatPrice(service.add_service_price) : '0.00' }}
         </option>
-
       </select>
     </div>
     <div class="flex justify-center mt-4">
-      <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
+      <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+        {{ isEditingInclusion ? 'Save Changes' : 'Add' }}
+      </button>
     </div>
   </div>
 </div>
 
+<!-- Confirmation Modal for Removing Inclusions -->
+<div v-if="showRemoveConfirmationModal" @click.self="closeRemoveConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white w-[400px] p-6 rounded-lg shadow-lg">
+    <div class="flex flex-col items-center mb-4">
+      <h2 class="text-lg font-semibold mb-4">Remove Confirmation</h2>
+      <p class="text-gray-600 mb-6">
+        Are you sure you want to remove this 
+        {{ inclusionToRemove && inclusionToRemove.type === 'outfits' ? 'outfit' : 
+           inclusionToRemove && inclusionToRemove.type === 'services' ? 'service' : 
+           inclusionToRemove && inclusionToRemove.type === 'suppliers' ? 'supplier' : 
+           inclusionToRemove && inclusionToRemove.type === 'venues' ? 'venue' : 'item' }}?
+      </p>
+      <div class="flex space-x-4">
+        <button @click="closeRemoveConfirmationModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+          Cancel
+        </button>
+        <button @click="confirmRemoveInclusion" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Remove
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
+  <!-- Edit Inclusion Modal -->
+  <div v-if="showEditInclusionModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white w-[500px] p-6 rounded-lg shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Edit Inclusion</h2>
+        <button @click="closeEditInclusionModal" class="text-red-500 hover:text-red-700 text-2xl">&times;</button>
+      </div>
 
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+        <input v-model="editingInclusion.type" class="w-full p-2 border rounded" disabled>
+      </div>
 
-  </template>
- 
+      <!-- Dynamic fields based on inclusion type -->
+      <div v-if="editingInclusion.type === 'suppliers'" class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Supplier Name</label>
+        <input v-model="editingInclusion.data.supplier_name" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Contact</label>
+        <input v-model="editingInclusion.data.contact" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Price</label>
+        <input v-model="editingInclusion.data.price" type="number" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Remarks</label>
+        <textarea v-model="editingInclusion.data.remarks" class="w-full p-2 border rounded" rows="3"></textarea>
+      </div>
 
+      <div v-if="editingInclusion.type === 'venues'" class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name</label>
+        <input v-model="editingInclusion.data.venue_name" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Location</label>
+        <input v-model="editingInclusion.data.location" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Price</label>
+        <input v-model="editingInclusion.data.price" type="number" class="w-full p-2 border rounded">
+      </div>
+
+      <div v-if="editingInclusion.type === 'outfits'" class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Outfit Name</label>
+        <input v-model="editingInclusion.data.outfit_name" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Size</label>
+        <input v-model="editingInclusion.data.size" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Price</label>
+        <input v-model="editingInclusion.data.price" type="number" class="w-full p-2 border rounded">
+      </div>
+
+      <div v-if="editingInclusion.type === 'services'" class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Service Name</label>
+        <input v-model="editingInclusion.data.service_name" class="w-full p-2 border rounded">
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Description</label>
+        <textarea v-model="editingInclusion.data.description" class="w-full p-2 border rounded" rows="3"></textarea>
+        <label class="block text-sm font-medium text-gray-700 mt-2 mb-2">Price</label>
+        <input v-model="editingInclusion.data.price" type="number" class="w-full p-2 border rounded">
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button @click="closeEditInclusionModal" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+          Cancel
+        </button>
+        <button @click="saveEditedInclusion" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Update Confirmation Modal -->
+  <div v-if="showStatusConfirmationModal" @click.self="closeStatusConfirmationModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+    <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+      <div class="flex flex-col items-center">
+        <h2 class="text-xl font-semibold mb-4">Confirm Status Change</h2>
+        <p class="mb-6 text-center">Are you sure you want to move this event to Upcoming Events?</p>
+        <div class="flex space-x-4">
+          <button 
+            @click="closeStatusConfirmationModal" 
+            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+            Cancel
+          </button>
+          <button 
+            @click="confirmUpdateStatus" 
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-opacity-90">
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</template>
 
  <script>
   import axios from 'axios';
@@ -1168,6 +1383,13 @@
   name: 'ManageEvents',
   data() {
     return {
+      showStatusConfirmationModal: false,
+      eventToUpdate: null,
+      showRemoveConfirmationModal: false,
+      inclusionToRemove: {
+        type: '',
+        index: -1
+      },
       showTable: 'wishlist',
       currentWishlistPage: 1,
       rowsPerWishlistPage: 5,
@@ -1176,6 +1398,12 @@
       currentFinishedPage: 1,
       rowsPerFinishedPage: 5,
       selectedIndex: null,
+      isEditingInclusion: false,
+      editingInclusionIndex: -1,
+      selectedService: null,
+      additionalServices: [],
+      wishlist: [],
+      upcomingEvents: [],
       selectedEvent: {
         event_name: '',
         event_theme: '',
@@ -1201,11 +1429,6 @@
         { capacity: '101-200', charges: 900, unit: 'per head' },
         { capacity: '201-300', charges: 800, unit: 'per head' }
       ],
-      newCapacity: {
-        capacity: '',
-        charges: 0,
-        unit: 'per head'
-      },
 
       bookedEvents: [],
       wishlist: [],
@@ -1276,6 +1499,13 @@
         remarks: ''
       },
       selectedExternalSupplierType: '',
+
+      showEditInclusionModal: false,
+      editingInclusion: {
+        type: '',
+        index: -1,
+        data: {}
+      },
   
 
      //Dummy rani!!
@@ -1375,14 +1605,27 @@
 },
 
   computed: {
-    totalPages() {
-      return Math.ceil(this.events.length / this.rowsPerPage);
-    },
-    paginatedEvents() {
+    paginatedUpcomingEvents() {
+      console.log('Paginating upcoming events:', this.upcomingEvents);
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.events.slice(start, end);
+      return this.upcomingEvents.slice(start, end);
     },
+
+    totalPages() {
+      return Math.ceil((this.upcomingEvents?.length || 0) / this.rowsPerPage);
+    },
+
+    paginatedWishlist() {
+      const start = (this.currentWishlistPage - 1) * this.rowsPerWishlistPage;
+      const end = start + this.rowsPerWishlistPage;
+      return this.wishlist.slice(start, end);
+    },
+
+    totalWishlistPages() {
+      return Math.ceil((this.wishlist?.length || 0) / this.rowsPerWishlistPage);
+    },
+
     totalFinishedPages() {
       return Math.ceil(this.finishedEvents.length / this.rowsPerFinishedPage);
     },
@@ -1390,14 +1633,6 @@
       const start = (this.currentFinishedPage - 1) * this.rowsPerFinishedPage;
       const end = start + this.rowsPerFinishedPage;
       return this.finishedEvents.slice(start, end);
-    },
-    totalWishlistPages() {
-      return Math.ceil(this.wishlist.length / this.rowsPerWishlistPage);
-    },
-    paginatedWishlist() {
-      const start = (this.currentWishlistPage - 1) * this.rowsPerWishlistPage;
-      const end = start + this.rowsPerWishlistPage;
-      return this.wishlist.slice(start, end);
     },
     buttonCursor() {
       return this.selectedIndex === null? 'cursor-not-allowed' : 'cursor-pointer';
@@ -1467,20 +1702,40 @@
     totalCapacity() {
     return Number(this.selectedEvent.capacity || 0) + Number(this.additionalCapacity || 0);
   },
+    filteredAdditionalServices() {
+      if (!this.additionalServices || !this.selectedEvent || !this.selectedEvent.services) {
+        return this.additionalServices || [];
+      }
+      // When editing, include the currently edited service
+      return this.additionalServices.filter(service => {
+        if (this.isEditingInclusion && this.editingInclusionIndex >= 0) {
+          // Don't filter out the service being edited
+          return !this.selectedEvent.services.some((s, index) => 
+            index !== this.editingInclusionIndex && s.add_service_id === service.add_service_id
+          );
+        }
+        // Normal filtering for adding new services
+        return !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id);
+      });
+    }
   },
 
   methods: {
     formatPrice(price) {
+      if (!price && price !== 0) return '0.00';
       const numPrice = Number(price) || 0;
       return numPrice.toLocaleString('en-PH', {
-        style: 'currency',
-        currency: 'PHP',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
     },
     updateAdditionalCapacity(value) {
-      this.additionalCapacity = parseInt(value) || 0;
+      // Remove any non-numeric characters except decimal point
+      const cleanValue = value.replace(/[^\d]/g, '');
+      
+      // Convert to number and ensure it's positive
+      const numValue = parseInt(cleanValue) || 0;
+      this.additionalCapacity = Math.max(0, numValue);
     },
     
     filteredSuppliers(serviceType) {
@@ -1514,15 +1769,9 @@
       return filtered;
     },
     
-    filteredAdditionalServices() {
-      if (!this.additionalServices) return [];
-      return this.additionalServices.filter(service => 
-        !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id)
-      );
-    },
-    
     async fetchAdditionalServices() {
       try {
+        console.log('Fetching additional services...');
         const token = localStorage.getItem('access_token');
         if (!token) {
           console.error('No access token found');
@@ -1536,18 +1785,15 @@
           }
         });
 
-        this.additionalServices = response.data.map(service => ({
-          add_service_id: service.service_id,
-          add_service_name: service.service_name,
-          add_service_type: service.service_type,
-          add_service_description: service.description,
-          add_service_price: parseFloat(service.price) || 0,
-          add_service_status: service.status
-        }));
-        
-        console.log('Processed additional services:', this.additionalServices);
+        // Store the raw response data directly
+        this.additionalServices = response.data;
+        console.log('Fetched additional services:', this.additionalServices);
       } catch (error) {
         console.error('Error fetching additional services:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+        }
         this.additionalServices = []; // Reset on error
       }
     },
@@ -1571,19 +1817,30 @@
         const data = await response.json();
         console.log('Raw response:', data);
 
-        this.wishlist = data.map(event => {
-          // Get venue data directly from the event object
-          const venue_name = event.venue_name || null;
-          console.log('Event:', event.event_name, 'Venue:', venue_name);
-
-          return {
+        // Process all events
+        const processedEvents = data.map(event => ({
             ...event,
-            venue_name: venue_name
-          };
-        });
+          venue_name: event.venue_name || null,
+          outfits: (event.outfits || []).map(outfit => ({
+            wishlist_outfit_id: outfit.wishlist_outfit_id,
+              outfit_id: outfit.outfit_id,
+              outfit_name: outfit.outfit_name,
+            price: parseFloat(outfit.price || 0),
+              outfit_type: outfit.outfit_type,
+            status: outfit.status || 'Pending'
+          }))
+        }));
+
+        // Separate events based on status
+        this.wishlist = processedEvents.filter(event => event.status === 'Wishlist');
+        this.upcomingEvents = processedEvents.filter(event => event.status === 'Upcoming');
+
+        console.log('Processed wishlist:', this.wishlist);
+        console.log('Processed upcoming events:', this.upcomingEvents);
       } catch (error) {
         console.error('Error fetching data:', error);
         this.wishlist = [];
+        this.upcomingEvents = [];
       }
     },
 
@@ -1815,120 +2072,208 @@
       console.log(`Selected capacity: ${this.selectedCapacity}`);
     },
     calculateAdditionalCharges() {
-        if (!this.additionalCapacity) return 0;
-        const chargePerUnit = parseFloat(this.selectedEvent.additional_capacity_charges || 0);
-        const chargeUnit = parseInt(this.selectedEvent.charge_unit || 1);
+      if (!this.additionalCapacity || !this.selectedEvent) return 0;
+      
+      try {
+        const chargePerUnit = parseFloat(this.selectedEvent.additional_capacity_charges) || 0;
+        const chargeUnit = parseInt(this.selectedEvent.charge_unit) || 1;
+        
+        if (chargePerUnit <= 0 || chargeUnit <= 0) return 0;
+        
         const units = Math.ceil(this.additionalCapacity / chargeUnit);
         return units * chargePerUnit;
+      } catch (error) {
+        console.error('Error calculating additional charges:', error);
+        return 0;
+      }
     },
     addCapacity() {
-      if (this.additionalCapacity > 0) {
+      // Check if selectedEvent exists
+      if (!this.selectedEvent) {
+        console.error('No event selected');
+        alert('Please select an event first.');
+        return;
+      }
+
+      // Validate additional capacity
+      if (!this.additionalCapacity || this.additionalCapacity <= 0) {
+        alert('Please enter a valid number of additional persons.');
+        return;
+      }
+      
+      try {
         const totalCharges = this.calculateAdditionalCharges();
-        this.selectedEvent.total_price += totalCharges;
-        this.selectedEvent.capacity += this.additionalCapacity;
-        this.additionalCapacity = 0;
-        this.showCapacityModal = false;
+        if (totalCharges > 0) {
+          // Ensure we have valid numbers
+          const currentCapacity = parseInt(this.selectedEvent.capacity) || 0;
+          const additionalCapacity = parseInt(this.additionalCapacity) || 0;
+          const currentPrice = parseFloat(this.selectedEvent.total_price) || 0;
+          
+          // Update total price and capacity
+          this.selectedEvent.total_price = (currentPrice + totalCharges).toFixed(2);
+          this.selectedEvent.capacity = currentCapacity + additionalCapacity;
+          
+          // Reset modal
+          this.closeCapacityModal();
+          
+          // Show success message
+          alert('Additional capacity added successfully!');
+        }
+      } catch (error) {
+        console.error('Error adding capacity:', error);
+        alert('An error occurred while adding capacity. Please try again.');
       }
     },
 
-  addSelectedSupplier() {
-    if (this.selectedSupplier && this.selectedSupplierType) {
-      console.log('Adding supplier:', this.selectedSupplier, 'for service type:', this.selectedSupplierType);
-      console.log('Supplier name:', this.selectedSupplier.supplier_name);
-      console.log('Supplier firstname:', this.selectedSupplier.firstname);
-      console.log('Supplier lastname:', this.selectedSupplier.lastname);
-      
-      // Make sure suppliers array exists
-      if (!this.selectedEvent.suppliers) {
-        this.selectedEvent.suppliers = [];
+    addSelectedSupplier() {
+      if (!this.selectedSupplier) {
+        console.error('No supplier selected');
+        return;
       }
-      
-      // Check if there's already a supplier with the same service type
-      const existingSupplierIndex = this.selectedEvent.suppliers.findIndex(
-        s => s.service_type === this.selectedSupplierType || s.service === this.selectedSupplierType
-      );
-      
-      // If found, replace it
-      if (existingSupplierIndex >= 0) {
-        this.selectedEvent.suppliers.splice(existingSupplierIndex, 1);
-      }
-      
-      // Add the new supplier
-      let supplierName = 'Unknown Supplier';
-      
-      if (this.selectedSupplier.supplier_name) {
-        supplierName = this.selectedSupplier.supplier_name;
-      } else if (this.selectedSupplier.firstname || this.selectedSupplier.lastname) {
-        supplierName = `${this.selectedSupplier.firstname || ''} ${this.selectedSupplier.lastname || ''}`.trim();
-      }
-      
-      console.log('Selected supplier object:', this.selectedSupplier);
-      console.log('Computed supplier name:', supplierName);
-      
+
+      if (this.isEditingInclusion) {
+        // Update existing supplier
+        this.selectedEvent.suppliers[this.editingInclusionIndex] = { ...this.selectedSupplier };
+        this.isEditingInclusion = false;
+        this.editingInclusionIndex = -1;
+      } else {
+        // Add new supplier
+        if (!this.selectedEvent.suppliers) {
+          this.selectedEvent.suppliers = [];
+        }
+        // Add the supplier with a default status of 'Pending'
       this.selectedEvent.suppliers.push({
-        supplier_id: this.selectedSupplier.supplier_id,
-        name: supplierName,
-        supplier_name: supplierName,
-        firstname: this.selectedSupplier.firstname || '',
-        lastname: this.selectedSupplier.lastname || '',
-        service_type: this.selectedSupplierType,
-        service: this.selectedSupplierType, // Add service field for compatibility
-        price: parseFloat(this.selectedSupplier.price || 0),
-        type: 'internal'
-      });
-      
-      console.log('Updated suppliers list:', this.selectedEvent.suppliers);
-      
+          ...this.selectedSupplier,
+          status: 'Pending'
+        });
+      }
+
+      // Reset and close modal
       this.selectedSupplier = null;
-      this.selectedSupplierType = null;
-      this.closeSupplierModal();
-    } else {
-      console.warn('Cannot add supplier: missing supplier or supplier type');
-    }
+      this.showInclusionModal = false;
+      this.selectedInclusionType = '';
   },
 
   addSelectedVenue() {
-    if (this.selectedVenue) {
-      this.selectedEvent.venue = this.selectedVenue;
-      this.closeVenueModal();
-    }
-  },
+      if (!this.selectedVenue) {
+        console.error('No venue selected');
+        return;
+      }
+
+      if (this.isEditingInclusion) {
+        // Update existing venue
+        this.selectedEvent.venues[this.editingInclusionIndex] = { ...this.selectedVenue };
+        this.isEditingInclusion = false;
+        this.editingInclusionIndex = -1;
+        } else {
+        // Add new venue
+        if (!this.selectedEvent.venues) {
+          this.selectedEvent.venues = [];
+        }
+        this.selectedEvent.venues.push({ ...this.selectedVenue });
+      }
+
+      // Reset and close modal
+      this.selectedVenue = null;
+      this.showInclusionModal = false;
+      this.selectedInclusionType = '';
+    },
 
   addSelectedOutfit() {
-    if (this.selectedOutfit) {
-      if (!this.selectedEvent.outfits) {
-        this.selectedEvent.outfits = [];
+      if (!this.selectedOutfit) {
+        console.error('No outfit selected');
+        return;
       }
-      const existingOutfit = this.selectedEvent.outfits.find(
-        o => o.outfit_id === this.selectedOutfit.outfit_id
-      );
-      
-      if (!existingOutfit) {
-        this.selectedEvent.outfits.push({
-          ...this.selectedOutfit,
-          price: this.selectedOutfit.outfit_price || 0
-        });
-      }
-      this.closeOutfitModal();
+
+      // Initialize outfits array if it doesn't exist
+    if (!this.selectedEvent.outfits) {
+      this.selectedEvent.outfits = [];
     }
+    
+      // Check if outfit already exists
+      const hasExistingOutfit = this.selectedEvent.outfits.some(outfit => {
+        if (this.outfitSelectionMode === 'package') {
+          return outfit.gown_package_id === this.selectedOutfit.gown_package_id;
+      } else {
+          return outfit.outfit_id === this.selectedOutfit.outfit_id;
+      }
+      });
+
+      if (hasExistingOutfit) {
+        alert('This outfit is already added.');
+    this.closeInclusionModal();
+        return;
+      }
+
+      // Create outfit data based on selection mode
+      const outfitData = this.outfitSelectionMode === 'package' ? {
+        type: 'package',
+        gown_package_id: this.selectedOutfit.gown_package_id,
+        gown_package_name: this.selectedOutfit.gown_package_name,
+        gown_package_price: parseFloat(this.selectedOutfit.gown_package_price || 0),
+        status: 'Pending',
+        is_initialized: false
+      } : {
+        type: 'individual',
+        outfit_id: this.selectedOutfit.outfit_id,
+        outfit_name: this.selectedOutfit.outfit_name,
+        outfit_type: this.selectedOutfit.outfit_type,
+        size: this.selectedOutfit.size,
+        rent_price: parseFloat(this.selectedOutfit.rent_price || 0),
+        status: 'Pending',
+        is_initialized: false
+      };
+
+      // Add the outfit
+      this.selectedEvent.outfits.push(outfitData);
+
+      // Reset and close modal
+      this.selectedOutfit = null;
+      this.showInclusionModal = false;
+      this.selectedInclusionType = '';
+      this.outfitSelectionMode = 'package'; // Reset to default mode
   },
 
   addSelectedService() {
-    if (this.selectedService) {
-      const existingService = this.selectedEvent.services.find(
-        s => s.add_service_id === this.selectedService.add_service_id
-      );
-      
-      if (!existingService) {
-        this.selectedEvent.services.push({
-          add_service_id: this.selectedService.add_service_id,
-          add_service_name: this.selectedService.add_service_name,
-          add_service_description: this.selectedService.add_service_description,
-          price: parseFloat(this.selectedService.add_service_price) || 0
-        });
+      if (!this.selectedService) {
+        console.error('No service selected');
+        return;
       }
-      this.closeServiceModal();
-    }
+
+      // Initialize services array if it doesn't exist
+      if (!this.selectedEvent.services) {
+        this.selectedEvent.services = [];
+      }
+
+      // Check if service already exists
+      const hasExistingService = this.selectedEvent.services.some(item => 
+        item.add_service_id === this.selectedService.add_service_id
+      );
+
+      if (hasExistingService && !this.isEditingInclusion) {
+        alert('This service is already added.');
+        return;
+      }
+
+      const serviceData = {
+        add_service_id: this.selectedService.add_service_id,
+        add_service_name: this.selectedService.add_service_name,
+        add_service_description: this.selectedService.add_service_description,
+        add_service_price: parseFloat(this.selectedService.add_service_price || 0)
+      };
+
+      if (this.isEditingInclusion) {
+        // Update existing service
+        this.selectedEvent.services[this.editingInclusionIndex] = serviceData;
+        this.isEditingInclusion = false;
+        this.editingInclusionIndex = -1;
+      } else {
+        // Add new service
+      this.selectedEvent.services.push(serviceData);
+      }
+
+      this.selectedService = null;
+      this.closeInclusionModal();
   },
 
   removeSupplier(index) {
@@ -1943,8 +2288,11 @@
     this.selectedEvent.venue = null;
   },
 
-  removeOutfit() {
-    this.selectedEvent.outfit = null;
+  removeOutfit(index) {
+    if (this.selectedEvent.outfits && this.selectedEvent.outfits.length > index) {
+      this.selectedEvent.outfits.splice(index, 1);
+      this.updatePricing();
+    }
   },
 
   openCapacityModal() {
@@ -1953,11 +2301,7 @@
 
   closeCapacityModal() {
     this.showCapacityModal = false;
-    this.newCapacity = {
-      capacity: '',
-      charges: 0,
-      unit: 'per head'
-    };
+    this.additionalCapacity = 0;
   },
 
   addCapacity() {
@@ -1978,6 +2322,10 @@
     });
       
     this.closeCapacityModal();
+  },
+
+  closeOutfitModal() {
+    this.showOutfitModal = false; // Assuming you have a modal state for outfits
   },
 
   removeCapacity(index) {
@@ -2012,26 +2360,36 @@
     },
 
     addSelectedOutfitPackage() {
-      if (this.selectedOutfit) {
-        // Check if outfit package already exists
+      if (!this.selectedOutfit) {
+        alert('Please select an outfit package.');
+        return;
+      }
+
+      // Initialize outfits array if it doesn't exist
+      if (!this.selectedEvent.outfits) {
+        this.selectedEvent.outfits = [];
+      }
+
+      // Check if package already exists
         const hasExistingPackage = this.selectedEvent.outfits.some(outfit => 
-          outfit.gown_package_id === this.selectedOutfit.gown_package_id
+        outfit.type === 'package' && outfit.gown_package_id === this.selectedOutfit.gown_package_id
         );
 
         if (hasExistingPackage) {
           alert('This outfit package is already added.');
-        } else {
+        return;
+      }
+
+      // Add the package outfit
           this.selectedEvent.outfits.push({
             type: 'package',
             gown_package_id: this.selectedOutfit.gown_package_id,
             gown_package_name: this.selectedOutfit.gown_package_name,
-            gown_package_price: this.selectedOutfit.gown_package_price
+        gown_package_price: parseFloat(this.selectedOutfit.gown_package_price || 0),
+        status: 'Pending'
           });
+
           this.closeOutfitModal();
-        }
-      } else {
-        alert('Please select an outfit package.');
-      }
     },
 
     addExternalSupplier() {
@@ -2085,34 +2443,65 @@
     closeInclusionModal() {
       this.showInclusionModal = false;
       this.selectedInclusionType = '';
+      this.selectedService = null;
+      this.selectedVenue = null;
+      this.selectedOutfit = null;
     },
     openWishlistModal(event) {
-      this.selectedEvent = {
-        ...this.selectedEvent, // Keep default values for undefined fields
+      console.log('Opening wishlist modal for event:', event);
+      
+      // Create a deep copy of the event to avoid modifying the original
+      this.selectedEvent = JSON.parse(JSON.stringify({
         ...event,
-        suppliers: event.suppliers || [], // Initialize suppliers array
-        services: event.services || [], // Initialize services array
-        outfits: event.outfits || [], // Initialize outfits array
-        venues: event.venues || [], // Initialize venues array
-        inclusions: event.inclusions || [], // Initialize inclusions array
-        gown_package_name: event.gown_package_name || 'N/A',
+        suppliers: event.suppliers || [],
+        services: event.services || [],
+        outfits: event.outfits || [],
+        venues: event.venues || [],
+        gown_package_name: event.gown_package_name || '',
         gown_package_price: event.gown_package_price || 0,
         firstname: event.firstname || '',
         lastname: event.lastname || '',
         contactnumber: event.contactnumber || ''
-      };
-      console.log('Selected event for editing:', this.selectedEvent);
-      
-      // Check the structure of suppliers in the selected event
-      if (this.selectedEvent.suppliers && this.selectedEvent.suppliers.length > 0) {
-        console.log('Suppliers in selected event:', this.selectedEvent.suppliers);
-        this.selectedEvent.suppliers.forEach((supplier, index) => {
-          console.log(`Supplier ${index}:`, supplier);
-        });
-      } else {
-        console.log('No suppliers in selected event');
+      }));
+
+      // If there's a gown package but no outfits, initialize the outfits array
+      if (event.gown_package_id && (!this.selectedEvent.outfits || this.selectedEvent.outfits.length === 0)) {
+        this.selectedEvent.outfits = [{
+          type: 'outfit_package',
+          gown_package_id: event.gown_package_id,
+          gown_package_name: event.gown_package_name,
+          gown_package_price: event.gown_package_price,
+          status: 'Pending',
+          is_initialized: true
+        }];
       }
-      
+
+      // Add any additional outfits from the event
+      if (event.outfits && event.outfits.length > 0) {
+        const additionalOutfits = event.outfits.map(outfit => ({
+          ...outfit,
+          is_initialized: outfit.is_initialized || false
+        }));
+        this.selectedEvent.outfits = [...this.selectedEvent.outfits, ...additionalOutfits];
+      }
+
+      // Make sure services array is properly initialized
+      if (!this.selectedEvent.services || !Array.isArray(this.selectedEvent.services)) {
+        this.selectedEvent.services = [];
+      }
+
+      // Add any additional services from the event
+      if (event.services && event.services.length > 0) {
+        const additionalServices = event.services.map(service => ({
+          ...service,
+          is_initialized: service.is_initialized || false
+        }));
+        this.selectedEvent.services = [...this.selectedEvent.services, ...additionalServices];
+      }
+
+      console.log('Selected event for editing:', this.selectedEvent);
+      console.log('Outfits array:', this.selectedEvent.outfits);
+      console.log('Services array:', this.selectedEvent.services);
       this.showWishlistModal = true;
     },
 
@@ -2120,24 +2509,131 @@
       this.showWishlistModal = false;
     },
     removeInclusion(type, index) {
+      if (!this.selectedEvent || !this.selectedEvent[type]) {
+        console.error('Invalid event or type:', type);
+        return;
+      }
+
+      if (index < 0 || index >= this.selectedEvent[type].length) {
+        console.error('Invalid index:', index);
+        return;
+      }
+
+      const item = this.selectedEvent[type][index];
+      
+      // Don't allow removal of initialized outfits
+      if (type === 'outfits' && item.is_initialized) {
+        alert('Cannot remove initialized outfits');
+        return;
+      }
+
+      // Store the item to be removed
+      this.inclusionToRemove = {
+        type,
+        index,
+        item
+      };
+      
+      // Show confirmation modal
+      this.showRemoveConfirmationModal = true;
+    },
+
+    confirmRemoveInclusion() {
+      if (!this.inclusionToRemove) {
+        console.error('No inclusion to remove');
+        return;
+      }
+
+      const { type, index } = this.inclusionToRemove;
+      
+      // Remove from local state
+      this.selectedEvent[type].splice(index, 1);
+      
+      // Close the confirmation modal
+      this.showRemoveConfirmationModal = false;
+      this.inclusionToRemove = null;
+    },
+
+    closeRemoveConfirmationModal() {
+      this.showRemoveConfirmationModal = false;
+      this.inclusionToRemove = null;
+    },
+    editInclusion(type, index) {
+      const inclusionTypes = {
+        'suppliers': 'supplier',
+        'venues': 'venue',
+        'outfits': 'outfit',
+        'services': 'service'
+      };
+
+      const modalType = inclusionTypes[type.toLowerCase()];
+      if (!modalType) {
+        console.error('Invalid inclusion type:', type);
+        return;
+      }
+
+      // Initialize arrays if they don't exist
+      if (!this.selectedEvent[type]) {
+        this.selectedEvent[type] = [];
+        console.error(`${type} array is not initialized`);
+        return;
+      }
+
+      const data = this.selectedEvent[type][index];
+      if (!data) {
+        console.error('No data found for index:', index);
+        return;
+      }
+
+      // Set up editing state
+      this.isEditingInclusion = true;
+      this.editingInclusionIndex = index;
+      this.selectedInclusionType = modalType;
+
+      // Pre-fill the form based on the inclusion type
+      if (modalType === 'supplier') {
+        this.selectedSupplier = { ...data };
+      } else if (modalType === 'venue') {
+        this.selectedVenue = { ...data };
+      } else if (modalType === 'outfit') {
+        this.selectedOutfit = { ...data };
+      } else if (modalType === 'service') {
+        this.selectedService = { ...data };
+      }
+
+      // Open the inclusion modal
+      this.showInclusionModal = true;
+    },
+
+    closeEditInclusionModal() {
+      this.showEditInclusionModal = false;
+      this.editingInclusion = {
+        type: '',
+        index: -1,
+        data: {}
+      };
+    },
+
+    saveEditedInclusion() {
+      const { type, index, data } = this.editingInclusion;
       const inclusionTypes = {
         'suppliers': 'suppliers',
         'venues': 'venues',
         'outfits': 'outfits',
+        'services': 'services',
         'additional services': 'services'
       };
 
       const arrayType = inclusionTypes[type.toLowerCase()];
-      if (arrayType) {
-        // Remove the inclusion from the specific array
-        this.selectedEvent[arrayType].splice(index, 1);
+      if (arrayType && this.selectedEvent[arrayType]) {
+        // Update the data in the correct array
+        this.selectedEvent[arrayType][index] = { ...data };
+        console.log(`Updated ${type} at index ${index}:`, data);
       }
+
+      this.closeEditInclusionModal();
     },
-    editInclusion(index) {
-      // This is a placeholder for editing inclusions
-      // You would typically open a modal with the inclusion details for editing
-      alert('Edit functionality will be implemented in a future update.');
-    },
+
     selectSupplierType(serviceType) {
       this.selectedSupplierType = serviceType;
       this.showInclusionModal = false;
@@ -2180,19 +2676,300 @@
     goToInvoice() {
       this.$router.push({ name: 'Invoice' });
     },
+    async approveInclusion(type, index) {
+      try {
+        if (!this.selectedEvent || !this.selectedEvent[type]) {
+          throw new Error(`Invalid event or type: ${type}`);
+        }
+
+        if (index < 0 || index >= this.selectedEvent[type].length) {
+          throw new Error(`Invalid ${type} index: ${index}`);
+        }
+
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        let item = this.selectedEvent[type][index];
+        let endpoint;
+        let requestData;
+        let method = 'PUT';
+
+        switch (type) {
+          case 'outfits': {
+            // Check if the wishlist_outfit_id exists
+            if (!item.wishlist_outfit_id) {
+              // For outfits without IDs, just update locally
+              this.selectedEvent.outfits[index].status = 'Approved';
+              alert('Outfit approved successfully');
+              return;
+            } else {
+              // Update existing wishlist outfit
+              endpoint = `http://127.0.0.1:5000/api/wishlist-outfits/${item.wishlist_outfit_id}`;
+              requestData = {
+                status: 'Approved'
+              };
+            }
+            break;
+          }
+          
+          case 'services': {
+            // Check if the wishlist_service_id exists
+            if (!item.wishlist_service_id) {
+              // For services without IDs, just update locally
+              this.selectedEvent.services[index].status = 'Approved';
+              alert('Service approved successfully');
+              return;
+            } else {
+              // Update existing wishlist service
+              endpoint = `http://127.0.0.1:5000/api/wishlist-additional-services/${item.wishlist_service_id}`;
+              requestData = {
+                status: 'Approved'
+              };
+            }
+            break;
+          }
+          
+          case 'suppliers': {
+            // Check if the wishlist_supplier_id exists
+            if (!item.wishlist_supplier_id) {
+              // For suppliers without IDs, just update locally
+              this.selectedEvent.suppliers[index].status = 'Approved';
+              alert('Supplier approved successfully');
+              return;
+            } else {
+              // Update existing wishlist supplier
+              endpoint = `http://127.0.0.1:5000/api/wishlist-suppliers/${item.wishlist_supplier_id}`;
+              requestData = {
+                status: 'Approved'
+              };
+            }
+            break;
+          }
+          
+          case 'venues': {
+            // Check if the wishlist_venue_id exists
+            if (!item.wishlist_venue_id) {
+              // For venues without IDs, just update locally
+              this.selectedEvent.venues[index].status = 'Approved';
+              alert('Venue approved successfully');
+              return;
+            } else {
+              // Update existing wishlist venue
+              endpoint = `http://127.0.0.1:5000/api/wishlist-venues/${item.wishlist_venue_id}`;
+              requestData = {
+                status: 'Approved'
+              };
+            }
+            break;
+          }
+          default:
+            throw new Error(`Unsupported inclusion type: ${type}`);
+        }
+
+        console.log(`Making API call to: ${endpoint} with method: ${method}`);
+        console.log('Request data:', requestData);
+        
+        const response = await fetch(endpoint, {
+          method: method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // If we created a new wishlist item, update the local item with the new ID
+        if (method === 'POST' && result.id) {
+          const idField = `wishlist_${type.slice(0, -1)}_id`; // Convert 'outfits' to 'wishlist_outfit_id'
+          this.selectedEvent[type][index][idField] = result.id;
+        }
+        
+        // Update local state
+        this.selectedEvent[type][index].status = 'Approved';
+        
+        alert('Item approved successfully');
+      } catch (error) {
+        console.error('Error in approveInclusion:', error);
+        alert(`Error approving item: ${error.message}`);
+      }
+    },
+
+    async updateEventStatus(event) {
+      this.eventToUpdate = event;
+      this.showStatusConfirmationModal = true;
+    },
+
+    closeStatusConfirmationModal() {
+      this.showStatusConfirmationModal = false;
+      this.eventToUpdate = null;
+    },
+
+    async confirmUpdateStatus() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await fetch(`http://127.0.0.1:5000/events/${this.eventToUpdate.events_id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            status: 'Upcoming'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Update the event status
+          const updatedEvent = { ...this.eventToUpdate, status: 'Upcoming' };
+          
+          // Remove from wishlist and add to upcoming events
+          this.wishlist = this.wishlist.filter(e => e.events_id !== updatedEvent.events_id);
+          this.upcomingEvents.push(updatedEvent);
+          
+          // Show success message
+          alert('Event status updated to Upcoming');
+          
+          // Close the confirmation modal
+          this.closeStatusConfirmationModal();
+          
+          // Reset the event to update
+          this.eventToUpdate = null;
+        } else {
+          throw new Error(result.message || 'Failed to update event status');
+        }
+      } catch (error) {
+        console.error('Error updating event status:', error);
+        alert(`Error updating event status: ${error.message}`);
+      }
+    },
+
+    debugUpcomingEvents() {
+      console.log('All wishlist events:', this.wishlist);
+      
+      // Check if any events have status 'Upcoming'
+      const upcomingEvents = this.wishlist.filter(event => event.status === 'Upcoming');
+      console.log('Filtered upcoming events:', upcomingEvents);
+      
+      // Check if status is case sensitive
+      const upcomingCaseInsensitive = this.wishlist.filter(event => 
+        event.status && event.status.toLowerCase() === 'upcoming'
+      );
+      console.log('Case insensitive upcoming events:', upcomingCaseInsensitive);
+      
+      // Check for status field existence
+      const eventsWithStatus = this.wishlist.filter(event => event.status);
+      console.log('Events with status field:', eventsWithStatus);
+      
+      // Log all unique status values
+      const uniqueStatuses = [...new Set(this.wishlist.map(event => event.status))];
+      console.log('Unique status values:', uniqueStatuses);
+    },
+
+    async fetchUpcomingEvents() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.error('No access token found');
+          return;
+        }
+
+        const response = await fetch('http://127.0.0.1:5000/upcoming-events', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        console.log('Raw upcoming events:', data);
+
+        this.upcomingEvents = data.map(event => ({
+          ...event,
+          venue_name: event.venue_name || null,
+          status: 'Upcoming'
+        }));
+        
+        console.log('Processed upcoming events:', this.upcomingEvents);
+      } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+        this.upcomingEvents = [];
+      }
+    },
+    debugServices() {
+      console.log('Debug Services:');
+      console.log('selectedEvent:', this.selectedEvent);
+      console.log('services array:', this.selectedEvent.services);
+      console.log('additionalServices:', this.additionalServices);
+      console.log('filteredAdditionalServices:', this.filteredAdditionalServices);
+      
+      // Check if services array is properly initialized
+      if (!this.selectedEvent.services) {
+        console.log('Services array is undefined');
+        this.selectedEvent.services = [];
+      } else if (!Array.isArray(this.selectedEvent.services)) {
+        console.log('Services is not an array, type:', typeof this.selectedEvent.services);
+        this.selectedEvent.services = [];
+      }
+      
+      // Add a test service if needed
+      if (confirm('Add a test service?')) {
+        this.addTestService();
+      }
+      
+      alert(`Services count: ${this.selectedEvent.services.length}\nCheck console for details`);
+    },
+    
+    addTestService() {
+      if (!this.selectedEvent.services) {
+        this.selectedEvent.services = [];
+      }
+      
+      // Create a test service
+      const testService = {
+        add_service_id: Date.now(), // Use timestamp as a unique ID
+        add_service_name: 'Test Service',
+        add_service_description: 'This is a test service added for debugging',
+        add_service_price: 1000,
+        status: 'Pending'
+      };
+      
+      // Add to services array
+      this.selectedEvent.services.push(testService);
+      console.log('Added test service:', testService);
+      console.log('Updated services array:', this.selectedEvent.services);
+    },
   },
 
   mounted() {
       this.fetchBookedWishlist();
+      this.fetchUpcomingEvents();
       this.fetchAdditionalServices();
       this.fetchAvailableSuppliers();
       this.fetchAvailableVenues();
       this.fetchAvailableGownPackages();
       this.fetchOutfits();
-  },
-
-
-  
+  }
 };
   </script>
 

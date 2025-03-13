@@ -774,11 +774,6 @@ def get_all_booked_wishlist():
     cursor = conn.cursor()
     
     try:
-        # First, let's check what statuses we have
-        cursor.execute("SELECT DISTINCT status FROM events")
-        statuses = [row[0] for row in cursor.fetchall()]
-        logger.info(f"Available event statuses: {statuses}")
-        
         cursor.execute("""
             SELECT 
                 e.events_id, e.event_name, e.event_type, e.event_theme, e.event_color,
@@ -859,72 +854,82 @@ def get_all_booked_wishlist():
                 }]
             
             # Get suppliers for this event
-            cursor.execute("""
-                SELECT 
-                    ws.supplier_id, s.service, ws.price, ws.remarks,
-                    u.firstname as supplier_firstname, u.lastname as supplier_lastname,
-                    u.email as supplier_email, u.contactnumber as supplier_contact
-                FROM wishlist_suppliers ws
-                LEFT JOIN suppliers s ON ws.supplier_id = s.supplier_id
-                LEFT JOIN users u ON s.userid = u.userid
-                WHERE ws.wishlist_id = %s
-            """, (event['wishlist_id'],))
-            
-            suppliers = cursor.fetchall()
-            event['suppliers'] = [{
-                'supplier_id': s[0],
-                'service': s[1],
-                'price': float(s[2]) if s[2] else 0,
-                'remarks': s[3],
-                'supplier_firstname': s[4],
-                'supplier_lastname': s[5],
-                'supplier_email': s[6],
-                'supplier_contact': s[7]
-            } for s in suppliers]
-
-            # Get services for this event - first check if the table exists
-            cursor.execute("""
-                SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_name = 'wishlist_additional_services'
-                );
-            """)
-            table_exists = cursor.fetchone()[0]
-            
-            if table_exists:
+            if event['wishlist_id']:
                 cursor.execute("""
                     SELECT 
-                        wps.add_service_id, wps.price, wps.remarks,
-                        a.add_service_name, a.add_service_description
-                    FROM wishlist_additional_services wps
-                    LEFT JOIN additional_services a ON wps.add_service_id = a.add_service_id
-                    WHERE wps.wishlist_id = %s
+                        ws.wishlist_supplier_id, ws.supplier_id, s.service, ws.price, ws.remarks,
+                        u.firstname as supplier_firstname, u.lastname as supplier_lastname,
+                        u.email as supplier_email, u.contactnumber as supplier_contact,
+                        ws.status
+                    FROM wishlist_suppliers ws
+                    LEFT JOIN suppliers s ON ws.supplier_id = s.supplier_id
+                    LEFT JOIN users u ON s.userid = u.userid
+                    WHERE ws.wishlist_id = %s
                 """, (event['wishlist_id'],))
                 
-                services = cursor.fetchall()
-                event['services'] = [{
-                    'add_service_id': s[0],
-                    'price': float(s[1]) if s[1] else 0,
-                    'remarks': s[2],
-                    'add_service_name': s[3],
-                    'add_service_description': s[4]
-                } for s in services]
-            else:
-                # Create the table if it doesn't exist
+                suppliers = cursor.fetchall()
+                event['suppliers'] = [{
+                    'wishlist_supplier_id': s[0],
+                    'supplier_id': s[1],
+                    'service': s[2],
+                    'price': float(s[3]) if s[3] else 0,
+                    'remarks': s[4],
+                    'supplier_firstname': s[5],
+                    'supplier_lastname': s[6],
+                    'supplier_email': s[7],
+                    'supplier_contact': s[8],
+                    'status': s[9] if s[9] else 'Pending'
+                } for s in suppliers]
+
+                # Get outfits for this event
                 cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS wishlist_additional_services (
-                        id SERIAL PRIMARY KEY,
-                        wishlist_id INTEGER NOT NULL,
-                        add_service_id INTEGER NOT NULL,
-                        price DECIMAL(10,2),
-                        remarks TEXT,
-                        FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages (wishlist_id) ON DELETE CASCADE,
-                        FOREIGN KEY (add_service_id) REFERENCES additional_services (add_service_id) ON DELETE CASCADE
-                    )
-                """)
-                conn.commit()
-                event['services'] = []
-            
+                    SELECT 
+                        wo.wishlist_outfit_id, wo.outfit_id, wo.gown_package_id, wo.price, wo.remarks,
+                        o.outfit_name, o.outfit_type, o.outfit_color, o.outfit_desc, o.rent_price,
+                        gp.gown_package_name, gp.gown_package_price,
+                        wo.status
+                    FROM wishlist_outfits wo
+                    LEFT JOIN outfits o ON wo.outfit_id = o.outfit_id
+                    LEFT JOIN gown_package gp ON wo.gown_package_id = gp.gown_package_id
+                    WHERE wo.wishlist_id = %s
+                """, (event['wishlist_id'],))
+                
+                outfits = cursor.fetchall()
+                event['outfits'] = [{
+                    'wishlist_outfit_id': o[0],
+                    'outfit_id': o[1],
+                    'gown_package_id': o[2],
+                    'price': float(o[3]) if o[3] else 0,
+                    'remarks': o[4],
+                    'outfit_name': o[5],
+                    'outfit_type': o[6],
+                    'outfit_color': o[7],
+                    'outfit_desc': o[8],
+                    'rent_price': float(o[9]) if o[9] else 0,
+                    'gown_package_name': o[10],
+                    'gown_package_price': float(o[11]) if o[11] else 0,
+                    'status': o[12] if o[12] else 'Pending'
+                } for o in outfits]
+
+            # If there's a gown package but no outfits, add it as an initialized outfit
+            if event['gown_package_id'] and not event['outfits']:
+                event['outfits'] = [{
+                    'wishlist_outfit_id': None,  # No wishlist_outfit_id for initialized outfit
+                    'outfit_id': None,
+                    'gown_package_id': event['gown_package_id'],
+                    'price': float(event['gown_package_price']) if event['gown_package_price'] else 0,
+                    'remarks': None,
+                    'outfit_name': None,
+                    'outfit_type': 'outfit_package',
+                    'outfit_color': None,
+                    'outfit_desc': None,
+                    'rent_price': 0,
+                    'gown_package_name': event['gown_package_name'],
+                    'gown_package_price': float(event['gown_package_price']) if event['gown_package_price'] else 0,
+                    'status': 'Pending',
+                    'is_initialized': True
+                }]
+
             events.append(event)
             logger.info(f"Added event to list: {event['event_name']} (ID: {event['events_id']})")
         
@@ -2740,13 +2745,14 @@ def create_wishlist_package(events_id, package_data):
         if package_data.get('services'):
             for service in package_data['services']:
                 cursor.execute("""
-                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks, status)
+                    VALUES (%s, %s, %s, %s, %s)
                 """, (
                     wishlist_id, 
                     service['add_service_id'],
                     service.get('price', 0),
-                    service.get('remarks', '')
+                    service.get('remarks', ''),
+                    'Pending'  # Set initial status to Pending
                 ))
         
         # Add suppliers if provided
@@ -2940,9 +2946,9 @@ def update_wishlist_package(wishlist_id, package_data):
             cursor.execute("DELETE FROM wishlist_additional_services WHERE wishlist_id = %s", (wishlist_id,))
             for service in package_data['services']:
                 cursor.execute("""
-                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks)
-                    VALUES (%s, %s, %s, %s)
-                """, (wishlist_id, service['add_service_id'], service.get('price', 0), service.get('remarks', '')))
+                    INSERT INTO wishlist_additional_services (wishlist_id, add_service_id, price, remarks, status)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (wishlist_id, service['add_service_id'], service.get('price', 0), service.get('remarks', ''), 'Pending'))
         
         # Update suppliers
         if 'suppliers' in package_data:
@@ -2996,6 +3002,60 @@ def delete_wishlist_package(wishlist_id):
     except Exception as e:
         conn.rollback()
         logger.error(f"Error deleting wishlist package: {str(e)}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_wishlist_supplier_status(wishlist_supplier_id, status):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE wishlist_suppliers SET status = %s WHERE wishlist_supplier_id = %s",
+            (status, wishlist_supplier_id)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error updating wishlist supplier status: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_wishlist_outfit_status(wishlist_outfit_id, status):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE wishlist_outfits SET status = %s WHERE wishlist_outfit_id = %s",
+            (status, wishlist_outfit_id)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error updating wishlist outfit status: {e}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_wishlist_additional_service_status(id, status):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE wishlist_additional_services SET status = %s WHERE id = %s",
+            (status, id)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error updating wishlist additional service status: {e}")
+        conn.rollback()
         return False
     finally:
         cursor.close()

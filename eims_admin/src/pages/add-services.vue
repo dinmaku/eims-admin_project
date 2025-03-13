@@ -52,7 +52,7 @@
                             <button
                                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                 @click="editPackageBtn(index)"> 
-                                <img src="/img/update2.png" alt="Update" class="w-5 h-5">
+                                <img src="/img/update3.png" alt="Update" class="w-5 h-5">
                             </button>
                         </td>
                     </tr>

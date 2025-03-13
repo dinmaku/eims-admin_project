@@ -67,7 +67,7 @@
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="editServiceBtn(index)"
                                         title="Update Other Inclusions Info">
-                                        <img src="/img/update2.png" alt="Update" class="w-5 h-5">
+                                        <img src="/img/update3.png" alt="Update" class="w-5 h-5">
                                     </button>
                                     <button
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
@@ -79,7 +79,7 @@
                                         class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200"
                                         @click="openStatusConfirmModal(service, 'Inactive')"
                                         title="Deactivate">
-                                        <img src="/img/inactive2.png" alt="Set Inactive" class="w-5 h-5">
+                                        <img src="/img/deactivate.png" alt="Set Inactive" class="w-5 h-5">
                                     </button>
                                 </div>
                             </td>

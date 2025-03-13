@@ -32,7 +32,9 @@ from .models import (
     track_outfit_modification, track_individual_outfit_modification,
     track_additional_service_modification, get_all_outfits, create_outfit,
     create_wishlist_package, get_wishlist_package, get_event_wishlists,
-    update_wishlist_package, delete_wishlist_package, Supplier
+    update_wishlist_package, delete_wishlist_package, Supplier,
+    update_wishlist_supplier_status, update_wishlist_outfit_status,
+    update_wishlist_additional_service_status
 )
 
 # Configure logging
@@ -44,7 +46,13 @@ SECRET_KEY = os.getenv('eims', 'fallback_jwt_secret')
 def init_routes(app):
     # Initialize CORS with proper configuration
     CORS(app, resources={
-        r"/api/v1/*": {
+        r"/api/*": {
+            "origins": ["http://localhost:5173"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "supports_credentials": True
+        },
+        r"/*": {
             "origins": ["http://localhost:5173"],
             "allow_headers": ["Content-Type", "Authorization"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -1537,5 +1545,177 @@ def init_routes(app):
                 cursor.close()
             if conn:
                 conn.close()
+
+    @app.route('/api/wishlist-suppliers/<int:wishlist_supplier_id>', methods=['PUT'])
+    @jwt_required()
+    def update_wishlist_supplier_status_route(wishlist_supplier_id):
+        try:
+            data = request.get_json()
+            status = data.get('status')
+            
+            if not status:
+                return jsonify({'message': 'Status is required'}), 400
+                
+            success = update_wishlist_supplier_status(wishlist_supplier_id, status)
+            
+            if success:
+                return jsonify({'message': 'Status updated successfully'}), 200
+            else:
+                return jsonify({'message': 'Failed to update status'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error updating wishlist supplier status: {e}")
+            return jsonify({'message': 'An error occurred while updating status'}), 500
+
+    @app.route('/api/wishlist-outfits/<int:wishlist_outfit_id>', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    def update_wishlist_outfit_status_route(wishlist_outfit_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'PUT,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            data = request.get_json()
+            status = data.get('status')
+            
+            if not status:
+                return jsonify({'message': 'Status is required'}), 400
+                
+            success = update_wishlist_outfit_status(wishlist_outfit_id, status)
+            
+            if success:
+                response = jsonify({'message': 'Status updated successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Failed to update status'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error updating wishlist outfit status: {e}")
+            return jsonify({'message': 'An error occurred while updating status'}), 500
+
+    @app.route('/api/wishlist-additional-services/<int:id>', methods=['PUT'])
+    @jwt_required()
+    def update_wishlist_additional_service_status_route(id):
+        try:
+            data = request.get_json()
+            status = data.get('status')
+            
+            if not status:
+                return jsonify({'message': 'Status is required'}), 400
+                
+            success = update_wishlist_additional_service_status(id, status)
+            
+            if success:
+                return jsonify({'message': 'Status updated successfully'}), 200
+            else:
+                return jsonify({'message': 'Failed to update status'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error updating wishlist additional service status: {e}")
+            return jsonify({'message': 'An error occurred while updating status'}), 500
+
+    @app.route('/api/wishlist-additional-services/update-status', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    def update_wishlist_additional_service_status_by_ids_route():
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'PUT,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            data = request.get_json()
+            wishlist_id = data.get('wishlist_id')
+            add_service_id = data.get('add_service_id')
+            status = data.get('status')
+            
+            if not all([wishlist_id, add_service_id, status]):
+                return jsonify({'message': 'Missing required fields'}), 400
+                
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE wishlist_additional_services SET status = %s WHERE wishlist_id = %s AND add_service_id = %s",
+                    (status, wishlist_id, add_service_id)
+                )
+                conn.commit()
+                response = jsonify({'message': 'Status updated successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            except Exception as e:
+                logger.error(f"Error updating wishlist additional service status: {e}")
+                conn.rollback()
+                return jsonify({'message': 'Failed to update status'}), 500
+            finally:
+                cursor.close()
+                conn.close()
+                
+        except Exception as e:
+            logger.error(f"Error in update_wishlist_additional_service_status_by_ids_route: {e}")
+            return jsonify({'message': 'An error occurred while updating status'}), 500
+
+    @app.route('/events/<int:events_id>/status', methods=['PUT'])
+    @jwt_required()
+    def update_event_status(events_id):
+        try:
+            data = request.get_json()
+            new_status = data.get('status')
+            
+            if not new_status:
+                return jsonify({
+                    'success': False,
+                    'message': 'Status is required'
+                }), 400
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            try:
+                cursor.execute("""
+                    UPDATE events 
+                    SET status = %s 
+                    WHERE events_id = %s 
+                    RETURNING events_id
+                """, (new_status, events_id))
+                
+                updated_id = cursor.fetchone()
+                conn.commit()
+                
+                if updated_id:
+                    return jsonify({
+                        'success': True,
+                        'message': f'Event status updated to {new_status}'
+                    }), 200
+                else:
+                    return jsonify({
+                        'success': False,
+                        'message': 'Event not found'
+                    }), 404
+                    
+            except Exception as e:
+                conn.rollback()
+                return jsonify({
+                    'success': False,
+                    'message': str(e)
+                }), 500
+            finally:
+                cursor.close()
+                conn.close()
+                
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'message': str(e)
+            }), 500
 
     return app
