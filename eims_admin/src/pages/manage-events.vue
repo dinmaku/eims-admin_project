@@ -52,6 +52,15 @@
     </button>
     <button
       :class="[
+        'w-[120px] h-[45px] border border-solid rounded-md shadow-md transition-transform transform hover:scale-105',
+        { 'bg-gray-800 text-white hover:bg-gray-900': showTable !== 'ongoing-events', 'bg-white': showTable === 'ongoing-events' }
+      ]"
+      @click="showTable = 'ongoing-events'"
+    >
+      <h1 class="font-amaticBold font-medium">Ongoing</h1>
+    </button>
+    <button
+      :class="[
         'w-[90px] h-[45px] border border-solid rounded-md shadow-md transition-transform transform hover:scale-105',
         { 'bg-gray-800 text-white hover:bg-gray-900': showTable !== 'finished-events', 'bg-white': showTable === 'finished-events' }
       ]"
@@ -73,9 +82,9 @@
               <th scope="col" class="px-2 py-3 w-12">#</th>
               <th scope="col" class="px-2 py-3 w-32">Event</th>
               <th scope="col" class="px-2 py-3 w-32">Theme</th>
-              <th scope="col" class="px-2 py-3 w-32">Venue</th>
               <th scope="col" class="px-2 py-3 w-32">Booked by</th>
               <th scope="col" class="px-2 py-3 w-32">Contact Number</th>
+              <th scope="col" class="px-2 py-3 w-32">Booking Type</th>
               <th scope="col" class="px-2 py-3 w-20">Action</th>
             </tr>
           </thead>
@@ -88,9 +97,9 @@
               <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
               <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
               <td class="px-1 py-3 truncate">{{ event.event_theme }}</td>
-              <td class="px-1 py-3 truncate">{{ event.venue_name || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.onsite_contact || event.contactnumber || 'Not provided' }}</td>
+              <td class="px-1 py-3 truncate">{{ event.booking_type || 'N/A' }}</td>
               <td class="px-1 py-3 flex justify-start">
                 <button
                     @click="openWishlistModal(event)"
@@ -155,9 +164,9 @@
               <th scope="col" class="px-2 py-3">#</th>
               <th scope="col" class="px-2 py-3">Event Name</th>
               <th scope="col" class="px-2 py-3">Event Theme</th>
-              <th scope="col" class="px-2 py-3">Venue</th>
               <th scope="col" class="px-2 py-3">Booked By</th>
               <th scope="col" class="px-2 py-3">Contact</th>
+              <th scope="col" class="px-2 py-3">Booking Type</th>
               <th scope="col" class="px-2 py-3">Action</th>
             </tr>
           </thead>
@@ -170,9 +179,9 @@
               <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
               <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
               <td class="px-1 py-3 truncate">{{ event.event_theme }}</td>
-              <td class="px-1 py-3 truncate">{{ event.venue_name || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
               <td class="px-1 py-3 truncate">{{ event.onsite_contact || event.contactnumber || 'Not provided' }}</td>
+              <td class="px-1 py-3 truncate">{{ event.booking_type || 'N/A' }}</td>
               <td class="px-1 py-3 flex justify-start">
                 <button
                     @click="openWishlistModal(event)"
@@ -206,6 +215,58 @@
         </div>
       </div>
     </div>
+
+        <!-- Ongoing Events Section -->
+        <div v-if="showTable === 'ongoing-events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 table-fixed">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-2 py-3 w-12">#</th>
+              <th scope="col" class="px-2 py-3 w-32">Event</th>
+              <th scope="col" class="px-2 py-3 w-32">Client Name</th>
+              <th scope="col" class="px-2 py-3 w-32">Date Scheduled</th>
+              <th scope="col" class="px-2 py-3 w-32">Event Type</th>
+              <th scope="col" class="px-2 py-3 w-20">Status</th>
+              <th scope="col" class="px-2 py-3 w-20">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="ongoingEvents.length === 0" class="border-b dark:border-gray-700">
+              <td colspan="7" class="px-2 py-4 text-center text-gray-500">No ongoing events found</td>
+            </tr>
+            <tr v-for="(event, index) in paginatedOngoingEvents" :key="event.events_id" class="border-b dark:border-gray-700">
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
+              <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
+              <td class="px-1 py-3 truncate">{{ event.firstname }} {{ event.lastname }}</td>
+              <td class="px-1 py-3 truncate">{{ formatDate(event.schedule) }}</td>
+              <td class="px-1 py-3 truncate">{{ event.event_type }}</td>
+              <td class="px-1 py-3 truncate">
+                <span class="px-2 py-1 rounded-full bg-green-100 text-green-800">{{ event.status }}</span>
+              </td>
+              <td class="px-1 py-3 flex justify-start">
+                <button @click="openDetailsModal(event)" class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                  <img src="/img/update3.png" alt="View" class="w-5 h-5">
+                </button>
+                <button @click="markAsCompleted(event)" class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                  <img src="/img/approve.png" alt="Mark as Completed" class="w-5 h-5" title="Mark as Completed">
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Pagination Controls -->
+        <div class="flex justify-center space-x-2 mt-4 mb-6" v-if="ongoingEvents.length > 0">
+          <button @click="currentOngoingPage = Math.max(currentOngoingPage - 1, 1)" :disabled="currentOngoingPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
+          <button v-for="page in totalOngoingPages" :key="page" @click="changeOngoingPage(page)" :class="{'bg-[#9B111E]': currentOngoingPage === page, 'bg-gray-300': currentOngoingPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+            {{ page }}
+          </button>
+          <button @click="currentOngoingPage = Math.min(currentOngoingPage + 1, totalOngoingPages)" :disabled="currentOngoingPage === totalOngoingPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Next</button>
+        </div>
+      </div>
+    </div>
+
 
 
 
@@ -288,7 +349,19 @@
             <label class="block text-xs font-medium mb-1 text-gray-600 text-start">Schedule</label>
             <input v-model="selectedEvent.schedule" disabled type="text" class="w-full p-2 border rounded text-sm">
           </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600 text-start">Start Time</label>
+            <input v-model="selectedEvent.start_time" disabled type="text" class="w-full p-2 border rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-600 text-start">End Time</label>
+            <input v-model="selectedEvent.end_time" disabled type="text" class="w-full p-2 border rounded text-sm">
+          </div>
         </div>
+        <div class ="mb-2">
+            <label class="text-xs font-medium mb-1 text-gray-600">Package Name</label>
+            <p class="text-lg font-semibold">{{ selectedEvent.package_name }}</p>
+          </div>
 
         <div class = "mb-4">
             <p class = "text-md font-medium font-poppins text-gray-500">(* Click the buttons to Add items to the list )</p>
@@ -574,6 +647,7 @@
           </div>
       </div>
 
+
       <!-- Capacity Modal -->
       <div v-if="showCapacityModal" @click.self="showCapacityModal = false" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
                   <div class="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
@@ -652,7 +726,7 @@
 
         <!-- Actions -->
         <div class="flex justify-end space-x-3">
-          <button @click="saveChanges" class="px-4 py-2 bg-blue-500 text-white rounded">Save Changes</button>
+          <button @click="saveUpdatedWishlist" class="px-4 py-2 bg-blue-500 text-white rounded">Save Changes</button>
           <button @click="closeWishlistModal" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
         </div>
       </div>
@@ -1394,7 +1468,7 @@
       currentWishlistPage: 1,
       rowsPerWishlistPage: 5,
       currentPage: 1,
-      rowsPerPage: 4,
+      rowsPerPage: 5,
       currentFinishedPage: 1,
       rowsPerFinishedPage: 5,
       selectedIndex: null,
@@ -1404,6 +1478,9 @@
       additionalServices: [],
       wishlist: [],
       upcomingEvents: [],
+      currentOngoingPage: 1,  // New pagination for ongoing events
+      rowsPerOngoingPage: 10, // New row limit for ongoing events
+      ongoingEvents: [],      // New array to store ongoing events
       selectedEvent: {
         event_name: '',
         event_theme: '',
@@ -1616,6 +1693,16 @@
       return Math.ceil((this.upcomingEvents?.length || 0) / this.rowsPerPage);
     },
 
+    paginatedOngoingEvents() {
+      const start = (this.currentOngoingPage - 1) * this.rowsPerOngoingPage;
+      const end = start + this.rowsPerOngoingPage;
+      return this.ongoingEvents.slice(start, end);
+    },
+
+    totalOngoingPages() {
+      return Math.ceil((this.ongoingEvents?.length || 0) / this.rowsPerOngoingPage);
+    },
+
     paginatedWishlist() {
       const start = (this.currentWishlistPage - 1) * this.rowsPerWishlistPage;
       const end = start + this.rowsPerWishlistPage;
@@ -1800,45 +1887,52 @@
 
     async fetchBookedWishlist() {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
           console.error('No access token found');
           return;
         }
 
         const response = await fetch('http://127.0.0.1:5000/booked-wishlist', {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           },
           credentials: 'include'
         });
 
-        const data = await response.json();
-        console.log('Raw response:', data);
+        if (!response.ok) {
+          throw new Error('Failed to fetch booked wishlist');
+        }
 
-        // Process all events
-        const processedEvents = data.map(event => ({
+        const data = await response.json();
+        console.log('Raw response data:', data);
+
+        // Process the data to extract venue names and outfits
+        const processedEvents = data.map(event => {
+          // Extract venue name from the venue object if it exists
+          const venueName = event.venue ? event.venue.venue_name : null;
+          
+          // Extract outfits from the outfits array if it exists
+          const outfits = event.outfits || [];
+          
+          return {
             ...event,
-          venue_name: event.venue_name || null,
-          outfits: (event.outfits || []).map(outfit => ({
-            wishlist_outfit_id: outfit.wishlist_outfit_id,
-              outfit_id: outfit.outfit_id,
-              outfit_name: outfit.outfit_name,
-            price: parseFloat(outfit.price || 0),
-              outfit_type: outfit.outfit_type,
-            status: outfit.status || 'Pending'
-          }))
-        }));
+            venue_name: venueName,
+            outfits: outfits,
+            booking_type: event.booking_type || 'N/A'  // Include booking_type
+          };
+        });
 
         // Separate events based on status
         this.wishlist = processedEvents.filter(event => event.status === 'Wishlist');
         this.upcomingEvents = processedEvents.filter(event => event.status === 'Upcoming');
-
+        
         console.log('Processed wishlist:', this.wishlist);
         console.log('Processed upcoming events:', this.upcomingEvents);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching booked wishlist:', error);
         this.wishlist = [];
         this.upcomingEvents = [];
       }
@@ -2125,66 +2219,97 @@
       }
     },
 
-    addSelectedSupplier() {
+    async addSelectedSupplier() {
       if (!this.selectedSupplier) {
         console.error('No supplier selected');
         return;
       }
 
+      try {
+        // Initialize suppliers array if it doesn't exist
+        if (!this.selectedEvent.suppliers) {
+          this.selectedEvent.suppliers = [];
+        }
+
+        // Add the supplier with a default status of 'Pending'
+        const supplierData = {
+          ...this.selectedSupplier,
+          status: 'Pending'
+        };
+
+        // Add to local state first
       if (this.isEditingInclusion) {
         // Update existing supplier
-        this.selectedEvent.suppliers[this.editingInclusionIndex] = { ...this.selectedSupplier };
+          this.selectedEvent.suppliers[this.editingInclusionIndex] = supplierData;
         this.isEditingInclusion = false;
         this.editingInclusionIndex = -1;
       } else {
         // Add new supplier
-        if (!this.selectedEvent.suppliers) {
-          this.selectedEvent.suppliers = [];
+          this.selectedEvent.suppliers.push(supplierData);
         }
-        // Add the supplier with a default status of 'Pending'
-      this.selectedEvent.suppliers.push({
-          ...this.selectedSupplier,
-          status: 'Pending'
-        });
-      }
+
+        // Save changes to the database immediately
+        await this.saveUpdatedWishlist(false); // Don't show success alert
 
       // Reset and close modal
       this.selectedSupplier = null;
       this.showInclusionModal = false;
       this.selectedInclusionType = '';
+      } catch (error) {
+        console.error('Error adding supplier:', error);
+        alert(`Error adding supplier: ${error.message}`);
+      }
   },
 
-  addSelectedVenue() {
+    async addSelectedVenue() {
       if (!this.selectedVenue) {
         console.error('No venue selected');
         return;
       }
 
+      try {
+        // Initialize venues array if it doesn't exist
+        if (!this.selectedEvent.venues) {
+          this.selectedEvent.venues = [];
+        }
+        
+        // Add venue data with status
+        const venueData = {
+          ...this.selectedVenue,
+          status: 'Pending'
+        };
+
+        // Add to local state first
       if (this.isEditingInclusion) {
         // Update existing venue
-        this.selectedEvent.venues[this.editingInclusionIndex] = { ...this.selectedVenue };
+          this.selectedEvent.venues[this.editingInclusionIndex] = venueData;
         this.isEditingInclusion = false;
         this.editingInclusionIndex = -1;
         } else {
         // Add new venue
-        if (!this.selectedEvent.venues) {
-          this.selectedEvent.venues = [];
-        }
-        this.selectedEvent.venues.push({ ...this.selectedVenue });
+          this.selectedEvent.venues.push(venueData);
       }
+
+        // Save changes to the database immediately
+        await this.saveUpdatedWishlist(false); // Don't show success alert
 
       // Reset and close modal
       this.selectedVenue = null;
       this.showInclusionModal = false;
       this.selectedInclusionType = '';
+      } catch (error) {
+        console.error('Error adding venue:', error);
+        alert(`Error adding venue: ${error.message}`);
+      }
     },
 
-  addSelectedOutfit() {
+    async addSelectedOutfit() {
       if (!this.selectedOutfit) {
         console.error('No outfit selected');
         return;
       }
 
+      try {
       // Initialize outfits array if it doesn't exist
     if (!this.selectedEvent.outfits) {
       this.selectedEvent.outfits = [];
@@ -2224,22 +2349,30 @@
         is_initialized: false
       };
 
-      // Add the outfit
+        // Add the outfit to local state
       this.selectedEvent.outfits.push(outfitData);
+
+        // Save changes to the database immediately
+        await this.saveUpdatedWishlist(false); // Don't show success alert
 
       // Reset and close modal
       this.selectedOutfit = null;
       this.showInclusionModal = false;
       this.selectedInclusionType = '';
       this.outfitSelectionMode = 'package'; // Reset to default mode
+      } catch (error) {
+        console.error('Error adding outfit:', error);
+        alert(`Error adding outfit: ${error.message}`);
+      }
   },
 
-  addSelectedService() {
+    async addSelectedService() {
       if (!this.selectedService) {
         console.error('No service selected');
         return;
       }
 
+      try {
       // Initialize services array if it doesn't exist
       if (!this.selectedEvent.services) {
         this.selectedEvent.services = [];
@@ -2259,9 +2392,11 @@
         add_service_id: this.selectedService.add_service_id,
         add_service_name: this.selectedService.add_service_name,
         add_service_description: this.selectedService.add_service_description,
-        add_service_price: parseFloat(this.selectedService.add_service_price || 0)
+          add_service_price: parseFloat(this.selectedService.add_service_price || 0),
+          status: 'Pending' // Add default status
       };
 
+        // Add to local state first
       if (this.isEditingInclusion) {
         // Update existing service
         this.selectedEvent.services[this.editingInclusionIndex] = serviceData;
@@ -2272,8 +2407,15 @@
       this.selectedEvent.services.push(serviceData);
       }
 
+        // Save changes to the database immediately
+        await this.saveUpdatedWishlist(false); // Don't show success alert
+
       this.selectedService = null;
       this.closeInclusionModal();
+      } catch (error) {
+        console.error('Error adding service:', error);
+        alert(`Error adding service: ${error.message}`);
+      }
   },
 
   removeSupplier(index) {
@@ -2350,7 +2492,9 @@
             outfit_name: this.selectedOutfit.outfit_name,
             outfit_type: this.selectedOutfit.outfit_type,
             size: this.selectedOutfit.size,
-            rent_price: this.selectedOutfit.rent_price
+            rent_price: this.selectedOutfit.rent_price,
+            status: 'Pending',
+            is_initialized: false
           });
           this.closeOutfitModal();
         }
@@ -2386,7 +2530,8 @@
             gown_package_id: this.selectedOutfit.gown_package_id,
             gown_package_name: this.selectedOutfit.gown_package_name,
         gown_package_price: parseFloat(this.selectedOutfit.gown_package_price || 0),
-        status: 'Pending'
+            status: 'Pending',
+            is_initialized: false
           });
 
           this.closeOutfitModal();
@@ -2464,25 +2609,21 @@
         contactnumber: event.contactnumber || ''
       }));
 
-      // If there's a gown package but no outfits, initialize the outfits array
-      if (event.gown_package_id && (!this.selectedEvent.outfits || this.selectedEvent.outfits.length === 0)) {
-        this.selectedEvent.outfits = [{
+      // Initialize outfits array if it doesn't exist
+      if (!this.selectedEvent.outfits) {
+        this.selectedEvent.outfits = [];
+      }
+
+      // If there's a gown package but no outfits, initialize the outfits array with the package
+      if (event.gown_package_id && this.selectedEvent.outfits.length === 0) {
+        this.selectedEvent.outfits.push({
           type: 'outfit_package',
           gown_package_id: event.gown_package_id,
           gown_package_name: event.gown_package_name,
           gown_package_price: event.gown_package_price,
           status: 'Pending',
           is_initialized: true
-        }];
-      }
-
-      // Add any additional outfits from the event
-      if (event.outfits && event.outfits.length > 0) {
-        const additionalOutfits = event.outfits.map(outfit => ({
-          ...outfit,
-          is_initialized: outfit.is_initialized || false
-        }));
-        this.selectedEvent.outfits = [...this.selectedEvent.outfits, ...additionalOutfits];
+        });
       }
 
       // Make sure services array is properly initialized
@@ -2490,13 +2631,24 @@
         this.selectedEvent.services = [];
       }
 
-      // Add any additional services from the event
-      if (event.services && event.services.length > 0) {
-        const additionalServices = event.services.map(service => ({
+      // Ensure all services have a status field
+      this.selectedEvent.services = this.selectedEvent.services.map(service => ({
           ...service,
-          is_initialized: service.is_initialized || false
+        status: service.status || 'Pending'
+      }));
+
+      // Ensure all outfits have a status field
+      this.selectedEvent.outfits = this.selectedEvent.outfits.map(outfit => ({
+        ...outfit,
+        status: outfit.status || 'Pending'
+      }));
+
+      // Ensure all suppliers have a status field
+      if (Array.isArray(this.selectedEvent.suppliers)) {
+        this.selectedEvent.suppliers = this.selectedEvent.suppliers.map(supplier => ({
+          ...supplier,
+          status: supplier.status || 'Pending'
         }));
-        this.selectedEvent.services = [...this.selectedEvent.services, ...additionalServices];
       }
 
       console.log('Selected event for editing:', this.selectedEvent);
@@ -2538,20 +2690,146 @@
       this.showRemoveConfirmationModal = true;
     },
 
-    confirmRemoveInclusion() {
+    async confirmRemoveInclusion() {
       if (!this.inclusionToRemove) {
         console.error('No inclusion to remove');
         return;
       }
 
-      const { type, index } = this.inclusionToRemove;
-      
-      // Remove from local state
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const { type, index, item } = this.inclusionToRemove;
+        let endpoint;
+        let requestData = {};
+        let method = 'DELETE'; // Change to DELETE
+
+        switch (type) {
+          case 'outfits': {
+            if (!item.wishlist_outfit_id) {
+              // For outfits without IDs, just remove from local state
+              this.selectedEvent.outfits.splice(index, 1);
+              alert('Outfit removed successfully');
+              return;
+            } else {
+              // Use direct DELETE for wishlist outfit
+              endpoint = `http://127.0.0.1:5000/api/wishlist-outfits-direct/${item.wishlist_outfit_id}`;
+            }
+            break;
+          }
+          
+          case 'services': {
+            if (!item.id) {
+              // For services without IDs, just remove from local state
+              this.selectedEvent.services.splice(index, 1);
+              alert('Service removed successfully');
+              return;
+            } else {
+              // Use direct DELETE for wishlist service
+              endpoint = `http://127.0.0.1:5000/api/wishlist-services-direct/${item.id}`;
+            }
+            break;
+          }
+          
+          case 'suppliers': {
+            if (!item.wishlist_supplier_id) {
+              // For suppliers without IDs, just remove from local state
+              this.selectedEvent.suppliers.splice(index, 1);
+              alert('Supplier removed successfully');
+              return;
+            } else {
+              // Use direct DELETE for wishlist supplier
+              endpoint = `http://127.0.0.1:5000/api/wishlist-suppliers-direct/${item.wishlist_supplier_id}`;
+            }
+            break;
+          }
+          
+          case 'venues': {
+            if (!item.wishlist_venue_id) {
+              // For venues without IDs, just remove from local state
+              this.selectedEvent.venues.splice(index, 1);
+              alert('Venue removed successfully');
+              return;
+            } else {
+              // Use direct DELETE for wishlist venue
+              endpoint = `http://127.0.0.1:5000/api/wishlist-venues-direct/${item.wishlist_venue_id}`;
+            }
+            break;
+          }
+          default:
+            throw new Error(`Unsupported inclusion type: ${type}`);
+        }
+
+        console.log(`Making API call to: ${endpoint} with method: ${method}`);
+        
+        // First attempt direct DELETE
+        try {
+          const response = await fetch(endpoint, {
+            method: method,
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          // Remove from local state only after successful API call
       this.selectedEvent[type].splice(index, 1);
-      
+          alert(`${type.slice(0, -1)} removed successfully`);
+        } catch (directDeleteError) {
+          console.error('Direct DELETE failed, falling back to status update:', directDeleteError);
+          
+          // Fallback: update status to 'Deleted'
+          let fallbackEndpoint;
+          
+          switch (type) {
+            case 'outfits':
+              fallbackEndpoint = `http://127.0.0.1:5000/api/wishlist-outfits/${item.wishlist_outfit_id}`;
+              break;
+            case 'services':
+              fallbackEndpoint = `http://127.0.0.1:5000/api/wishlist-additional-services/${item.id}`;
+              break;
+            case 'suppliers':
+              fallbackEndpoint = `http://127.0.0.1:5000/api/wishlist-suppliers/${item.wishlist_supplier_id}`;
+              break;
+            case 'venues':
+              fallbackEndpoint = `http://127.0.0.1:5000/api/wishlist-venues/${item.wishlist_venue_id}`;
+              break;
+          }
+          
+          const fallbackResponse = await fetch(fallbackEndpoint, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ status: 'Deleted' })
+          });
+          
+          if (!fallbackResponse.ok) {
+            throw new Error(`Fallback update failed! status: ${fallbackResponse.status}`);
+          }
+          
+          // Remove from local state after successful fallback
+          this.selectedEvent[type].splice(index, 1);
+          alert(`${type.slice(0, -1)} marked as deleted successfully`);
+        }
+      } catch (error) {
+        console.error('Error in confirmRemoveInclusion:', error);
+        alert(`Error removing item: ${error.message}`);
+      } finally {
       // Close the confirmation modal
       this.showRemoveConfirmationModal = false;
       this.inclusionToRemove = null;
+      }
     },
 
     closeRemoveConfirmationModal() {
@@ -2559,16 +2837,17 @@
       this.inclusionToRemove = null;
     },
     editInclusion(type, index) {
-      const inclusionTypes = {
+      // Convert inclusion type to modal type
+      const modalTypes = {
         'suppliers': 'supplier',
         'venues': 'venue',
         'outfits': 'outfit',
         'services': 'service'
       };
 
-      const modalType = inclusionTypes[type.toLowerCase()];
+      const modalType = modalTypes[type];
       if (!modalType) {
-        console.error('Invalid inclusion type:', type);
+        console.error(`Unsupported inclusion type: ${type}`);
         return;
       }
 
@@ -2585,6 +2864,9 @@
         return;
       }
 
+      // Preserve the current status
+      const currentStatus = data.status || 'Pending';
+
       // Set up editing state
       this.isEditingInclusion = true;
       this.editingInclusionIndex = index;
@@ -2592,13 +2874,25 @@
 
       // Pre-fill the form based on the inclusion type
       if (modalType === 'supplier') {
-        this.selectedSupplier = { ...data };
+        this.selectedSupplier = { 
+          ...data,
+          status: currentStatus
+        };
       } else if (modalType === 'venue') {
-        this.selectedVenue = { ...data };
+        this.selectedVenue = { 
+          ...data,
+          status: currentStatus
+        };
       } else if (modalType === 'outfit') {
-        this.selectedOutfit = { ...data };
+        this.selectedOutfit = { 
+          ...data,
+          status: currentStatus
+        };
       } else if (modalType === 'service') {
-        this.selectedService = { ...data };
+        this.selectedService = { 
+          ...data,
+          status: currentStatus
+        };
       }
 
       // Open the inclusion modal
@@ -2607,31 +2901,65 @@
 
     closeEditInclusionModal() {
       this.showEditInclusionModal = false;
-      this.editingInclusion = {
-        type: '',
-        index: -1,
-        data: {}
-      };
+      this.editingInclusion = { type: '', index: -1, data: {} };
     },
 
-    saveEditedInclusion() {
-      const { type, index, data } = this.editingInclusion;
-      const inclusionTypes = {
-        'suppliers': 'suppliers',
-        'venues': 'venues',
-        'outfits': 'outfits',
-        'services': 'services',
-        'additional services': 'services'
-      };
-
-      const arrayType = inclusionTypes[type.toLowerCase()];
-      if (arrayType && this.selectedEvent[arrayType]) {
-        // Update the data in the correct array
-        this.selectedEvent[arrayType][index] = { ...data };
-        console.log(`Updated ${type} at index ${index}:`, data);
+    async saveEditedInclusion() {
+      try {
+        // Update the inclusion in the selectedEvent based on the type and index
+        const { type, index, data } = this.editingInclusion;
+        
+        if (!type || index < 0 || !this.selectedEvent[type] || !this.selectedEvent[type][index]) {
+          throw new Error('Invalid inclusion data');
+        }
+        
+        // Update the specific inclusion with edited data
+        // First create a copy of the original item
+        const updatedItem = { ...this.selectedEvent[type][index] };
+        
+        // Map the edited data to the correct fields based on inclusion type
+        switch (type) {
+          case 'suppliers':
+            updatedItem.supplier_name = data.supplier_name;
+            updatedItem.contact = data.contact;
+            updatedItem.price = parseFloat(data.price) || 0;
+            updatedItem.remarks = data.remarks;
+            break;
+          case 'venues':
+            updatedItem.venue_name = data.venue_name;
+            updatedItem.location = data.location;
+            updatedItem.venue_price = parseFloat(data.price) || 0;
+            break;
+          case 'outfits':
+            if (updatedItem.type === 'package') {
+              updatedItem.gown_package_name = data.outfit_name;
+              updatedItem.gown_package_price = parseFloat(data.price) || 0;
+            } else {
+              updatedItem.outfit_name = data.outfit_name;
+              updatedItem.size = data.size;
+              updatedItem.rent_price = parseFloat(data.price) || 0;
+            }
+            break;
+          case 'services':
+            updatedItem.add_service_name = data.service_name;
+            updatedItem.add_service_description = data.description;
+            updatedItem.add_service_price = parseFloat(data.price) || 0;
+            break;
+        }
+        
+        // Update the inclusion in the selectedEvent
+        this.selectedEvent[type][index] = updatedItem;
+        
+        // Save changes to the database
+        await this.saveUpdatedWishlist(false);
+        
+        // Close the modal
+        this.closeEditInclusionModal();
+        alert('Inclusion updated successfully');
+      } catch (error) {
+        console.error('Error saving edited inclusion:', error);
+        alert(`Error updating inclusion: ${error.message}`);
       }
-
-      this.closeEditInclusionModal();
     },
 
     selectSupplierType(serviceType) {
@@ -2678,14 +3006,6 @@
     },
     async approveInclusion(type, index) {
       try {
-        if (!this.selectedEvent || !this.selectedEvent[type]) {
-          throw new Error(`Invalid event or type: ${type}`);
-        }
-
-        if (index < 0 || index >= this.selectedEvent[type].length) {
-          throw new Error(`Invalid ${type} index: ${index}`);
-        }
-
         const token = localStorage.getItem('access_token');
         if (!token) {
           throw new Error('No authentication token found');
@@ -2695,37 +3015,41 @@
         let endpoint;
         let requestData;
         let method = 'PUT';
+        
+        // Determine the new status - toggle between Approved and Pending
+        const newStatus = item.status === 'Approved' ? 'Pending' : 'Approved';
+        const statusVerb = newStatus === 'Approved' ? 'approved' : 'reverted to pending';
 
         switch (type) {
           case 'outfits': {
             // Check if the wishlist_outfit_id exists
             if (!item.wishlist_outfit_id) {
               // For outfits without IDs, just update locally
-              this.selectedEvent.outfits[index].status = 'Approved';
-              alert('Outfit approved successfully');
+              this.selectedEvent.outfits[index].status = newStatus;
+              alert(`Outfit ${statusVerb} successfully`);
               return;
             } else {
               // Update existing wishlist outfit
               endpoint = `http://127.0.0.1:5000/api/wishlist-outfits/${item.wishlist_outfit_id}`;
               requestData = {
-                status: 'Approved'
+                status: newStatus
               };
             }
             break;
           }
           
           case 'services': {
-            // Check if the wishlist_service_id exists
-            if (!item.wishlist_service_id) {
+            // Check if the service id exists
+            if (!item.id) {
               // For services without IDs, just update locally
-              this.selectedEvent.services[index].status = 'Approved';
-              alert('Service approved successfully');
+              this.selectedEvent.services[index].status = newStatus;
+              alert(`Service ${statusVerb} successfully`);
               return;
             } else {
               // Update existing wishlist service
-              endpoint = `http://127.0.0.1:5000/api/wishlist-additional-services/${item.wishlist_service_id}`;
+              endpoint = `http://127.0.0.1:5000/api/wishlist-additional-services/${item.id}`;
               requestData = {
-                status: 'Approved'
+                status: newStatus
               };
             }
             break;
@@ -2735,14 +3059,14 @@
             // Check if the wishlist_supplier_id exists
             if (!item.wishlist_supplier_id) {
               // For suppliers without IDs, just update locally
-              this.selectedEvent.suppliers[index].status = 'Approved';
-              alert('Supplier approved successfully');
+              this.selectedEvent.suppliers[index].status = newStatus;
+              alert(`Supplier ${statusVerb} successfully`);
               return;
             } else {
               // Update existing wishlist supplier
               endpoint = `http://127.0.0.1:5000/api/wishlist-suppliers/${item.wishlist_supplier_id}`;
               requestData = {
-                status: 'Approved'
+                status: newStatus
               };
             }
             break;
@@ -2752,14 +3076,14 @@
             // Check if the wishlist_venue_id exists
             if (!item.wishlist_venue_id) {
               // For venues without IDs, just update locally
-              this.selectedEvent.venues[index].status = 'Approved';
-              alert('Venue approved successfully');
+              this.selectedEvent.venues[index].status = newStatus;
+              alert(`Venue ${statusVerb} successfully`);
               return;
             } else {
               // Update existing wishlist venue
               endpoint = `http://127.0.0.1:5000/api/wishlist-venues/${item.wishlist_venue_id}`;
               requestData = {
-                status: 'Approved'
+                status: newStatus
               };
             }
             break;
@@ -2787,19 +3111,13 @@
 
         const result = await response.json();
         
-        // If we created a new wishlist item, update the local item with the new ID
-        if (method === 'POST' && result.id) {
-          const idField = `wishlist_${type.slice(0, -1)}_id`; // Convert 'outfits' to 'wishlist_outfit_id'
-          this.selectedEvent[type][index][idField] = result.id;
-        }
-        
         // Update local state
-        this.selectedEvent[type][index].status = 'Approved';
+        this.selectedEvent[type][index].status = newStatus;
         
-        alert('Item approved successfully');
+        alert(`Item ${statusVerb} successfully`);
       } catch (error) {
         console.error('Error in approveInclusion:', error);
-        alert(`Error approving item: ${error.message}`);
+        alert(`Error updating item status: ${error.message}`);
       }
     },
 
@@ -2889,33 +3207,84 @@
       try {
         const token = localStorage.getItem('access_token');
         if (!token) {
-          console.error('No access token found');
+          console.error('No token found');
+          return;
+        }
+        
+        const response = await fetch('http://127.0.0.1:5000/booked-wishlist', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Upcoming events data:', data);
+        
+        // Filter only upcoming events (not wishlist or finished)
+        this.upcomingEvents = data.filter(event => event.status === 'Upcoming');
+        
+        // Filter ongoing events
+        this.ongoingEvents = data.filter(event => event.status === 'Ongoing');
+        
+        // Filter finished events
+        this.finishedEvents = data.filter(event => event.status === 'Finished');
+        
+      } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+      }
+    },
+
+    async markAsCompleted(event) {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        if (!confirm(`Are you sure you want to mark "${event.event_name}" as completed?`)) {
           return;
         }
 
-        const response = await fetch('http://127.0.0.1:5000/upcoming-events', {
+        const response = await fetch(`http://127.0.0.1:5000/events/${event.events_id}/status`, {
+          method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          credentials: 'include'
+          credentials: 'include',
+          body: JSON.stringify({
+            status: 'Finished'
+          })
         });
 
-        const data = await response.json();
-        console.log('Raw upcoming events:', data);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        this.upcomingEvents = data.map(event => ({
-          ...event,
-          venue_name: event.venue_name || null,
-          status: 'Upcoming'
-        }));
+        const result = await response.json();
         
-        console.log('Processed upcoming events:', this.upcomingEvents);
+        if (result.success) {
+          // Remove from ongoing events and add to finished events
+          this.ongoingEvents = this.ongoingEvents.filter(e => e.events_id !== event.events_id);
+          event.status = 'Finished';
+          this.finishedEvents.push(event);
+          
+          // Show success message
+          alert('Event marked as completed successfully');
+        } else {
+          throw new Error(result.message || 'Failed to update event status');
+        }
       } catch (error) {
-        console.error('Error fetching upcoming events:', error);
-        this.upcomingEvents = [];
+        console.error('Error marking event as completed:', error);
+        alert(`Error marking event as completed: ${error.message}`);
       }
     },
+
     debugServices() {
       console.log('Debug Services:');
       console.log('selectedEvent:', this.selectedEvent);
@@ -2958,6 +3327,83 @@
       this.selectedEvent.services.push(testService);
       console.log('Added test service:', testService);
       console.log('Updated services array:', this.selectedEvent.services);
+    },
+    async saveUpdatedWishlist(showAlert = true) {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Prepare data for API
+        const updatedEvent = {
+          events_id: this.selectedEvent.events_id,
+          package_name: this.selectedEvent.package_name || '',
+          description: this.selectedEvent.description || '',
+          capacity: parseInt(this.selectedEvent.capacity) || 0,
+          venue_id: this.selectedEvent.venue ? this.selectedEvent.venue.venue_id : null,
+          gown_package_id: this.selectedEvent.gown_package_id || null,
+          additional_capacity_charges: parseFloat(this.selectedEvent.additional_capacity_charges) || 0,
+          charge_unit: parseInt(this.selectedEvent.charge_unit) || 1,
+          total_price: parseFloat(this.selectedEvent.total_price) || 0,
+          event_type_id: this.selectedEvent.event_type_id || null,
+          status: this.selectedEvent.status || 'Wishlist',
+          outfits: this.selectedEvent.outfits.map(outfit => ({
+            ...outfit,
+            status: outfit.status || 'Pending'
+          })),
+          services: this.selectedEvent.services.map(service => ({
+            ...service,
+            status: service.status || 'Pending'
+          })),
+          suppliers: this.selectedEvent.suppliers.map(supplier => ({
+            ...supplier,
+            status: supplier.status || 'Pending'
+          }))
+        };
+
+        console.log('Updating wishlist with data:', updatedEvent);
+        console.log('Wishlist ID:', this.selectedEvent.wishlist_id);
+
+        // Create API URL
+        const apiUrl = `http://127.0.0.1:5000/wishlist-packages/${this.selectedEvent.wishlist_id}`;
+        console.log('API URL:', apiUrl);
+
+        // Configure axios request
+        const config = {
+          method: 'put',
+          url: apiUrl,
+          headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Content-Type': 'application/json'
+          },
+          data: updatedEvent,
+          withCredentials: true
+        };
+
+        // Make the request
+        const response = await axios(config);
+        console.log('Response:', response);
+
+        // Handle API response
+        if (response.data && response.data.success) {
+          if (showAlert) {
+            alert('Wishlist updated successfully');
+            this.closeWishlistModal();
+          }
+          // Refresh data
+          await this.fetchBookedWishlist();
+          return true;
+        } else {
+          throw new Error((response.data && response.data.message) || 'Failed to update wishlist');
+        }
+      } catch (error) {
+        console.error('Error in saveUpdatedWishlist:', error);
+        if (showAlert) {
+          alert(`Error updating wishlist: ${error.message}`);
+        }
+        return false;
+      }
     },
   },
 

@@ -34,7 +34,8 @@ from .models import (
     create_wishlist_package, get_wishlist_package, get_event_wishlists,
     update_wishlist_package, delete_wishlist_package, Supplier,
     update_wishlist_supplier_status, update_wishlist_outfit_status,
-    update_wishlist_additional_service_status
+    update_wishlist_additional_service_status, delete_wishlist_outfit_direct,
+    delete_wishlist_service_direct, delete_wishlist_supplier_direct, delete_wishlist_venue_direct
 )
 
 # Configure logging
@@ -717,7 +718,8 @@ def init_routes(app):
                 'onsite_lastname': data.get('onsite_lastname'),
                 'onsite_contact': data.get('onsite_contact'),
                 'onsite_address': data.get('onsite_address'),
-                'total_price': data.get('total_price', 0)
+                'total_price': data.get('total_price', 0),
+                'booking_type': data.get('booking_type', 'Onsite')
             }
 
             # Package configuration data
@@ -966,7 +968,8 @@ def init_routes(app):
                 'onsite_lastname': data.get('onsite_lastname'),
                 'onsite_contact': data.get('onsite_contact'),
                 'onsite_address': data.get('onsite_address'),
-                'total_price': data.get('total_price', 0)
+                'total_price': data.get('total_price', 0),
+                'booking_type': data.get('booking_type', 'Onsite')
             }
 
             # Package configuration data
@@ -1456,6 +1459,65 @@ def init_routes(app):
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             return response, 500
 
+    @app.route('/wishlist-packages/<int:wishlist_id>', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    def update_wishlist_package_route(wishlist_id):
+        if request.method == 'OPTIONS':
+            # Handle preflight request
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'PUT,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        try:
+            # Get user ID from token
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if userid is None:
+                response = jsonify({
+                    'success': False,
+                    'message': 'User not found'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 404
+
+            data = request.get_json()
+            
+            # Update wishlist package and its related data
+            result = update_wishlist_package(wishlist_id, data)
+            
+            if result:
+                response = jsonify({
+                    'success': True,
+                    'message': 'Wishlist package updated successfully',
+                    'wishlist_id': wishlist_id
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                response = jsonify({
+                    'success': False,
+                    'message': 'Failed to update wishlist package'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 500
+                
+        except Exception as e:
+            logging.error(f"Error updating wishlist package: {str(e)}")
+            response = jsonify({
+                'success': False,
+                'message': f'Error updating wishlist package: {str(e)}'
+            })
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
+
     @app.route('/events/schedules', methods=['GET', 'OPTIONS'])
     @jwt_required()
     def get_event_schedules():
@@ -1717,5 +1779,109 @@ def init_routes(app):
                 'success': False,
                 'message': str(e)
             }), 500
+
+    @app.route('/api/wishlist-outfits-direct/<int:wishlist_outfit_id>', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def delete_wishlist_outfit_direct_route(wishlist_outfit_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            success = delete_wishlist_outfit_direct(wishlist_outfit_id)
+            
+            if success:
+                response = jsonify({'message': 'Outfit deleted successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Failed to delete outfit'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error deleting wishlist outfit: {e}")
+            return jsonify({'message': 'An error occurred while deleting outfit'}), 500
+
+    @app.route('/api/wishlist-services-direct/<int:service_id>', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def delete_wishlist_service_direct_route(service_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            success = delete_wishlist_service_direct(service_id)
+            
+            if success:
+                response = jsonify({'message': 'Service deleted successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Failed to delete service'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error deleting wishlist service: {e}")
+            return jsonify({'message': 'An error occurred while deleting service'}), 500
+
+    @app.route('/api/wishlist-suppliers-direct/<int:wishlist_supplier_id>', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def delete_wishlist_supplier_direct_route(wishlist_supplier_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            success = delete_wishlist_supplier_direct(wishlist_supplier_id)
+            
+            if success:
+                response = jsonify({'message': 'Supplier deleted successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Failed to delete supplier'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error deleting wishlist supplier: {e}")
+            return jsonify({'message': 'An error occurred while deleting supplier'}), 500
+
+    @app.route('/api/wishlist-venues-direct/<int:wishlist_venue_id>', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def delete_wishlist_venue_direct_route(wishlist_venue_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            success = delete_wishlist_venue_direct(wishlist_venue_id)
+            
+            if success:
+                response = jsonify({'message': 'Venue deleted successfully'})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Failed to delete venue'}), 500
+                
+        except Exception as e:
+            logger.error(f"Error deleting wishlist venue: {e}")
+            return jsonify({'message': 'An error occurred while deleting venue'}), 500
 
     return app

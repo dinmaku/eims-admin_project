@@ -1502,7 +1502,8 @@ export default {
             onsite_lastname: this.onsite_lastname,
             onsite_contact: this.onsite_contact,
             onsite_address: this.onsite_address,
-            status: 'Wishlist'
+            status: 'Wishlist',
+            booking_type: 'Onsite'
         };
 
         // Create event first
