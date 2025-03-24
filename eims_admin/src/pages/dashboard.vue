@@ -52,8 +52,8 @@
           <div class="h-[50px]">
             <div class="relative">
               <div @click="toggleDrop" ref="settingsButton" class="flex items-center py-[10px] px-[10px] w-full text-md font-amaticBold font-semibold rounded-md border-gray-200 hover:bg-white hover:text-gray-900 transition duration-400 ease-in-out group cursor-pointer whitespace-nowrap select-none">
-                <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] text-white transition duration-300 ease-in-out group-hover:brightness-0" src="/img/dot-pending.png">
-               <p class ="text-center items-center">More</p>
+                <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] text-white transition duration-300 ease-in-out group-hover:brightness-0" src="/img/settings2.png">
+               <p class ="text-center items-center">Action</p>
               </div>
               <!-- Drop down -->
               <div v-show="showDropDown" ref="dropdownMenu" @click.self="showDropDown = false" class="fixed z-60 w-44 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">

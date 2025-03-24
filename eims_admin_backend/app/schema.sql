@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS wishlist_packages (
     created_at date DEFAULT CURRENT_DATE,
     event_type_id integer,
     status character varying(225),
+    venue_status character varying(225) DEFAULT 'Pending',
     CONSTRAINT fk_wishlist_event FOREIGN KEY (events_id) 
         REFERENCES events(events_id) ON DELETE CASCADE,
     CONSTRAINT fk_wishlist_venue FOREIGN KEY (venue_id) 
@@ -135,3 +136,14 @@ CREATE TABLE IF NOT EXISTS wishlist_outfits (
     FOREIGN KEY (outfit_id) REFERENCES outfits(outfit_id),
     FOREIGN KEY (gown_package_id) REFERENCES gown_packages(gown_package_id)
 );
+
+-- Add venue_status column to wishlist_packages if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT FROM information_schema.columns 
+        WHERE table_name = 'wishlist_packages' AND column_name = 'venue_status'
+    ) THEN
+        ALTER TABLE wishlist_packages ADD COLUMN venue_status character varying(225) DEFAULT 'Pending';
+    END IF;
+END $$;

@@ -781,7 +781,7 @@ def get_all_booked_wishlist():
                 e.onsite_firstname, e.onsite_lastname, e.onsite_contact, e.onsite_address,
                 e.total_price, e.userid,
                 wp.wishlist_id, wp.package_name, wp.capacity, wp.description as package_description,
-                wp.additional_capacity_charges, wp.charge_unit,
+                wp.additional_capacity_charges, wp.charge_unit, wp.venue_status,
                 v.venue_id, v.venue_name, v.location, v.description as venue_description,
                 v.venue_price, v.venue_capacity,
                 gp.gown_package_id, gp.gown_package_name, gp.gown_package_price,
@@ -821,22 +821,23 @@ def get_all_booked_wishlist():
                 'package_description': row[19],
                 'additional_capacity_charges': float(row[20]) if row[20] else 0,
                 'charge_unit': row[21],
-                'venue_id': row[22],
-                'venue_name': row[23],
-                'venue_location': row[24],
-                'venue_description': row[25],
-                'venue_price': float(row[26]) if row[26] else 0,
-                'venue_capacity': row[27],
-                'gown_package_id': row[28],
-                'gown_package_name': row[29],
-                'gown_package_price': float(row[30]) if row[30] else 0,
-                'event_type_id': row[31],
-                'event_type_name': row[32],
-                'firstname': row[33],
-                'lastname': row[34],
-                'email': row[35],
-                'contactnumber': row[36],
-                'bookedBy': f"{row[33] or ''} {row[34] or ''}".strip(),
+                'venue_status': row[22] if row[22] else 'Pending',
+                'venue_id': row[23],
+                'venue_name': row[24],
+                'venue_location': row[25],
+                'venue_description': row[26],
+                'venue_price': float(row[27]) if row[27] else 0,
+                'venue_capacity': row[28],
+                'gown_package_id': row[29],
+                'gown_package_name': row[30],
+                'gown_package_price': float(row[31]) if row[31] else 0,
+                'event_type_id': row[32],
+                'event_type_name': row[33],
+                'firstname': row[34],
+                'lastname': row[35],
+                'email': row[36],
+                'contactnumber': row[37],
+                'bookedBy': f"{row[34] or ''} {row[35] or ''}".strip(),
                 'suppliers': [],
                 'services': [],
                 'venues': [],
@@ -911,6 +912,28 @@ def get_all_booked_wishlist():
                     'gown_package_price': float(o[11]) if o[11] else 0,
                     'status': o[12] if o[12] else 'Pending'
                 } for o in outfits]
+
+                # Get services for this event
+                cursor.execute("""
+                    SELECT 
+                        was.id, was.wishlist_id, was.add_service_id, was.price, was.remarks, was.status,
+                        a.add_service_name, a.add_service_description, a.add_service_price
+                    FROM wishlist_additional_services was
+                    JOIN additional_services a ON was.add_service_id = a.add_service_id
+                    WHERE was.wishlist_id = %s
+                """, (event['wishlist_id'],))
+                
+                services = cursor.fetchall()
+                event['services'] = [{
+                    'id': s[0],
+                    'add_service_id': s[2],
+                    'price': float(s[3]) if s[3] is not None else float(s[8]) if s[8] is not None else 0,  # Use wishlist price if exists, otherwise use service price
+                    'remarks': s[4],
+                    'status': s[5] if s[5] else 'Pending',
+                    'add_service_name': s[6],
+                    'add_service_description': s[7],
+                    'add_service_price': float(s[8]) if s[8] is not None else 0  # Always use service's default price
+                } for s in services]
 
             # If there's a gown package but no outfits, add it as an initialized outfit
             if event['gown_package_id'] and not event['outfits']:
@@ -2377,7 +2400,7 @@ def get_event_outfits(events_id):
                        gp.gown_package_id, gp.gown_package_name, gp.gown_package_price
                 FROM event_outfits eo
                 LEFT JOIN outfits o ON eo.outfit_id = o.outfit_id
-                LEFT JOIN gown_packages gp ON eo.gown_package_id = gp.gown_package_id
+                LEFT JOIN gown_package gp ON eo.gown_package_id = gp.gown_package_id
                 WHERE eo.events_id = %s
             """, (events_id,))
             outfits = cursor.fetchall()
@@ -2723,9 +2746,9 @@ def create_wishlist_package(events_id, package_data):
             INSERT INTO wishlist_packages (
                 events_id, package_name, capacity, description, venue_id,
                 gown_package_id, additional_capacity_charges, charge_unit,
-                total_price, event_type_id, status
+                total_price, event_type_id, status, venue_status
             ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
             ) RETURNING wishlist_id
         """, (
             events_id,
@@ -2738,7 +2761,8 @@ def create_wishlist_package(events_id, package_data):
             package_data.get('charge_unit', 1),
             package_data.get('total_price', 0),
             package_data.get('event_type_id'),
-            package_data.get('status', 'Active')
+            package_data.get('status', 'Active'),
+            package_data.get('venue_status', 'Pending')
         ))
         
         wishlist_id = cursor.fetchone()[0]
@@ -2832,6 +2856,7 @@ def get_wishlist_package(wishlist_id):
             'event_type_id': package[11],
             'event_type_name': package[15],  # from JOIN
             'status': package[12],
+            'venue_status': package[16] if len(package) > 16 else 'Pending',
             'services': [],
             'suppliers': [],
             'outfits': []
@@ -2839,21 +2864,22 @@ def get_wishlist_package(wishlist_id):
         
         # Get services from wishlist_additional_services table
         cursor.execute("""
-            SELECT was.*, ps.package_service_name, ps.package_service_description 
+            SELECT was.*, ads.add_service_name, ads.add_service_description, ads.add_service_price 
             FROM wishlist_additional_services was
-            JOIN package_service ps ON was.add_service_id = ps.package_service_id
+            JOIN additional_services ads ON was.add_service_id = ads.add_service_id
             WHERE was.wishlist_id = %s
         """, (wishlist_id,))
         
         services = cursor.fetchall()
         result['services'] = [{
-            'id': row[0],  # Use id from the table
+            'id': row[0],  # id from the table
             'add_service_id': row[2],  # add_service_id
-            'add_service_name': row[5],  # package_service_name
-            'add_service_description': row[6],  # package_service_description
             'price': float(row[3]) if row[3] else 0,  # price
             'remarks': row[4],  # remarks
-            'status': row[5]  # status
+            'status': row[5] if row[5] else 'Pending',  # status column from was table
+            'add_service_name': row[6],  # add_service_name
+            'add_service_description': row[7],  # add_service_description
+            'add_service_price': float(row[3]) if row[3] else float(row[8]) if row[8] else 0  # Use price from wishlist or package
         } for row in services]
         
         # Get suppliers
@@ -2927,6 +2953,10 @@ def update_wishlist_package(wishlist_id, package_data):
     cursor = conn.cursor()
     
     try:
+        # Log the venue_status for debugging
+        venue_status = package_data.get('venue_status', 'Pending')
+        logger.info(f"Updating wishlist_package {wishlist_id} with venue_status: {venue_status}")
+        
         # Update main package details
         cursor.execute("""
             UPDATE wishlist_packages SET
@@ -2939,7 +2969,8 @@ def update_wishlist_package(wishlist_id, package_data):
                 charge_unit = %s,
                 total_price = %s,
                 event_type_id = %s,
-                status = %s
+                status = %s,
+                venue_status = %s
             WHERE wishlist_id = %s
         """, (
             package_data.get('package_name'),
@@ -2952,6 +2983,7 @@ def update_wishlist_package(wishlist_id, package_data):
             package_data.get('total_price', 0),
             package_data.get('event_type_id'),
             package_data.get('status', 'Active'),
+            venue_status,
             wishlist_id
         ))
         
@@ -3166,6 +3198,59 @@ def delete_wishlist_venue_direct(wishlist_venue_id):
         logger.error(f"Error deleting wishlist venue: {e}")
         conn.rollback()
         return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_upcoming_events():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT 
+                e.events_id, e.event_name, e.event_type, e.event_theme, e.event_color,
+                e.schedule, e.start_time, e.end_time, e.status, e.booking_type,
+                e.onsite_firstname, e.onsite_lastname, e.onsite_contact, e.onsite_address,
+                e.total_price, e.userid,
+                u.firstname, u.lastname, u.email, u.contactnumber
+            FROM events e
+            LEFT JOIN users u ON e.userid = u.userid
+            WHERE UPPER(e.status) = 'UPCOMING'
+            ORDER BY e.schedule ASC
+        """)
+        events = []
+        for row in cursor.fetchall():
+            event = {
+                'events_id': row[0],
+                'event_name': row[1],
+                'event_type': row[2],
+                'event_theme': row[3],
+                'event_color': row[4],
+                'schedule': row[5].strftime('%Y-%m-%d') if row[5] else None,
+                'start_time': row[6].strftime('%H:%M') if row[6] else None,
+                'end_time': row[7].strftime('%H:%M') if row[7] else None,
+                'status': 'Upcoming',  # Always standardize this to 'Upcoming' for consistency
+                'booking_type': row[9],
+                'onsite_firstname': row[10],
+                'onsite_lastname': row[11],
+                'onsite_contact': row[12],
+                'onsite_address': row[13],
+                'total_price': float(row[14]) if row[14] else 0,
+                'userid': row[15],
+                'firstname': row[16],
+                'lastname': row[17],
+                'email': row[18],
+                'contactnumber': row[19],
+                'bookedBy': f"{row[16] or ''} {row[17] or ''}".strip()
+            }
+            events.append(event)
+        
+        logger.info(f"Total upcoming events found: {len(events)}")
+        return events
+    except Exception as e:
+        logger.error(f"Error getting upcoming events: {str(e)}")
+        raise
     finally:
         cursor.close()
         conn.close()

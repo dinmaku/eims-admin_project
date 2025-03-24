@@ -94,7 +94,7 @@
                 :key="event.events_id"
                 :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
                 class="border-b dark:border-gray-700">
-              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ (currentWishlistPage - 1) * rowsPerWishlistPage + index + 1 }}</th>
               <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
               <td class="px-1 py-3 truncate">{{ event.event_theme }}</td>
               <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
@@ -123,12 +123,16 @@
         </table>
 
         <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6">
-          <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
-          <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" :class="{'bg-[#9B111E]': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+        <div v-if="showTable === 'wishlist' && totalWishlistPages > 1" class="flex justify-center space-x-2 mt-4 mb-6">
+          <button @click="prevWishlistPage" :disabled="currentWishlistPage === 1" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+          <button v-for="page in totalWishlistPages" :key="page" @click="changeWishlistPage(page)" 
+            :class="{'bg-[#9B111E]': currentWishlistPage === page, 'bg-gray-300': currentWishlistPage !== page}" 
+            class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
             {{ page }}
           </button>
-          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Next</button>
+          <button @click="nextWishlistPage" :disabled="currentWishlistPage === totalWishlistPages" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
         </div>
       </div>
     </div>
@@ -176,7 +180,7 @@
                 :key="event.events_id"
                 :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
                 class="border-b dark:border-gray-700">
-              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</th>
               <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
               <td class="px-1 py-3 truncate">{{ event.event_theme }}</td>
               <td class="px-1 py-3 truncate">{{ event.bookedBy || 'Not assigned' }}</td>
@@ -195,24 +199,28 @@
                   </button>
               </td>
             </tr>
+            <tr v-if="paginatedUpcomingEvents.length === 0" class="border-b dark:border-gray-700">
+              <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                <p>No upcoming events found.</p>
+                <p class="text-xs mt-2">Events with status 'Upcoming' will appear here.</p>
+              </td>
+            </tr>
           </tbody>
         </table>
 
         <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6">
-          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
-          <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{'bg-[#9B111E]': currentPage === page, 'bg-gray-300': currentPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+        <div class="flex justify-center space-x-2 mt-4 mb-6" v-if="showTable === 'events' && totalPages > 1">
+          <button @click="prevPage" :disabled="currentPage === 1" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+          <button v-for="page in totalPages" :key="page" @click="changePage(page)" 
+            :class="{'bg-[#9B111E]': currentPage === page, 'bg-gray-300': currentPage !== page}" 
+            class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
             {{ page }}
           </button>
-          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
+          <button @click="nextPage" :disabled="currentPage === totalPages" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
         </div>
         
-        <!-- Debug Button -->
-        <div class="flex justify-center mb-4">
-          <button @click="debugUpcomingEvents" class="px-4 py-2 bg-blue-500 text-white rounded">
-            Debug Upcoming Events
-          </button>
-        </div>
       </div>
     </div>
 
@@ -236,7 +244,7 @@
               <td colspan="7" class="px-2 py-4 text-center text-gray-500">No ongoing events found</td>
             </tr>
             <tr v-for="(event, index) in paginatedOngoingEvents" :key="event.events_id" class="border-b dark:border-gray-700">
-              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ index + 1 }}</th>
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ (currentOngoingPage - 1) * rowsPerOngoingPage + index + 1 }}</th>
               <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
               <td class="px-1 py-3 truncate">{{ event.firstname }} {{ event.lastname }}</td>
               <td class="px-1 py-3 truncate">{{ formatDate(event.schedule) }}</td>
@@ -258,11 +266,15 @@
         
         <!-- Pagination Controls -->
         <div class="flex justify-center space-x-2 mt-4 mb-6" v-if="ongoingEvents.length > 0">
-          <button @click="currentOngoingPage = Math.max(currentOngoingPage - 1, 1)" :disabled="currentOngoingPage === 1" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Previous</button>
-          <button v-for="page in totalOngoingPages" :key="page" @click="changeOngoingPage(page)" :class="{'bg-[#9B111E]': currentOngoingPage === page, 'bg-gray-300': currentOngoingPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
+          <button @click="prevOngoingPage" :disabled="currentOngoingPage === 1" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+          <button v-for="page in totalOngoingPages" :key="page" @click="changeOngoingPage(page)" 
+            :class="{'bg-[#9B111E]': currentOngoingPage === page, 'bg-gray-300': currentOngoingPage !== page}" 
+            class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
             {{ page }}
           </button>
-          <button @click="currentOngoingPage = Math.min(currentOngoingPage + 1, totalOngoingPages)" :disabled="currentOngoingPage === totalOngoingPages" class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-md">Next</button>
+          <button @click="nextOngoingPage" :disabled="currentOngoingPage === totalOngoingPages" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
         </div>
       </div>
     </div>
@@ -289,7 +301,7 @@
           </thead>
           <tbody>
             <tr v-for="event in paginatedFinishedEvents" :key="event.no" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-              <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ event.no }}</th>
+              <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ (currentFinishedPage - 1) * rowsPerFinishedPage + index + 1 }}</th>
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.event }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">{{event.eventName }}</td>
               <td class="px-1 py-3 hidden sm:table-cell">{{ event.packageDeal }}</td>
@@ -304,12 +316,16 @@
         </table>
 
         <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6"> <!-- Added mb-6 for bottom margin -->
-          <button @click="prevFinishedPage" :disabled="currentFinishedPage === 1" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-md">Previous</button> <!-- Smaller button -->
-          <button v-for="page in totalPages" :key="page" @click="changeFinishedPage(page)" :class="{'bg-blue-900': changeFinishedPage === page, 'bg-gray-300': changeFinishedPage !== page}" class="px-3 py-1 text-white rounded-md hover:bg-blue-600 text-xs">
+        <div class="flex justify-center space-x-2 mt-4 mb-6" v-if="finishedEvents.length > 0">
+          <button @click="prevFinishedPage" :disabled="currentFinishedPage === 1" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
+          <button v-for="page in totalFinishedPages" :key="page" @click="changeFinishedPage(page)" 
+            :class="{'bg-[#9B111E]': currentFinishedPage === page, 'bg-gray-300': currentFinishedPage !== page}" 
+            class="px-3 py-1 text-white rounded-md hover:bg-[#B73A45] text-xs">
             {{ page }}
           </button>
-          <button @click="nextFinishedPage" :disabled="currentFinishedPage === totalFinishedPages" class="px-3 py-1 bg-blue-900 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 text-xs">Next</button> <!-- Smaller button -->
+          <button @click="nextFinishedPage" :disabled="currentFinishedPage === totalFinishedPages" 
+            class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-xs">Next</button>
         </div>
       </div>
     </div>
@@ -419,12 +435,56 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="selectedEvent.venues && selectedEvent.venues.length > 0">
+                  <tr v-if="selectedEvent.venue && selectedEvent.venue.venue_id">
+                    <td class="px-2 py-1">{{ selectedEvent.venue.venue_name }}</td>
+                    <td class="px-2 py-1">{{ selectedEvent.venue.location }}</td>
+                    <td class="px-2 py-1">₱{{ formatPrice(selectedEvent.venue.venue_price) }}</td>
+                    <td class="px-2 py-1">
+                      <span :class="{
+                        'text-yellow-600': !selectedEvent.venue_status || selectedEvent.venue_status === 'Pending',
+                        'text-green-600': selectedEvent.venue_status === 'Approved',
+                        'text-red-600': selectedEvent.venue_status === 'Declined'
+                      }">
+                        {{ selectedEvent.venue_status || 'Pending' }}
+                      </span>
+                    </td>
+                    <td class="px-2 py-1">
+                      <div class="flex justify-start items-center space-x-2">
+                        <div class="inline-block cursor-pointer">
+                        <img 
+                          alt="Approve Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/mark.png" 
+                          @click="toggleVenueStatus"
+                        >
+                      </div>
+                        <button type="button" @click="editVenue" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Edit Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/edit.png" 
+                        >
+                      </button>
+                      <div @click="removeVenue" class="inline-block cursor-pointer">
+                        <img 
+                          alt="Delete Icon" 
+                          class="w-[17px] h-[17px] transition-transform transform hover:scale-110 hover:brightness-90" 
+                          src="/img/delete.png" 
+                        >
+                      </div>
+                    </div>
+                    </td>
+                  </tr>
+                  <tr v-else-if="selectedEvent.venues && selectedEvent.venues.length > 0">
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].venue_name }}</td>
                     <td class="px-2 py-1">{{ selectedEvent.venues[0].location }}</td>
                     <td class="px-2 py-1">₱{{ formatPrice(selectedEvent.venues[0].venue_price) }}</td>
                     <td class="px-2 py-1">
-                      <span :class="{'text-yellow-600': !selectedEvent.venues[0].status || selectedEvent.venues[0].status === 'Pending', 'text-green-600': selectedEvent.venues[0].status === 'Approved'}">
+                      <span :class="{
+                        'text-yellow-600': !selectedEvent.venues[0].status || selectedEvent.venues[0].status === 'Pending',
+                        'text-green-600': selectedEvent.venues[0].status === 'Approved',
+                        'text-red-600': selectedEvent.venues[0].status === 'Declined'
+                      }">
                         {{ selectedEvent.venues[0].status || 'Pending' }}
                       </span>
                     </td>
@@ -480,7 +540,11 @@
                   <td class="px-2 py-1">{{ supplier.service_type || supplier.service }}</td>
                   <td class="px-2 py-1">₱{{ formatPrice(supplier.price) }}</td>
                   <td class="px-2 py-1">
-                    <span :class="{'text-yellow-600': !supplier.status || supplier.status === 'Pending', 'text-green-600': supplier.status === 'Approved'}">
+                    <span :class="{
+                      'text-yellow-600': !supplier.status || supplier.status === 'Pending',
+                      'text-green-600': supplier.status === 'Approved',
+                      'text-red-600': supplier.status === 'Declined'
+                    }">
                       {{ supplier.status || 'Pending' }}
                     </span>
                   </td>
@@ -532,7 +596,11 @@
                   <td class="px-2 py-1">{{ outfit.gown_package_name || outfit.outfit_name }}</td>
                   <td class="px-2 py-1">₱{{ formatPrice(outfit.gown_package_price || outfit.price || outfit.rent_price) }}</td>
                   <td class="px-2 py-1">
-                    <span :class="{'text-yellow-600': !outfit.status || outfit.status === 'Pending', 'text-green-600': outfit.status === 'Approved'}">
+                    <span :class="{
+                      'text-yellow-600': !outfit.status || outfit.status === 'Pending',
+                      'text-green-600': outfit.status === 'Approved',
+                      'text-red-600': outfit.status === 'Declined'
+                    }">
                       {{ outfit.status || 'Pending' }}
                     </span>
                   </td>
@@ -576,7 +644,7 @@
           <div>
             <h3 class="font-semibold text-blue-900 mb-2 font-raleway text-start ml-3">
               Other Inclusions 
-              <button @click="debugServices" class="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">Debug</button>
+              <!-- Removing the debug button -->
             </h3>
             <table class="table-auto w-full text-left text-sm">
               <thead class="bg-gray-200">
@@ -593,12 +661,16 @@
                   <td colspan="5" class="px-2 py-4 text-center text-gray-500">No services added yet</td>
                 </tr>
                 <tr v-for="(service, index) in selectedEvent.services" :key="index">
-                  <td class="px-2 py-1">{{ service?.add_service_name || 'N/A' }}</td>
-                  <td class="px-2 py-1">{{ service?.add_service_description || 'N/A' }}</td>
-                  <td class="px-2 py-1">₱{{ formatPrice(service?.add_service_price || 0) }}</td>
+                    <td class="px-2 py-1">{{ service.add_service_name || 'N/A' }}</td>
+                    <td class="px-2 py-1">{{ service.add_service_description || 'N/A' }}</td>
+                    <td class="px-2 py-1">₱{{ formatPrice(service.price || service.add_service_price || 0) }}</td>
                   <td class="px-2 py-1">
-                    <span :class="{'text-yellow-600': !service?.status || service?.status === 'Pending', 'text-green-600': service?.status === 'Approved'}">
-                      {{ service?.status || 'Pending' }}
+                      <span :class="{
+                        'text-yellow-600': !service.status || service.status === 'Pending',
+                        'text-green-600': service.status === 'Approved',
+                        'text-red-600': service.status === 'Declined'
+                      }">
+                        {{ service.status || 'Pending' }}
                     </span>
                   </td>
                   <td class="px-2 py-1">
@@ -719,8 +791,12 @@
         <!-- Total Price Section -->
         <div class="bg-blue-50 p-4 rounded mb-6">
           <div class="flex justify-between items-center">
-            <h3 class="font-medium">Total Price</h3>
-            <span class="text-xl font-bold">{{ formatPrice(calculateTotalPrice) }}</span>
+            <h3 class="font-semibold">Total Price</h3>
+            <span class="text-xl font-bold">₱ {{ formatPrice(calculateTotalPrice) }}</span>
+          </div>
+          <div class="flex justify-between items-center mt-2 pt-2 border-t border-blue-100">
+            <h3 class="font-semibold text-gray-700">Expected Price</h3>
+            <span class="text-xl font-bold text-gray-700">₱ {{ formatPrice(calculateExpectedPrice) }}</span>
           </div>
         </div>
 
@@ -1189,7 +1265,7 @@
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 text-left">Service Type</label>
-        <select v-model="selectedExternalSupplierType" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+        <select v-model="selectedExternalSupplierType" class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           <option value="">Select Service Type</option>
           <option v-for="type in supplierTypes" :key="type" :value="type">{{ type }}</option>
         </select>
@@ -1445,6 +1521,121 @@
     </div>
   </div>
   
+  <!-- Status Approval Modal -->
+  <div v-if="showStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+      <h3 class="text-lg font-semibold mb-4">Update Status</h3>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Current Status: {{ inclusionToUpdate?.status || 'Pending' }}</label>
+        <select v-model="newStatus" class="w-full p-2 border rounded-md">
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Declined">Declined</option>
+        </select>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button @click="closeStatusModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+        <button @click="updateInclusionStatus" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Event Modal -->
+  <div v-if="showEditEventModal" @click.self="closeEditEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white w-[800px] p-6 rounded-lg shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Edit Event Details</h2>
+        <button type="button" @click="closeEditEventModal" class="text-red-500 hover:text-red-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Event Details Section -->
+        <div class="col-span-2">
+          <h3 class="text-md font-bold font-raleway text-gray-700 mb-4">Event Details</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Event Name</label>
+              <input v-model="selectedEvent.event_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Event Theme</label>
+              <input v-model="selectedEvent.event_theme" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Schedule Date</label>
+              <input v-model="selectedEvent.schedule" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Capacity</label>
+              <input v-model="selectedEvent.capacity" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Venue Section -->
+        <div class="col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-bold font-raleway text-gray-700">Venue</h3>
+            <button @click="editVenue" class="text-blue-500 hover:text-blue-700">Change Venue</button>
+          </div>
+          <div v-if="selectedEvent.venue" class="bg-gray-50 p-4 rounded-md">
+            <p class="text-sm text-gray-700">{{ selectedEvent.venue.venue_name }}</p>
+            <p class="text-sm text-gray-500">{{ selectedEvent.venue.location }}</p>
+            <p class="text-sm text-gray-500">Status: {{ selectedEvent.venue_status }}</p>
+          </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-bold font-raleway text-gray-700">Services</h3>
+            <button @click="openInclusionModal('service')" class="text-blue-500 hover:text-blue-700">Add Service</button>
+          </div>
+          <div class="space-y-2">
+            <div v-for="(service, index) in selectedEvent.services" :key="index" class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+              <div>
+                <p class="text-sm text-gray-700">{{ service.add_service_name }}</p>
+                <p class="text-sm text-gray-500">{{ service.add_service_description }}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button @click="editInclusion('services', index)" class="text-blue-500 hover:text-blue-700">Edit</button>
+                <button @click="removeInclusion('services', index)" class="text-red-500 hover:text-red-700">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outfits Section -->
+        <div class="col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-bold font-raleway text-gray-700">Outfits</h3>
+            <button @click="openInclusionModal('outfit')" class="text-blue-500 hover:text-blue-700">Add Outfit</button>
+          </div>
+          <div class="space-y-2">
+            <div v-for="(outfit, index) in selectedEvent.outfits" :key="index" class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+              <div>
+                <p class="text-sm text-gray-700">{{ outfit.outfit_name || outfit.gown_package_name }}</p>
+                <p class="text-sm text-gray-500">{{ outfit.type === 'package' ? 'Package' : 'Individual' }}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button @click="editInclusion('outfits', index)" class="text-blue-500 hover:text-blue-700">Edit</button>
+                <button @click="removeInclusion('outfits', index)" class="text-red-500 hover:text-red-700">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-6 space-x-4">
+        <button @click="closeEditEventModal" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Cancel</button>
+        <button @click="saveEventChanges" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Save Changes</button>
+      </div>
+    </div>
+  </div>
 </template>
 
  <script>
@@ -1464,11 +1655,11 @@
         type: '',
         index: -1
       },
-      showTable: 'wishlist',
+      showTable: 'wishlist', // Default to wishlist
+      itemsPerPage: 5, // Limit to 5 items per page
+      currentPage: 1,
       currentWishlistPage: 1,
       rowsPerWishlistPage: 5,
-      currentPage: 1,
-      rowsPerPage: 5,
       currentFinishedPage: 1,
       rowsPerFinishedPage: 5,
       selectedIndex: null,
@@ -1478,9 +1669,9 @@
       additionalServices: [],
       wishlist: [],
       upcomingEvents: [],
-      currentOngoingPage: 1,  // New pagination for ongoing events
-      rowsPerOngoingPage: 10, // New row limit for ongoing events
-      ongoingEvents: [],      // New array to store ongoing events
+      currentOngoingPage: 1,
+      rowsPerOngoingPage: 5, // Limit ongoing events to 5 per page
+      ongoingEvents: [],
       selectedEvent: {
         event_name: '',
         event_theme: '',
@@ -1669,7 +1860,10 @@
         { no: 12, Name: 'Radiant Luxe Studio', email: 'radiant.luxe@example.com', contact: '234-567-8901', service: 'Hair and Makeup', minPrice: '7k php', maxPrice: '30k php' }
       ],
       
-
+      showStatusModal: false,
+      inclusionToUpdate: null,
+      newStatus: 'Pending',
+      showEditEventModal: false,
     };
   },
   watch: {
@@ -1679,20 +1873,22 @@
         }
     },
     
+    showTable(newValue) {
+      if (newValue === 'events') {
+        this.fetchUpcomingEvents();
+      }
+    }
 },
 
   computed: {
     paginatedUpcomingEvents() {
-      console.log('Paginating upcoming events:', this.upcomingEvents);
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
       return this.upcomingEvents.slice(start, end);
     },
-
     totalPages() {
-      return Math.ceil((this.upcomingEvents?.length || 0) / this.rowsPerPage);
+      return Math.ceil(this.upcomingEvents.length / this.itemsPerPage);
     },
-
     paginatedOngoingEvents() {
       const start = (this.currentOngoingPage - 1) * this.rowsPerOngoingPage;
       const end = start + this.rowsPerOngoingPage;
@@ -1804,7 +2000,68 @@
         // Normal filtering for adding new services
         return !this.selectedEvent.services.some(s => s.add_service_id === service.add_service_id);
       });
-    }
+    },
+    calculateExpectedPrice() {
+      let total = 0;
+
+      // Add venue price if approved
+      if (this.selectedEvent.venue && this.selectedEvent.venue_status === 'Approved') {
+        total += parseFloat(this.selectedEvent.venue.venue_price) || 0;
+      }
+
+      // Add approved suppliers
+      if (this.selectedEvent.suppliers) {
+        total += this.selectedEvent.suppliers
+          .filter(supplier => supplier.status === 'Approved')
+          .reduce((sum, supplier) => sum + (parseFloat(supplier.price) || 0), 0);
+      }
+
+      // Add approved outfits
+      if (this.selectedEvent.outfits) {
+        total += this.selectedEvent.outfits
+          .filter(outfit => outfit.status === 'Approved')
+          .reduce((sum, outfit) => {
+            const price = outfit.type === 'package' 
+              ? parseFloat(outfit.gown_package_price) || 0
+              : parseFloat(outfit.rent_price) || 0;
+            return sum + price;
+          }, 0);
+      }
+
+      // Add approved services
+      if (this.selectedEvent.services) {
+        total += this.selectedEvent.services
+          .filter(service => service.status === 'Approved')
+          .reduce((sum, service) => sum + (parseFloat(service.add_service_price) || 0), 0);
+      }
+
+      return total;
+    },
+    upcomingEventStats() {
+      // Create debug information about upcoming events
+      if (!this.upcomingEvents || this.upcomingEvents.length === 0) {
+        return 'No upcoming events found';
+      }
+      
+      // Check for status values
+      const statusValues = this.upcomingEvents.map(e => e.status);
+      const uniqueStatuses = [...new Set(statusValues)];
+      
+      return {
+        total: this.upcomingEvents.length,
+        statuses: uniqueStatuses,
+        withUpcomingStatus: this.upcomingEvents.filter(e => e.status === 'Upcoming').length,
+        withStatus: this.upcomingEvents.filter(e => e.status).length,
+        firstEvent: this.upcomingEvents.length > 0 ? JSON.stringify(this.upcomingEvents[0]) : 'No events'
+      };
+    },
+    
+    filteredUpcomingEvents() {
+      // Filter events to only include those with "Upcoming" status (case insensitive)
+      return this.upcomingEvents.filter(
+        event => event.status && event.status.toUpperCase() === 'UPCOMING'
+      );
+    },
   },
 
   methods: {
@@ -1911,15 +2168,28 @@
 
         // Process the data to extract venue names and outfits
         const processedEvents = data.map(event => {
-          // Extract venue name from the venue object if it exists
-          const venueName = event.venue ? event.venue.venue_name : null;
+          // Create a proper venue object if venue data exists
+          let venue = null;
+          if (event.venue_id) {
+            venue = {
+              venue_id: event.venue_id,
+              venue_name: event.venue_name,
+              location: event.venue_location,
+              description: event.venue_description,
+              venue_price: event.venue_price,
+              venue_capacity: event.venue_capacity
+            };
+            console.log(`Created venue object for ${event.event_name} with id ${venue.venue_id}`);
+          }
+          
+          console.log(`Event ${event.event_name} venue_status: ${event.venue_status || 'not set'}`);
           
           // Extract outfits from the outfits array if it exists
           const outfits = event.outfits || [];
           
           return {
             ...event,
-            venue_name: venueName,
+            venue: venue,
             outfits: outfits,
             booking_type: event.booking_type || 'N/A'  // Include booking_type
           };
@@ -2096,9 +2366,6 @@
     nextWishlistPage() {
       if (this.currentWishlistPage < this.totalWishlistPages) {
       this.currentWishlistPage++;
-
-      this.selectedIndex = null;
-      this.selectedEvent = null;
       }
     },
     changeWishlistPage(page) {
@@ -2263,44 +2530,33 @@
 
     async addSelectedVenue() {
       if (!this.selectedVenue) {
-        console.error('No venue selected');
+        alert('Please select a venue.');
         return;
       }
 
-      try {
-        // Initialize venues array if it doesn't exist
-        if (!this.selectedEvent.venues) {
-          this.selectedEvent.venues = [];
-        }
-        
-        // Add venue data with status
-        const venueData = {
-          ...this.selectedVenue,
-          status: 'Pending'
-        };
-
-        // Add to local state first
-      if (this.isEditingInclusion) {
-        // Update existing venue
-          this.selectedEvent.venues[this.editingInclusionIndex] = venueData;
-        this.isEditingInclusion = false;
-        this.editingInclusionIndex = -1;
-        } else {
-        // Add new venue
-          this.selectedEvent.venues.push(venueData);
+      // Check if venue already exists
+      if (this.selectedEvent.venue) {
+        alert('This event already has a venue. Please remove the existing venue first.');
+        return;
       }
 
-        // Save changes to the database immediately
-        await this.saveUpdatedWishlist(false); // Don't show success alert
+      // Add the venue to the selected event
+      this.selectedEvent.venue = {
+        venue_id: this.selectedVenue.venue_id,
+        venue_name: this.selectedVenue.venue_name,
+        location: this.selectedVenue.location,
+        venue_price: this.selectedVenue.venue_price,
+        venue_capacity: this.selectedVenue.venue_capacity
+      };
 
-      // Reset and close modal
-      this.selectedVenue = null;
-      this.showInclusionModal = false;
-      this.selectedInclusionType = '';
-      } catch (error) {
-        console.error('Error adding venue:', error);
-        alert(`Error adding venue: ${error.message}`);
-      }
+      // Set initial venue status
+      this.selectedEvent.venue_status = 'Pending';
+
+      // Close the venue modal
+      this.closeInclusionModal();
+
+      // Save changes to the database
+      this.saveUpdatedWishlist(false);
     },
 
     async addSelectedOutfit() {
@@ -2427,7 +2683,27 @@
   },
 
   removeVenue() {
+    // Check if the venue exists
+    if (!this.selectedEvent.venue) {
+      console.error('No venue to remove');
+      return;
+    }
+    
+    if (confirm('Are you sure you want to remove this venue?')) {
+      // Clear the venue data
     this.selectedEvent.venue = null;
+      this.selectedEvent.venue_id = null;
+      this.selectedEvent.venue_status = 'Pending';
+      
+      // Save changes
+      this.saveUpdatedWishlist(false).then(success => {
+        if (success) {
+          alert('Venue removed successfully');
+        } else {
+          alert('Failed to remove venue');
+        }
+      });
+    }
   },
 
   removeOutfit(index) {
@@ -2602,6 +2878,7 @@
         services: event.services || [],
         outfits: event.outfits || [],
         venues: event.venues || [],
+        venue_status: event.venue_status || 'Pending',
         gown_package_name: event.gown_package_name || '',
         gown_package_price: event.gown_package_price || 0,
         firstname: event.firstname || '',
@@ -2609,6 +2886,18 @@
         contactnumber: event.contactnumber || ''
       }));
 
+      // Create a venue object if one doesn't exist but we have venue data
+      if (!this.selectedEvent.venue && this.selectedEvent.venue_id) {
+        this.selectedEvent.venue = {
+          venue_id: this.selectedEvent.venue_id,
+          venue_name: this.selectedEvent.venue_name,
+          location: this.selectedEvent.venue_location,
+          venue_price: this.selectedEvent.venue_price,
+          description: this.selectedEvent.venue_description,
+          venue_capacity: this.selectedEvent.venue_capacity
+        };
+      }
+      
       // Initialize outfits array if it doesn't exist
       if (!this.selectedEvent.outfits) {
         this.selectedEvent.outfits = [];
@@ -2874,29 +3163,35 @@
 
       // Pre-fill the form based on the inclusion type
       if (modalType === 'supplier') {
+        // Set the supplier type first
+        this.selectedSupplierType = data.service || data.service_type;
+        // Then set the supplier data
         this.selectedSupplier = { 
           ...data,
           status: currentStatus
         };
+        // Show the specific service type modal
+        this.showInclusionModal = false;
+        this.showSupplierModal = true;
       } else if (modalType === 'venue') {
         this.selectedVenue = { 
           ...data,
           status: currentStatus
         };
+        this.showInclusionModal = true;
       } else if (modalType === 'outfit') {
         this.selectedOutfit = { 
           ...data,
           status: currentStatus
         };
+        this.showInclusionModal = true;
       } else if (modalType === 'service') {
         this.selectedService = { 
           ...data,
           status: currentStatus
         };
-      }
-
-      // Open the inclusion modal
       this.showInclusionModal = true;
+      }
     },
 
     closeEditInclusionModal() {
@@ -2907,7 +3202,7 @@
     async saveEditedInclusion() {
       try {
         // Update the inclusion in the selectedEvent based on the type and index
-        const { type, index, data } = this.editingInclusion;
+      const { type, index, data } = this.editingInclusion;
         
         if (!type || index < 0 || !this.selectedEvent[type] || !this.selectedEvent[type][index]) {
           throw new Error('Invalid inclusion data');
@@ -2954,7 +3249,7 @@
         await this.saveUpdatedWishlist(false);
         
         // Close the modal
-        this.closeEditInclusionModal();
+      this.closeEditInclusionModal();
         alert('Inclusion updated successfully');
       } catch (error) {
         console.error('Error saving edited inclusion:', error);
@@ -3207,35 +3502,43 @@
       try {
         const token = localStorage.getItem('access_token');
         if (!token) {
-          console.error('No token found');
-          return;
+          throw new Error('No authentication token found');
         }
-        
-        const response = await fetch('http://127.0.0.1:5000/booked-wishlist', {
+
+        const response = await fetch('http://127.0.0.1:5000/api/upcoming-events', {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`
           },
           credentials: 'include'
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        console.log('Upcoming events data:', data);
         
-        // Filter only upcoming events (not wishlist or finished)
-        this.upcomingEvents = data.filter(event => event.status === 'Upcoming');
+        // Ensure we set the upcomingEvents array correctly
+        // And normalize the status to "Upcoming" if it's any variation of "upcoming"
+        this.upcomingEvents = Array.isArray(data) ? data.map(event => {
+          // If status doesn't exist or is null, set it to "Upcoming"
+          if (!event.status) {
+            return { ...event, status: 'Upcoming' };
+          }
+          // If status case doesn't match exactly, normalize it
+          if (event.status && event.status.toUpperCase() === 'UPCOMING' && event.status !== 'Upcoming') {
+            return { ...event, status: 'Upcoming' };
+          }
+          return event;
+        }) : [];
         
-        // Filter ongoing events
-        this.ongoingEvents = data.filter(event => event.status === 'Ongoing');
-        
-        // Filter finished events
-        this.finishedEvents = data.filter(event => event.status === 'Finished');
-        
+        // Return the upcomingEvents array for promise chaining
+        return this.upcomingEvents;
       } catch (error) {
         console.error('Error fetching upcoming events:', error);
+        alert(`Error fetching upcoming events: ${error.message}`);
+        // Return empty array on error for consistent promise handling
+        return [];
       }
     },
 
@@ -3335,6 +3638,14 @@
           throw new Error('No authentication token found');
         }
 
+        // Ensure venue_status is set
+        if (!this.selectedEvent.venue_status) {
+          console.log('venue_status was not set, defaulting to Pending');
+          this.selectedEvent.venue_status = 'Pending';
+        } else {
+          console.log(`Using existing venue_status: ${this.selectedEvent.venue_status}`);
+        }
+
         // Prepare data for API
         const updatedEvent = {
           events_id: this.selectedEvent.events_id,
@@ -3342,6 +3653,7 @@
           description: this.selectedEvent.description || '',
           capacity: parseInt(this.selectedEvent.capacity) || 0,
           venue_id: this.selectedEvent.venue ? this.selectedEvent.venue.venue_id : null,
+          venue_status: this.selectedEvent.venue_status,
           gown_package_id: this.selectedEvent.gown_package_id || null,
           additional_capacity_charges: parseFloat(this.selectedEvent.additional_capacity_charges) || 0,
           charge_unit: parseInt(this.selectedEvent.charge_unit) || 1,
@@ -3381,6 +3693,9 @@
           withCredentials: true
         };
 
+        // Log the exact data being sent to the API
+        console.log('API request data:', JSON.stringify(config.data));
+
         // Make the request
         const response = await axios(config);
         console.log('Response:', response);
@@ -3392,7 +3707,9 @@
             this.closeWishlistModal();
           }
           // Refresh data
+          console.log('Refreshing data after successful wishlist update...');
           await this.fetchBookedWishlist();
+          console.log('Data refresh complete');
           return true;
         } else {
           throw new Error((response.data && response.data.message) || 'Failed to update wishlist');
@@ -3405,6 +3722,214 @@
         return false;
       }
     },
+    async toggleVenueStatus() {
+      try {
+        // Determine the new status - toggle between Approved and Pending
+        const newStatus = this.selectedEvent.venue_status === 'Approved' ? 'Pending' : 'Approved';
+        const statusVerb = newStatus === 'Approved' ? 'approved' : 'reverted to pending';
+        
+        console.log(`Toggling venue status from ${this.selectedEvent.venue_status} to ${newStatus}`);
+        
+        // Get authentication token
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+        
+        // Call the new API endpoint to update venue status
+        const response = await axios({
+          method: 'put',
+          url: `http://127.0.0.1:5000/api/wishlist-packages/${this.selectedEvent.wishlist_id}/venue-status`,
+          headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Content-Type': 'application/json'
+          },
+          data: {
+            venue_status: newStatus
+          },
+          withCredentials: true
+        });
+        
+        // Check if update was successful
+        if (response.data && response.data.success) {
+          // Update the status in the selected event
+          this.selectedEvent.venue_status = newStatus;
+          console.log(`Venue status successfully updated to: ${newStatus}`);
+          alert(`Venue status ${statusVerb} successfully`);
+          
+          // Refresh the data to ensure UI is in sync with backend
+          await this.fetchBookedWishlist();
+          return true;
+        } else {
+          throw new Error('Failed to update venue status');
+        }
+      } catch (error) {
+        console.error('Error in toggleVenueStatus:', error);
+        alert(`Error updating venue status: ${error.message}`);
+        return false;
+      }
+    },
+    
+    editVenue() {
+      // Open the venue selection modal for editing
+      this.openInclusionModal('venue');
+    },
+    approveInclusion(type, index) {
+      this.inclusionToUpdate = this.selectedEvent[type][index];
+      this.newStatus = this.inclusionToUpdate.status || 'Pending';
+      this.showStatusModal = true;
+    },
+
+    closeStatusModal() {
+      this.showStatusModal = false;
+      this.inclusionToUpdate = null;
+      this.newStatus = 'Pending';
+    },
+
+    async updateInclusionStatus() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        let endpoint;
+        let data = { status: this.newStatus };
+
+        // Determine the endpoint based on the inclusion type
+        if (this.inclusionToUpdate.wishlist_supplier_id) {
+          endpoint = `http://127.0.0.1:5000/api/wishlist-suppliers/${this.inclusionToUpdate.wishlist_supplier_id}`;
+        } else if (this.inclusionToUpdate.wishlist_outfit_id) {
+          endpoint = `http://127.0.0.1:5000/api/wishlist-outfits/${this.inclusionToUpdate.wishlist_outfit_id}`;
+        } else if (this.inclusionToUpdate.id) {
+          endpoint = `http://127.0.0.1:5000/api/wishlist-additional-services/${this.inclusionToUpdate.id}`;
+        } else if (this.inclusionToUpdate.wishlist_venue_id) {
+          endpoint = `http://127.0.0.1:5000/api/wishlist-venues/${this.inclusionToUpdate.wishlist_venue_id}`;
+        } else {
+          throw new Error('Invalid inclusion type');
+        }
+
+        const response = await fetch(endpoint, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Update the status in the local state
+          this.inclusionToUpdate.status = this.newStatus;
+          alert('Status updated successfully');
+          this.closeStatusModal();
+        } else {
+          throw new Error(result.message || 'Failed to update status');
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert(`Error updating status: ${error.message}`);
+      }
+    },
+
+    async checkDatabaseEvents() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Fetch all events with their status
+        const response = await fetch('http://127.0.0.1:5000/api/check-events-status', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('All events with their status:', data);
+        
+        // Check for uppercase/lowercase variations of "Upcoming"
+        const upcomingVariations = data.filter(event => 
+          event.status && event.status.toUpperCase() === 'UPCOMING'
+        );
+        console.log('Events with any casing of "Upcoming":', upcomingVariations);
+        
+        alert(`Found ${data.length} events total, ${upcomingVariations.length} with 'Upcoming' status (any casing). Check console for details.`);
+      } catch (error) {
+        console.error('Error checking events status:', error);
+        alert(`Error checking events status: ${error.message}`);
+      }
+    },
+    
+    async fixEventStatus(event) {
+      try {
+        if (!event || !event.events_id) {
+          alert('No valid event provided');
+          return;
+        }
+        
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Update the event status to exactly 'Upcoming'
+        const response = await fetch(`http://127.0.0.1:5000/events/${event.events_id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            status: 'Upcoming'  // Use exactly this casing
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          alert(`Event status updated to 'Upcoming'. Refreshing data...`);
+          // Refresh the data
+          await this.fetchUpcomingEvents();
+        } else {
+          throw new Error(result.message || 'Failed to update event status');
+        }
+      } catch (error) {
+        console.error('Error fixing event status:', error);
+        alert(`Error fixing event status: ${error.message}`);
+      }
+    },
+
+    openEditEventModal(event) {
+      this.selectedEvent = { ...event };
+      this.showEditEventModal = true;
+    },
+    closeEditEventModal() {
+      this.showEditEventModal = false;
+      this.selectedEvent = null;
+    },
+    async saveEventChanges() {
+      try {
+        await this.saveUpdatedWishlist(true);
+        this.closeEditEventModal();
+      } catch (error) {
+        console.error('Error saving event changes:', error);
+        alert(`Error saving changes: ${error.message}`);
+      }
+    }
   },
 
   mounted() {

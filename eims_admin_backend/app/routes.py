@@ -35,7 +35,8 @@ from .models import (
     update_wishlist_package, delete_wishlist_package, Supplier,
     update_wishlist_supplier_status, update_wishlist_outfit_status,
     update_wishlist_additional_service_status, delete_wishlist_outfit_direct,
-    delete_wishlist_service_direct, delete_wishlist_supplier_direct, delete_wishlist_venue_direct
+    delete_wishlist_service_direct, delete_wishlist_supplier_direct, delete_wishlist_venue_direct,
+    fetch_upcoming_events
 )
 
 # Configure logging
@@ -1487,6 +1488,13 @@ def init_routes(app):
 
             data = request.get_json()
             
+            # Log the data received for debugging
+            logger.info(f"Updating wishlist package {wishlist_id} with data: {data}")
+            
+            # Verify venue_status is received properly
+            venue_status = data.get('venue_status', 'Pending')
+            logger.info(f"Venue status received: {venue_status}")
+            
             # Update wishlist package and its related data
             result = update_wishlist_package(wishlist_id, data)
             
@@ -1494,7 +1502,8 @@ def init_routes(app):
                 response = jsonify({
                     'success': True,
                     'message': 'Wishlist package updated successfully',
-                    'wishlist_id': wishlist_id
+                    'wishlist_id': wishlist_id,
+                    'venue_status': venue_status  # Include this in the response
                 })
                 response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
                 response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -1883,5 +1892,86 @@ def init_routes(app):
         except Exception as e:
             logger.error(f"Error deleting wishlist venue: {e}")
             return jsonify({'message': 'An error occurred while deleting venue'}), 500
+
+    @app.route('/api/wishlist-packages/<int:wishlist_id>/venue-status', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    def update_wishlist_venue_status_route(wishlist_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'PUT,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            data = request.get_json()
+            venue_status = data.get('venue_status')
+            
+            if not venue_status:
+                return jsonify({'message': 'Venue status is required'}), 400
+                
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE wishlist_packages SET venue_status = %s WHERE wishlist_id = %s",
+                    (venue_status, wishlist_id)
+                )
+                conn.commit()
+                response = jsonify({'message': 'Venue status updated successfully', 'success': True})
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            except Exception as e:
+                logger.error(f"Error updating wishlist venue status: {e}")
+                conn.rollback()
+                return jsonify({'message': 'Failed to update venue status', 'success': False}), 500
+            finally:
+                cursor.close()
+                conn.close()
+                
+        except Exception as e:
+            logger.error(f"Error in update_wishlist_venue_status_route: {e}")
+            return jsonify({'message': 'An error occurred while updating venue status', 'success': False}), 500
+
+    @app.route('/api/upcoming-events', methods=['GET'])
+    @jwt_required()
+    def get_upcoming_events():
+        try:
+            events = fetch_upcoming_events()
+            return jsonify(events)
+        except Exception as e:
+            logger.error(f"Error in get_upcoming_events route: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+    
+    @app.route('/api/check-events-status', methods=['GET'])
+    @jwt_required()
+    def check_events_status():
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT events_id, event_name, status
+                FROM events
+                ORDER BY events_id
+            """)
+            
+            events = []
+            for row in cursor.fetchall():
+                events.append({
+                    'events_id': row[0],
+                    'event_name': row[1],
+                    'status': row[2]
+                })
+            
+            cursor.close()
+            conn.close()
+            
+            return jsonify(events)
+        except Exception as e:
+            logger.error(f"Error in check_events_status route: {str(e)}")
+            return jsonify({'error': str(e)}), 500
 
     return app
