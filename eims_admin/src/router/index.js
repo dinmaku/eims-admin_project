@@ -93,7 +93,7 @@ const routes = [
       },
       {
         name: 'Invoice',
-        path: '/invoice',
+        path: '/invoice/:eventId?',
         component: Invoice,
         props: true,     
       

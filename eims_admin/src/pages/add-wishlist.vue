@@ -1985,7 +1985,32 @@ addSelectedOutfit() {
                   if (inclusion.data.type === 'external') {
                       return `${inclusion.data.external_supplier_name || 'Unknown'} (External)`;
                   }
-                  return `${inclusion.data.firstname || ''} ${inclusion.data.lastname || ''}`.trim() || 'Unknown Supplier';
+                  // Check for various field name combinations
+                  if (inclusion.data.supplier_name) {
+                      return inclusion.data.supplier_name;
+                  }
+                  if (inclusion.data.name) {
+                      return inclusion.data.name;
+                  }
+                  if (inclusion.data.company_name) {
+                      return inclusion.data.company_name;
+                  }
+                  if (inclusion.data.business_name) {
+                      return inclusion.data.business_name;
+                  }
+                  if (inclusion.data.vendor_name) {
+                      return inclusion.data.vendor_name;
+                  }
+                  // Fall back to firstname/lastname combination
+                  const fullName = `${inclusion.data.firstname || ''} ${inclusion.data.lastname || ''}`.trim();
+                  if (fullName) {
+                      return fullName;
+                  }
+                  // If we have an ID, use a more descriptive fallback
+                  if (inclusion.data.supplier_id) {
+                      return `Supplier #${inclusion.data.supplier_id}`;
+                  }
+                  return 'Unnamed Supplier';
               case 'service':
                   return inclusion.data.service_name || 'Unknown Service';
               default:

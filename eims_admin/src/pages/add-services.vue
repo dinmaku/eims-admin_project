@@ -101,11 +101,11 @@
             <h2 class="font-semibold text-lg text-gray-800 mb-4">Package Details</h2>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Package Name</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1 text-left">Package Name</label>
                 <input type="text" v-model="packageData.package_name" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Package Name" required />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Event Type</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1 text-left">Event Type</label>
                 <select v-model="packageData.event_type_id" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
                   <option disabled value="">Select Event Type</option>
                   <option v-for="type in eventTypes" :key="type.event_type_id" :value="type.event_type_id">
@@ -116,22 +116,22 @@
               </div>
 
               <div>
-                <label for="charge_unit" class="block text-xs font-medium text-gray-700 mb-1">Unit for Additional Charges</label>
+                <label for="charge_unit" class="block text-xs font-medium text-gray-700 mb-1 text-left">Unit for Additional Charges</label>
               <input type="number" id="charge_unit" v-model="packageData.charge_unit" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set person unit" required />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Additional Capacity Charges</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1 text-left">Additional Capacity Charges</label>
                 <input type="number" v-model="packageData.additional_capacity_charges" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Additional Capacity Charges" required />
               </div>
             </div>
 
             <div class="mt-5">
-              <label class="block text-xs font-medium text-gray-700 mb-1">Capacity</label>
+              <label class="block text-xs font-medium text-gray-700 mb-1 text-left">Capacity</label>
               <input type="number" v-model="packageData.capacity" class="p-2 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200" placeholder="Set Capacity" required />
             </div>
 
             <div class="mt-5">
-              <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+              <label for="description" class="block text-xs font-medium text-gray-700 mb-1 text-left">Description</label>
               <textarea v-model="packageData.description" class="p-2 w-full h-24 rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 resize-none" placeholder="Description" required></textarea>
             </div>
           </div>
@@ -208,7 +208,7 @@
             </select>
           </div>
           <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedSupplier" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+            <button type="button" @click="addSelectedSupplier" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
           </div>
         </div>
       </div>
@@ -240,7 +240,7 @@
             </div>
           </div>
           <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedVenue" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+            <button type="button" @click="addSelectedVenue" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
           </div>
         </div>
       </div>
@@ -266,7 +266,7 @@
             </select>
           </div>
           <div class="flex justify-center mt-4">
-            <button type="button" @click="addSelectedOutfit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+            <button type="button" @click="addSelectedOutfit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
           </div>
         </div>
       </div>
@@ -292,7 +292,7 @@
               </select>
             </div>
             <div class="flex justify-center mt-4">
-              <button type="button" @click="addSelectedService" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add</button>
+              <button type="button" @click="addSelectedService" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add</button>
             </div>
           </div>
         </div>
@@ -512,7 +512,7 @@
 
       <!-- Submit and Delete Buttons -->
       <div class="flex justify-center space-x-4 mt-8">
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Update Package</button>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Update Package</button>
         <button type="button" @click="deletePackage(selectedPackage.packageId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete Package</button>
       </div>
     </div>

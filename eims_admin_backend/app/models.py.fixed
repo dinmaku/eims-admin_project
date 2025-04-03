@@ -1,4 +1,4 @@
-# models.py
+﻿# models.py
 import hashlib
 from . import db
 import logging
@@ -2024,7 +2024,7 @@ def get_event_details(event_id):
             
             if suppliers:
                 supplier_cols = ['wishlist_supplier_id', 'supplier_id', 'status', 
-                                 'service', 'firstname', 'lastname', 'price']
+                                'service', 'firstname', 'lastname', 'price']
                 suppliers_list = []
                 for supplier in suppliers:
                     supplier_dict = dict(zip(supplier_cols, supplier))
@@ -2086,7 +2086,6 @@ def get_event_details(event_id):
             cursor.close()
         if 'conn' in locals() and conn:
             conn.close()
-
 
 def track_service_modification(events_id, package_service_id, modification_type, original_price=None, modified_price=None, remarks=None):
     conn = db.get_db_connection()
@@ -2935,11 +2934,11 @@ def get_wishlist_package(wishlist_id):
     try:
         conn = db.get_db_connection()
         cursor = conn.cursor()
-        
+    
         query = """
         SELECT wp.*
-        FROM wishlist_packages wp
-        WHERE wp.wishlist_id = %s
+            FROM wishlist_packages wp
+            WHERE wp.wishlist_id = %s
         """
         cursor.execute(query, (wishlist_id,))
         package = cursor.fetchone()
@@ -2953,7 +2952,7 @@ def get_wishlist_package(wishlist_id):
         # Get package details from events if available
         if 'events_id' in wishlist_dict:
             try:
-                cursor.execute("""
+        cursor.execute("""
                     SELECT p.package_id, p.package_name, p.total_price
                     FROM event_packages p
                     JOIN events e ON e.package_id = p.package_id
@@ -2974,8 +2973,7 @@ def get_wishlist_package(wishlist_id):
         raise
     finally:
         if 'conn' in locals() and conn:
-            conn.close()
-
+        conn.close()
 
 def get_event_wishlists(events_id):
     """Get all wishlist packages for an event"""
@@ -3732,4 +3730,4 @@ def get_payments_by_invoice(invoice_id):
         raise
     finally:
         if 'conn' in locals() and conn:
-            conn.close()
+        conn.close()

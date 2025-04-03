@@ -106,6 +106,8 @@ CREATE TABLE IF NOT EXISTS wishlist_package_services (
     wishlist_service_id SERIAL PRIMARY KEY,
     wishlist_id INTEGER NOT NULL,
     package_service_id INTEGER NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pending',
+    has_been_updated BOOLEAN DEFAULT FALSE,
     CONSTRAINT idx_wishlist_package_services UNIQUE (wishlist_id, package_service_id),
     CONSTRAINT fk_wishlist_package FOREIGN KEY (wishlist_id) 
         REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
@@ -120,6 +122,8 @@ CREATE TABLE IF NOT EXISTS wishlist_suppliers (
     supplier_id INTEGER NOT NULL,
     price DECIMAL(10,2),
     remarks TEXT,
+    status VARCHAR(50) DEFAULT 'Pending',
+    has_been_updated BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
     FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
 );
@@ -132,6 +136,8 @@ CREATE TABLE IF NOT EXISTS wishlist_outfits (
     gown_package_id INTEGER,
     price DECIMAL(10,2),
     remarks TEXT,
+    status VARCHAR(50) DEFAULT 'Pending',
+    has_been_updated BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (wishlist_id) REFERENCES wishlist_packages(wishlist_id) ON DELETE CASCADE,
     FOREIGN KEY (outfit_id) REFERENCES outfits(outfit_id),
     FOREIGN KEY (gown_package_id) REFERENCES gown_packages(gown_package_id)
@@ -147,3 +153,36 @@ BEGIN
         ALTER TABLE wishlist_packages ADD COLUMN venue_status character varying(225) DEFAULT 'Pending';
     END IF;
 END $$;
+
+-- Create invoices table if not exists
+CREATE TABLE IF NOT EXISTS invoices (
+    invoice_id SERIAL PRIMARY KEY,
+    events_id INTEGER NOT NULL REFERENCES events(events_id) ON DELETE CASCADE,
+    invoice_number VARCHAR(50) NOT NULL,
+    invoice_date DATE NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    discount_amount DECIMAL(10, 2) DEFAULT 0.00,
+    final_amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Unpaid',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create payments table if not exists
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id SERIAL PRIMARY KEY,
+    invoice_id INTEGER NOT NULL REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    reference_number VARCHAR(100),
+    payment_date DATE NOT NULL,
+    recorded_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index for faster invoice lookup by event
+CREATE INDEX IF NOT EXISTS idx_invoices_events_id ON invoices(events_id);
+
+-- Create index for faster payment lookup by invoice
+CREATE INDEX IF NOT EXISTS idx_payments_invoice_id ON payments(invoice_id);

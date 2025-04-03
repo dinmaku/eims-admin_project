@@ -104,17 +104,17 @@
                 <button
                     @click="openWishlistModal(event)"
                     class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                    <img src="/img/update3.png" alt="Update" class="w-5 h-5">
+                    <img src="/img/update3.png" alt="Update" class="w-5 h-5" title="Update Details">
                 </button>
                 <button
-                  @click="goToInvoice()"
+                  @click="confirmAndCreateInvoice(event)"
                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                <img src="/img/invoice.png" alt="Update" class="w-5 h-5">
+                <img src="/img/invoice.png" alt="Invoice" class="w-5 h-5" title="View Invoice">
                </button>
                <button
                 @click="updateEventStatus(event)"
                 class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                <img src="/img/approve.png" alt="Update" class="w-5 h-5" title="Upcoming Event">
+                <img src="/img/approve.png" alt="Update" class="w-5 h-5" title="Confirm Booking">
                </button>
                
               </td>
@@ -166,7 +166,7 @@
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" class="px-2 py-3">#</th>
-              <th scope="col" class="px-2 py-3">Event Name</th>
+              <th scope="col" class="px-2 py-3">Event</th>
               <th scope="col" class="px-2 py-3">Event Theme</th>
               <th scope="col" class="px-2 py-3">Booked By</th>
               <th scope="col" class="px-2 py-3">Contact</th>
@@ -190,12 +190,12 @@
                 <button
                     @click="openWishlistModal(event)"
                     class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                    <img src="/img/update3.png" alt="Update" class="w-5 h-5">
+                    <img src="/img/update3.png" alt="Update" class="w-5 h-5" title="Update Details">
                 </button>
                 <button
-                  @click="goToInvoice()"
+                  @click="confirmAndCreateInvoice(event)"
                   class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                  <img src="/img/invoice.png" alt="Update" class="w-5 h-5">
+                  <img src="/img/invoice.png" alt="Invoice" class="w-5 h-5" title="View Invoice">
                   </button>
               </td>
             </tr>
@@ -227,36 +227,67 @@
         <!-- Ongoing Events Section -->
         <div v-if="showTable === 'ongoing-events'" class="relative shadow-md sm:rounded-xl w-full max-w-[1170px] h-[200] ml-5 mt-2 font-amaticBold mb-10">
       <div class="overflow-x-auto">
+        <!-- Remove debug button -->
+        
+        <!-- Rest of the table -->
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-4 table-fixed">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-2 py-3 w-12">#</th>
-              <th scope="col" class="px-2 py-3 w-32">Event</th>
-              <th scope="col" class="px-2 py-3 w-32">Client Name</th>
-              <th scope="col" class="px-2 py-3 w-32">Date Scheduled</th>
-              <th scope="col" class="px-2 py-3 w-32">Event Type</th>
-              <th scope="col" class="px-2 py-3 w-20">Status</th>
-              <th scope="col" class="px-2 py-3 w-20">Action</th>
+              <th scope="col" class="px-2 py-3">#</th>
+              <th scope="col" class="px-2 py-3">Event</th>
+              <th scope="col" class="px-2 py-3">Client Name</th>
+              <th scope="col" class="px-2 py-3">Date Scheduled</th>
+              <th scope="col" class="px-2 py-3">Event Type</th>
+              <th scope="col" class="px-2 py-3">Total Price</th>
+              <th scope="col" class="px-2 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="ongoingEvents.length === 0" class="border-b dark:border-gray-700">
-              <td colspan="7" class="px-2 py-4 text-center text-gray-500">No ongoing events found</td>
+              <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                <p>No ongoing events found.</p>
+                <p class="text-xs mt-2">Events with status 'Upcoming' and today's date or earlier will appear here.</p>
+              </td>
             </tr>
-            <tr v-for="(event, index) in paginatedOngoingEvents" :key="event.events_id" class="border-b dark:border-gray-700">
+            <tr
+                v-for="(event, index) in paginatedOngoingEvents"
+                :key="event.events_id"
+                :class="{'bg-blue-100': selectedIndex === index, 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800': selectedIndex !== index}"
+                class="border-b dark:border-gray-700">
               <th scope="row" class="px-2 py-3 font-medium text-gray-900 dark:text-white">{{ (currentOngoingPage - 1) * rowsPerOngoingPage + index + 1 }}</th>
-              <td class="px-1 py-3 truncate">{{ event.event_name }}</td>
-              <td class="px-1 py-3 truncate">{{ event.firstname }} {{ event.lastname }}</td>
-              <td class="px-1 py-3 truncate">{{ formatDate(event.schedule) }}</td>
-              <td class="px-1 py-3 truncate">{{ event.event_type }}</td>
+              <td class="px-1 py-3 truncate">{{ event.event_name || 'Unnamed Event' }}</td>
               <td class="px-1 py-3 truncate">
-                <span class="px-2 py-1 rounded-full bg-green-100 text-green-800">{{ event.status }}</span>
+                <span v-if="event.booking_type && event.booking_type.toLowerCase() === 'online'">
+                  {{ event.bookedBy || 'Unknown User' }}
+                </span>
+                <span v-else>
+                  {{ getOnsiteClientName(event) }}
+                </span>
+                <span class="ml-1 text-xs text-gray-500">
+                  {{ event.booking_type ? `(${event.booking_type})` : '' }}
+                </span>
+              </td>
+              <td class="px-1 py-3 truncate" :class="getDateCellClass(event)">
+                {{ formatDate(event.event_date || event.schedule) }}
+              </td>
+              <td class="px-1 py-3 truncate">{{ event.event_type || 'Standard Event' }}</td>
+              <td class="px-1 py-3 truncate font-medium" :class="getPriceCellClass(event)">
+                ₱ {{ formatPrice(event.total_price) }}
               </td>
               <td class="px-1 py-3 flex justify-start">
-                <button @click="openDetailsModal(event)" class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
-                  <img src="/img/update3.png" alt="View" class="w-5 h-5">
+                <button
+                    @click="openWishlistModal(event)"
+                    class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                    <img src="/img/update3.png" alt="View" class="w-5 h-5" title="View Details">
                 </button>
-                <button @click="markAsCompleted(event)" class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                <button
+                  @click="confirmAndCreateInvoice(event)"
+                  class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
+                  <img src="/img/invoice.png" alt="Invoice" class="w-5 h-5" title="View Invoice">
+                </button>
+                <button
+                  @click="markAsCompleted(event)"
+                  class="p-2 hover:opacity-80 transform hover:scale-110 transition-transform duration-200">
                   <img src="/img/approve.png" alt="Mark as Completed" class="w-5 h-5" title="Mark as Completed">
                 </button>
               </td>
@@ -265,7 +296,7 @@
         </table>
         
         <!-- Pagination Controls -->
-        <div class="flex justify-center space-x-2 mt-4 mb-6" v-if="ongoingEvents.length > 0">
+        <div v-if="ongoingEvents.length > 0 && totalOngoingPages > 1" class="flex justify-center space-x-2 mt-4 mb-6">
           <button @click="prevOngoingPage" :disabled="currentOngoingPage === 1" 
             class="px-3 py-1 bg-[#9B111E] text-white rounded-md hover:bg-[#B73A45] disabled:opacity-50 text-sm">Previous</button>
           <button v-for="page in totalOngoingPages" :key="page" @click="changeOngoingPage(page)" 
@@ -535,7 +566,7 @@
               <tbody>
                 <tr v-for="(supplier, index) in selectedEvent.suppliers" :key="index">
                   <td class="px-2 py-1">
-                    {{ supplier.name || supplier.supplier_name || (supplier.supplier_firstname && supplier.supplier_lastname ? supplier.supplier_firstname + ' ' + supplier.supplier_lastname : 'Unknown Supplier') }}
+                    {{ getSupplierName(supplier) }}
                   </td>
                   <td class="px-2 py-1">{{ supplier.service_type || supplier.service }}</td>
                   <td class="px-2 py-1">₱{{ formatPrice(supplier.price) }}</td>
@@ -791,11 +822,11 @@
         <!-- Total Price Section -->
         <div class="bg-blue-50 p-4 rounded mb-6">
           <div class="flex justify-between items-center">
-            <h3 class="font-semibold">Total Price</h3>
+            <h3 class="font-semibold">Estimated Rate</h3>
             <span class="text-xl font-bold">₱ {{ formatPrice(calculateTotalPrice) }}</span>
           </div>
           <div class="flex justify-between items-center mt-2 pt-2 border-t border-blue-100">
-            <h3 class="font-semibold text-gray-700">Expected Price</h3>
+            <h3 class="font-semibold text-gray-700">Total Price Rate (*approved inclusions)</h3>
             <span class="text-xl font-bold text-gray-700">₱ {{ formatPrice(calculateExpectedPrice) }}</span>
           </div>
         </div>
@@ -825,11 +856,16 @@
     </div>
     <div class = "flex m-1 mt-4">
             <button
-            @click="viewInvoice(event)"
+            @click="viewInvoice(selectedEvent)"
                 class="h-8 w-24 bg-blue-900 font-amaticBold font-medium text-sm rounded-full text-white hover:bg-blue-600 transform-transition duration-300 transform hover:scale-105">
                 View Invoice 
               </button>
 
+            <button
+            @click="viewTestInvoice()"
+                class="h-8 w-32 ml-2 bg-green-900 font-amaticBold font-medium text-sm rounded-full text-white hover:bg-green-600 transform-transition duration-300 transform hover:scale-105">
+                Test Invoice 
+              </button>
     </div>
   
 
@@ -1636,6 +1672,73 @@
       </div>
     </div>
   </div>
+
+  <!-- Add this notification modal after the other modals in the template -->
+  <div v-if="showNotificationModal" @click.self="closeNotificationModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+    <div class="bg-white p-5 rounded-lg shadow-lg w-[400px]">
+      <div class="flex flex-col items-center">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold mb-4">{{ notificationTitle }}</h2>
+        <p class="mb-6 text-center">{{ notificationMessage }}</p>
+        <button 
+          @click="closeNotificationModal" 
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add the invoice creation modal -->
+  <div v-if="showInvoiceCreationModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 overflow-y-auto flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-[450px]">
+      <div class="flex flex-col items-center">
+        <div class="flex items-center mb-5">
+          <img src="/img/invoice.png" alt="Invoice" class="w-8 h-8 mr-3">
+          <h2 class="text-xl font-semibold">Create Invoice</h2>
+        </div>
+        
+        <div class="w-full mb-6 p-5 bg-gray-50 rounded-lg">
+          <div class="mb-3">
+            <p class="text-gray-600 text-sm">Event Name:</p>
+            <p class="font-semibold">{{ selectedEventForInvoice?.event_name || 'Unknown Event' }}</p>
+          </div>
+          
+          <div class="mb-3">
+            <p class="text-gray-600 text-sm">Event Type:</p>
+            <p class="font-semibold">{{ selectedEventForInvoice?.event_type || 'Standard Event' }}</p>
+          </div>
+          
+          <div>
+            <p class="text-gray-600 text-sm">Client:</p>
+            <p class="font-semibold">{{ getOnsiteClientName(selectedEventForInvoice) || 'Unknown Client' }}</p>
+          </div>
+        </div>
+        
+        <p class="mb-6 text-center text-sm text-gray-600">
+          No invoice exists for this event. Creating an invoice will allow you to track payments and generate receipts.
+        </p>
+        
+        <div class="flex space-x-4">
+          <button 
+            @click="cancelInvoiceCreation" 
+            class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button 
+            @click="confirmCreateInvoice" 
+            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors flex items-center">
+            <img src="/img/invoice.png" alt="Invoice" class="w-5 h-5 mr-2 invert">
+            Create Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
  <script>
@@ -1670,8 +1773,7 @@
       wishlist: [],
       upcomingEvents: [],
       currentOngoingPage: 1,
-      rowsPerOngoingPage: 5, // Limit ongoing events to 5 per page
-      ongoingEvents: [],
+      rowsPerOngoingPage: 5, // Changed from 10 to 5 to limit to 5 items per page
       selectedEvent: {
         event_name: '',
         event_theme: '',
@@ -1864,6 +1966,12 @@
       inclusionToUpdate: null,
       newStatus: 'Pending',
       showEditEventModal: false,
+      showNotificationModal: false,
+      notificationTitle: '',
+      notificationMessage: '',
+      filteredOngoingEvents: [], // Add this new property
+      selectedEventForInvoice: null,
+      showInvoiceCreationModal: false,
     };
   },
   watch: {
@@ -1876,6 +1984,8 @@
     showTable(newValue) {
       if (newValue === 'events') {
         this.fetchUpcomingEvents();
+      } else if (newValue === 'ongoing-events') {
+        this.fetchOngoingEvents();
       }
     }
 },
@@ -1896,7 +2006,7 @@
     },
 
     totalOngoingPages() {
-      return Math.ceil((this.ongoingEvents?.length || 0) / this.rowsPerOngoingPage);
+      return Math.ceil(this.ongoingEvents.length / this.rowsPerOngoingPage);
     },
 
     paginatedWishlist() {
@@ -2062,6 +2172,20 @@
         event => event.status && event.status.toUpperCase() === 'UPCOMING'
       );
     },
+    ongoingEvents() {
+      // Just return the pre-filtered events
+      return this.filteredOngoingEvents;
+    },
+    
+    paginatedOngoingEvents() {
+      const start = (this.currentOngoingPage - 1) * this.rowsPerOngoingPage;
+      const end = start + this.rowsPerOngoingPage;
+      return this.ongoingEvents.slice(start, end);
+    },
+    
+    totalOngoingPages() {
+      return Math.ceil(this.ongoingEvents.length / this.rowsPerOngoingPage);
+    }
   },
 
   methods: {
@@ -2418,9 +2542,106 @@
       this.upcomingEventDetailsModal = true; 
     },
 
-  viewInvoice(event) {
-    this.selectedEvent = event; 
-    this.$router.push('/invoice');
+  goToInvoice(event) {
+    try {
+      if (!event || !event.events_id) {
+        console.error('Cannot view invoice: Invalid event data', event);
+        alert('Error: Cannot view invoice for this event - missing event ID');
+        return;
+      }
+      
+      console.log('Invoice requested for event:', event.event_name);
+      console.log('Event ID:', event.events_id, 'Type:', typeof event.events_id);
+      
+      // Ensure event_id is a string
+      const eventId = String(event.events_id);
+      console.log('Formatted event ID:', eventId);
+      
+      // Store event ID in localStorage for the invoice page
+      localStorage.setItem('current_invoice_event_id', eventId);
+      
+      // Check if an invoice already exists in localStorage
+      const storedInvoice = localStorage.getItem(`invoice_${eventId}`);
+      let invoiceExists = false;
+      
+      if (storedInvoice) {
+        try {
+          const invoiceData = JSON.parse(storedInvoice);
+          if (invoiceData && invoiceData.invoice_id) {
+            invoiceExists = true;
+            console.log('✅ Invoice found, navigating to view it:', invoiceData.invoice_number);
+          }
+        } catch (parseError) {
+          console.error('Error parsing stored invoice:', parseError);
+        }
+      }
+      
+      if (invoiceExists) {
+        // If invoice exists, navigate to it directly
+        this.$router.push(`/invoice/${eventId}`);
+      } else {
+        // No invoice exists, show a confirmation dialog
+        if (confirm(`No invoice exists for "${event.event_name}". Would you like to create one now?`)) {
+          // User confirmed, set create_new_invoice flag and go to invoice page
+          localStorage.setItem('create_new_invoice', 'true');
+          this.$router.push(`/invoice/${eventId}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error navigating to invoice:', error);
+      alert('Error: Unable to view invoice - ' + error.message);
+    }
+  },
+
+  async checkOrCreateInvoice(event, eventId) {
+    try {
+      console.log('DEBUG invoice modal: Starting checkOrCreateInvoice');
+      console.log('DEBUG invoice modal: Current showInvoiceCreationModal state:', this.showInvoiceCreationModal);
+      console.log('DEBUG invoice modal: selectedEventForInvoice:', this.selectedEventForInvoice);
+      
+      // Store event ID in localStorage as a backup method
+      localStorage.setItem('current_invoice_event_id', eventId);
+      
+      // Show loading message to user
+      this.notificationTitle = 'Please wait';
+      this.notificationMessage = 'Checking invoice status...';
+      this.showNotificationModal = true;
+      
+      // Since the backend call isn't working, check localStorage directly
+      const storedInvoice = localStorage.getItem(`invoice_${eventId}`);
+      let invoiceExists = false;
+      
+      if (storedInvoice) {
+        try {
+          const invoiceData = JSON.parse(storedInvoice);
+          if (invoiceData && invoiceData.invoice_id) {
+            invoiceExists = true;
+            console.log('✅ Invoice found in localStorage, navigating to view it:', invoiceData);
+          }
+        } catch (parseError) {
+          console.error('Error parsing stored invoice:', parseError);
+        }
+      }
+      
+      // Close the notification modal
+      this.showNotificationModal = false;
+      
+      if (invoiceExists) {
+        // Navigate to invoice view with the event ID using params
+        this.$router.push(`/invoice/${eventId}`);
+      } else {
+        // Set the event for the modal to use and show the creation modal
+        console.log('⚠️ No invoice found, showing creation modal for event:', event.event_name);
+        this.selectedEventForInvoice = event;
+        this.showInvoiceCreationModal = true;
+        console.log('DEBUG invoice modal: Set showInvoiceCreationModal to:', this.showInvoiceCreationModal);
+        console.log('DEBUG invoice modal: Set selectedEventForInvoice to:', this.selectedEventForInvoice);
+      }
+    } catch (error) {
+      this.showNotificationModal = false;
+      console.error('Error checking invoice status:', error);
+      alert(`Error: ${error.message}`);
+    }
   },
 
   closeUpcomingEventsModal() 
@@ -3572,19 +3793,29 @@
         const result = await response.json();
         
         if (result.success) {
-          // Remove from ongoing events and add to finished events
-          this.ongoingEvents = this.ongoingEvents.filter(e => e.events_id !== event.events_id);
-          event.status = 'Finished';
-          this.finishedEvents.push(event);
+          // Update the event status in upcomingEvents
+          const eventIndex = this.upcomingEvents.findIndex(e => e.events_id === event.events_id);
+          if (eventIndex !== -1) {
+            this.upcomingEvents[eventIndex].status = 'Finished';
+            
+            // Add to finished events if that array exists
+            if (this.finishedEvents) {
+              this.finishedEvents.push({...this.upcomingEvents[eventIndex]});
+            }
+          }
           
           // Show success message
-          alert('Event marked as completed successfully');
+          this.notificationTitle = 'Success';
+          this.notificationMessage = 'Event marked as completed successfully';
+          this.showNotificationModal = true;
         } else {
           throw new Error(result.message || 'Failed to update event status');
         }
       } catch (error) {
         console.error('Error marking event as completed:', error);
-        alert(`Error marking event as completed: ${error.message}`);
+        this.notificationTitle = 'Error';
+        this.notificationMessage = `Error marking event as completed: ${error.message}`;
+        this.showNotificationModal = true;
       }
     },
 
@@ -3788,15 +4019,20 @@
 
     async updateInclusionStatus() {
       try {
+        if (!this.inclusionToUpdate) {
+          throw new Error('No inclusion selected');
+        }
+
         const token = localStorage.getItem('access_token');
         if (!token) {
           throw new Error('No authentication token found');
         }
 
-        let endpoint;
-        let data = { status: this.newStatus };
+        const data = {
+          status: this.newStatus
+        };
 
-        // Determine the endpoint based on the inclusion type
+        let endpoint = '';
         if (this.inclusionToUpdate.wishlist_supplier_id) {
           endpoint = `http://127.0.0.1:5000/api/wishlist-suppliers/${this.inclusionToUpdate.wishlist_supplier_id}`;
         } else if (this.inclusionToUpdate.wishlist_outfit_id) {
@@ -3824,14 +4060,18 @@
         if (response.ok) {
           // Update the status in the local state
           this.inclusionToUpdate.status = this.newStatus;
-          alert('Status updated successfully');
+          this.notificationTitle = 'Success';
+          this.notificationMessage = 'Status updated successfully';
+          this.showNotificationModal = true;
           this.closeStatusModal();
         } else {
           throw new Error(result.message || 'Failed to update status');
         }
       } catch (error) {
         console.error('Error updating status:', error);
-        alert(`Error updating status: ${error.message}`);
+        this.notificationTitle = 'Error';
+        this.notificationMessage = error.message;
+        this.showNotificationModal = true;
       }
     },
 
@@ -3929,12 +4169,539 @@
         console.error('Error saving event changes:', error);
         alert(`Error saving changes: ${error.message}`);
       }
-    }
+    },
+    closeNotificationModal() {
+      this.showNotificationModal = false;
+      this.notificationTitle = '';
+      this.notificationMessage = '';
+    },
+    prevOngoingPage() {
+      if (this.currentOngoingPage > 1) {
+        this.currentOngoingPage -= 1;
+      }
+    },
+    
+    nextOngoingPage() {
+      if (this.currentOngoingPage < this.totalOngoingPages) {
+        this.currentOngoingPage += 1;
+      }
+    },
+    
+    changeOngoingPage(page) {
+      this.currentOngoingPage = page;
+    },
+    debugOngoingEvents() {
+      console.log('Debugging ongoing events:');
+      console.log('Total upcomingEvents:', this.upcomingEvents.length);
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      console.log('Today is:', today.toISOString());
+      
+      // Log the filtered events
+      const filteredEvents = this.upcomingEvents.filter(event => {
+        // Only include events with status = 'Upcoming'
+        if (!event.status || event.status !== 'Upcoming') {
+          return false;
+        }
+        
+        // Skip if no event date
+        if (!event.event_date) {
+          return false;
+        }
+        
+        // Convert event_date to Date object
+        const eventDate = new Date(event.event_date);
+        eventDate.setHours(0, 0, 0, 0);
+        
+        console.log(`Event: ${event.event_name}, Date: ${event.event_date}, Parsed: ${eventDate.toISOString()}, Status: ${event.status}`);
+        
+        // Check if event date is today or in the past
+        const isToday = eventDate.getTime() === today.getTime();
+        const isPast = eventDate.getTime() < today.getTime();
+        
+        console.log(`- Is today: ${isToday}, Is past: ${isPast}`);
+        
+        return eventDate.getTime() <= today.getTime();
+      });
+      
+      console.log('Filtered ongoing events:', filteredEvents.length);
+      console.log('These events should appear in the ongoing table:', filteredEvents);
+      
+      // Check if our computed property is working
+      console.log('Computed ongoingEvents:', this.ongoingEvents.length);
+      console.log('Computed matches filtered:', this.ongoingEvents.length === filteredEvents.length);
+      
+      return 'Check console for details';
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return 'Unscheduled';
+      
+      // Try to parse the date
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date Format';
+      }
+      
+      // Format the date
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    },
+    // Add this new method after fetchUpcomingEvents
+    async fetchOngoingEvents() {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Get current date for filtering
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to beginning of day
+        
+        console.log('Fetching events for filtering by date:', today.toISOString());
+
+        // Use the existing upcoming-events endpoint 
+        const url = 'http://127.0.0.1:5000/api/upcoming-events';
+        
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Fetched events for ongoing filtering:', data);
+        
+        // Filter the events on the client side
+        const ongoingEvents = Array.isArray(data) ? data.filter(event => {
+          // Skip if status is not 'Upcoming'
+          if (!event.status || event.status.toUpperCase() !== 'UPCOMING') {
+            return false;
+          }
+          
+          // Check if event has a date (either event_date or schedule)
+          const dateField = event.event_date || event.schedule;
+          if (!dateField) {
+            return false;
+          }
+          
+          // Parse event date
+          const eventDate = new Date(dateField);
+          
+          // Check if valid date
+          if (isNaN(eventDate.getTime())) {
+            console.warn(`Invalid date format for event ${event.event_name}: ${dateField}`);
+            return false;
+          }
+          
+          eventDate.setHours(0, 0, 0, 0); // Set to beginning of day for comparison
+          
+          // Event is today or has passed
+          return eventDate.getTime() <= today.getTime();
+        }).map(event => ({
+          ...event,
+          status: 'Upcoming', // Normalize the status
+          firstname: event.firstname || '',
+          lastname: event.lastname || '',
+          onsite_firstname: event.onsite_firstname || '',
+          onsite_lastname: event.onsite_lastname || '',
+          bookedBy: event.bookedBy || event.username || '',
+          booking_type: event.booking_type || '',
+          total_price: event.total_price || 0,
+          event_name: event.event_name || 'Unnamed Event',
+          event_type: event.event_type || 'Standard Event'
+        })) : [];
+        
+        console.log('Filtered ongoing events client-side:', ongoingEvents);
+        
+        // Store the filtered events in filteredOngoingEvents instead of upcomingEvents
+        this.filteredOngoingEvents = ongoingEvents;
+        
+        return this.filteredOngoingEvents;
+      } catch (error) {
+        console.error('Error fetching ongoing events:', error);
+        this.notificationTitle = 'Error';
+        this.notificationMessage = `Error fetching ongoing events: ${error.message}`;
+        this.showNotificationModal = true;
+        return [];
+      }
+    },
+    getOnsiteClientName(event) {
+      // Check for onsite client name fields first
+      if (event.onsite_firstname || event.onsite_lastname) {
+        return `${event.onsite_firstname || ''} ${event.onsite_lastname || ''}`.trim();
+      }
+      
+      // Fall back to regular firstname/lastname if onsite fields aren't available
+      if (event.firstname || event.lastname) {
+        return `${event.firstname || ''} ${event.lastname || ''}`.trim();
+      }
+      
+      return 'Not specified';
+    },
+    getDateCellClass(event) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to beginning of day
+      
+      const dateField = event.event_date || event.schedule;
+      if (!dateField) return '';
+      
+      const eventDate = new Date(dateField);
+      if (isNaN(eventDate.getTime())) return '';
+      
+      eventDate.setHours(0, 0, 0, 0); // Set to beginning of day
+      
+      // Check if date is today
+      if (eventDate.getTime() === today.getTime()) {
+        return 'text-blue-600 font-medium';
+      }
+      
+      // Check if date is in the past
+      if (eventDate.getTime() < today.getTime()) {
+        return 'text-red-600 font-medium';
+      }
+      
+      return '';
+    },
+
+    getPriceCellClass(event) {
+      const price = parseFloat(event.total_price) || 0;
+      
+      if (price === 0) {
+        return 'text-green-600';
+      } else {
+        return 'text-red-600';
+      }
+    },
+    viewTestInvoice() {
+      try {
+        console.clear(); // Clear previous logs
+        console.log('🧪 viewTestInvoice called - using hardcoded event ID');
+        
+        // Hardcoded test event ID - use a valid ID from your database
+        const testEventId = '1';
+        
+        // Store in localStorage for the invoice page to find
+        localStorage.setItem('current_invoice_event_id', testEventId);
+        console.log('💾 Saved test event ID to localStorage:', testEventId);
+        
+        // Use direct navigation instead of Vue Router
+        console.log('🔗 Navigating directly to: /invoice/' + testEventId);
+        window.location.href = '/invoice/' + testEventId;
+      } catch (error) {
+        console.error('❌ Error in viewTestInvoice:', error);
+        alert('Error: ' + error.message);
+      }
+    },
+    cancelInvoiceCreation() {
+      // Just close the modal without creating an invoice
+      this.showInvoiceCreationModal = false;
+      this.selectedEventForInvoice = null;
+    },
+    confirmCreateInvoice() {
+      if (!this.selectedEventForInvoice || !this.selectedEventForInvoice.events_id) {
+        console.error('No event selected for invoice creation');
+        return;
+      }
+      
+      const eventId = String(this.selectedEventForInvoice.events_id);
+      console.log('🔄 Creating new invoice for event:', eventId);
+      
+      // Set a flag in localStorage to indicate we're creating a new invoice
+      localStorage.setItem('create_new_invoice', 'true');
+      
+      // Close the modal
+      this.showInvoiceCreationModal = false;
+      
+      // Navigate to invoice to create a new one
+      this.$router.push(`/invoice/${eventId}`);
+    },
+    async confirmAndCreateInvoice(event) {
+      try {
+        if (!event || !event.events_id) {
+          console.error('Cannot create invoice: Invalid event data', event);
+          alert('Error: Cannot create invoice for this event - missing event ID');
+          return;
+        }
+        
+        // Ensure event_id is a string
+        const eventId = String(event.events_id);
+        console.log('Working with event ID:', eventId, 'Type:', typeof eventId);
+        
+        // Store event ID in localStorage for the invoice page
+        localStorage.setItem('current_invoice_event_id', eventId);
+        
+        // Check if an invoice exists in the database
+        try {
+          const token = localStorage.getItem('access_token');
+          if (!token) {
+            throw new Error('No authentication token found');
+          }
+          
+          // Show loading notification
+          this.notificationTitle = 'Please wait';
+          this.notificationMessage = 'Checking for existing invoice...';
+          this.showNotificationModal = true;
+          
+          // Check for existing invoice by event ID
+          const checkResponse = await fetch(`http://127.0.0.1:5000/api/invoices/event/${eventId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            credentials: 'include'
+          });
+          
+          if (checkResponse.ok) {
+            // Invoice exists, navigate to it
+            console.log('Found existing invoice for event ID:', eventId);
+            this.showNotificationModal = false;
+            this.$router.push(`/invoice/${eventId}`);
+            return;
+          } else if (checkResponse.status !== 404) {
+            // Only treat 404 as "invoice doesn't exist" - any other error should be reported
+            console.error('Error checking for invoice:', checkResponse.status, checkResponse.statusText);
+          }
+          
+          // If we get here, either the invoice doesn't exist (404) or we couldn't check effectively
+          // Ask user if they want to create an invoice
+          this.showNotificationModal = false;
+          const confirmed = confirm(`No invoice exists for "${event.event_name}". Would you like to create one now?`);
+          console.log('User confirmed invoice creation:', confirmed);
+          
+          if (confirmed) {
+            // User confirmed, fetch the auth token
+            if (!token) {
+              throw new Error('No authentication token found');
+            }
+            
+            // Show loading notification
+            this.notificationTitle = 'Please wait';
+            this.notificationMessage = 'Creating invoice...';
+            this.showNotificationModal = true;
+            
+            try {
+              // Initialize invoice tables first
+              console.log('Initializing invoice tables...');
+              const initResponse = await fetch('http://127.0.0.1:5000/api/initialize-invoice-tables', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                credentials: 'include'
+              });
+              
+              if (!initResponse.ok) {
+                console.warn('Table initialization response not OK, but continuing anyway:', 
+                  initResponse.status, initResponse.statusText);
+              } else {
+                const initResult = await initResponse.json();
+                console.log('Table initialization result:', initResult);
+              }
+              
+              // Create a reasonable invoice estimate based on event data
+              const totalAmount = this.estimateEventTotal(event) || 100000; // Fallback to 100,000 if estimation fails
+              
+              // Create a unique invoice number
+              const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+              
+              // Prepare invoice data - ensure events_id is a number
+              const eventIdNumber = parseInt(eventId);
+              if (isNaN(eventIdNumber)) {
+                throw new Error(`Invalid event ID format: ${eventId} cannot be parsed as a number`);
+              }
+              
+              const invoiceData = {
+                events_id: eventIdNumber,
+                invoice_number: invoiceNumber,
+                invoice_date: new Date().toISOString().split('T')[0],
+                total_amount: totalAmount,
+                discount_amount: 0,
+                final_amount: totalAmount,
+                status: 'Unpaid',
+                notes: `Invoice for ${event.event_name || 'event'}`
+              };
+              
+              console.log('Creating invoice with data:', JSON.stringify(invoiceData, null, 2));
+              
+              // Make the API call to create the invoice
+              const response = await fetch('http://127.0.0.1:5000/api/invoices', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(invoiceData),
+                credentials: 'include'
+              });
+              
+              // Hide notification after response
+              this.showNotificationModal = false;
+              
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API error response:', response.status, response.statusText, errorText);
+                throw new Error(`HTTP error creating invoice! status: ${response.status}, details: ${errorText}`);
+              }
+              
+              // Parse the JSON response
+              let result;
+              try {
+                result = await response.json();
+              } catch (jsonError) {
+                console.error('Error parsing JSON response:', jsonError);
+                const responseText = await response.text();
+                throw new Error(`Invalid response from server: ${responseText.substring(0, 100)}...`);
+              }
+              
+              console.log('Invoice created successfully:', result);
+              
+              // Store the invoice data in localStorage for backup
+              localStorage.setItem(`invoice_${eventId}`, JSON.stringify(result));
+              
+              // Navigate to invoice view
+              this.$router.push(`/invoice/${eventId}`);
+            } catch (apiError) {
+              this.showNotificationModal = false;
+              console.error('API call failed, falling back to flag-based creation:', apiError);
+              
+              // Set a flag in localStorage to indicate we're creating a new invoice
+              localStorage.setItem('create_new_invoice', 'true');
+              
+              // Navigate to invoice to create a new one
+              this.$router.push(`/invoice/${eventId}`);
+            }
+          }
+        } catch (error) {
+          this.showNotificationModal = false;
+          console.error('Error checking for existing invoice:', error);
+          
+          // Set a flag in localStorage to indicate we're creating a new invoice
+          if (confirm(`Error checking for invoice: ${error.message}. Would you like to create a new invoice anyway?`)) {
+            localStorage.setItem('create_new_invoice', 'true');
+            this.$router.push(`/invoice/${eventId}`);
+          }
+        }
+      } catch (error) {
+        this.showNotificationModal = false;
+        console.error('Error handling invoice:', error);
+        alert('Error: ' + error.message);
+      }
+    },
+    
+    estimateEventTotal(event) {
+      try {
+        let total = 0;
+        
+        // Add venue price if available
+        if (event.venue && event.venue.venue_price) {
+          total += parseFloat(event.venue.venue_price) || 0;
+        }
+        
+        // Add supplier prices if available
+        if (event.suppliers && Array.isArray(event.suppliers)) {
+          event.suppliers.forEach(supplier => {
+            total += parseFloat(supplier.price || 0);
+          });
+        }
+        
+        // Add outfit prices if available
+        if (event.outfits && Array.isArray(event.outfits)) {
+          event.outfits.forEach(outfit => {
+            total += parseFloat(outfit.price || 0);
+          });
+        }
+        
+        // Return total or fallback if it's zero
+        return total > 0 ? total : 100000; // Default to 100,000 if no prices found
+      } catch (error) {
+        console.error('Error estimating event total:', error);
+        return 100000; // Default value on error
+      }
+    },
+    getSupplierName(supplier) {
+      console.log('Displaying supplier:', JSON.stringify(supplier));
+      
+      // Check for supplier_name with highest priority
+      if (supplier.supplier_name) {
+        console.log('Using supplier.supplier_name:', supplier.supplier_name);
+        return supplier.supplier_name;
+      }
+      
+      // Check firstname/lastname combination - highest priority after supplier_name
+      if (supplier.firstname || supplier.lastname) {
+        const fullName = `${supplier.firstname || ''} ${supplier.lastname || ''}`.trim();
+        console.log('Using firstname/lastname:', fullName);
+        return fullName;
+      }
+      
+      // Check supplier_firstname/supplier_lastname combination
+      if (supplier.supplier_firstname || supplier.supplier_lastname) {
+        const fullName = `${supplier.supplier_firstname || ''} ${supplier.supplier_lastname || ''}`.trim();
+        console.log('Using supplier_firstname/supplier_lastname:', fullName);
+        return fullName;
+      }
+      
+      // Check for name property directly
+      if (supplier.name) {
+        console.log('Using supplier.name:', supplier.name);
+        return supplier.name;
+      }
+      
+      // Check for other possible properties where name might be stored
+      if (supplier.company_name) {
+        console.log('Using supplier.company_name:', supplier.company_name);
+        return supplier.company_name;
+      }
+      
+      if (supplier.business_name) {
+        console.log('Using supplier.business_name:', supplier.business_name);
+        return supplier.business_name;
+      }
+      
+      if (supplier.vendor_name) {
+        console.log('Using supplier.vendor_name:', supplier.vendor_name);
+        return supplier.vendor_name;
+      }
+      
+      // If we have supplier ID, provide a more informative fallback
+      if (supplier.supplier_id) {
+        return `Supplier #${supplier.supplier_id}`;
+      }
+      
+      if (supplier.id) {
+        return `Supplier #${supplier.id}`;
+      }
+      
+      // Generic index-based fallback if available
+      if (typeof supplier.index === 'number') {
+        return `Supplier #${supplier.index + 1}`;
+      }
+      
+      console.log('No name found in supplier object');
+      return 'Unnamed Supplier';
+    },
   },
 
   mounted() {
       this.fetchBookedWishlist();
+      
+      // Determine which events to fetch based on the active tab
+      if (this.showTable === 'ongoing-events') {
+        this.fetchOngoingEvents();
+      } else {
       this.fetchUpcomingEvents();
+      }
+      
       this.fetchAdditionalServices();
       this.fetchAvailableSuppliers();
       this.fetchAvailableVenues();
