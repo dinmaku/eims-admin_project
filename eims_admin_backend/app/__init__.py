@@ -12,13 +12,6 @@ def create_app():
     # Set up logging
     setup_logging(app)
 
-    # Enable CORS for all routes
-    CORS(app, 
-         origins=["http://localhost:5173"], 
-         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
-         supports_credentials=True,
-         allow_headers=["Content-Type", "Authorization"])
-
     # Set up the Flask-JWT-Extended configuration
     app.config['JWT_SECRET_KEY'] = os.getenv('eims', 'fallback_jwt_secret')  # Ensure you set a JWT secret key
     

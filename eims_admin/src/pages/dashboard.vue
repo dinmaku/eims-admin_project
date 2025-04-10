@@ -38,6 +38,10 @@
                 <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] text-white transition duration-300 ease-in-out group-hover:brightness-0" src="/img/events-ticket.png">
                 Event Packages
               </router-link>
+              <router-link to="/add-discounts" class="inline-flex items-center py-[15px] px-[6.3px] w-full text-sm font-amaticBold font-semibold hover:bg-white hover:text-gray-900 transition duration-400 ease-in-out group whitespace-nowrap">
+                <img aria-hidden="true" class="mr-2 w-[20px] h-[20px] text-white transition duration-300 ease-in-out group-hover:brightness-0" src="/img/discounts.png">
+                Discounts
+              </router-link>
             </div>
 
             <p @click="toggleSection('management')" class="ml-2 text-left text-lg font-bold text-[#FFE4C4] cursor-pointer">Management</p>
@@ -113,7 +117,6 @@
     return {
       showDropDown: false,
       showSide: true,
-      toggleSideBar: false,
       visibleSections: {
         setup: true,
         management: true,

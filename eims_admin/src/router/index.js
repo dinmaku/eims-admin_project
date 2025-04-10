@@ -19,6 +19,7 @@ import AddVenue from '../pages/add-venue.vue';
 import AddOutfitPackage from '../pages/add-outfitPackage.vue';
 import AdditionalServices from '../pages/additional_services.vue';
 import AddWishlist from '../pages/add-wishlist.vue';
+import AddDiscounts from '../pages/discounts.vue';
 
 const routes = [
   {
@@ -129,6 +130,12 @@ const routes = [
         name: 'AddWishlist',
         path: '/add-wishlist',
         component: AddWishlist,
+        props: true,     
+      },
+      {
+        name: 'AddDiscounts',
+        path: '/add-discounts',
+        component: AddDiscounts,
         props: true,     
       },
     ],

@@ -263,7 +263,7 @@
 
       const fetchEventsByMonth = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/events-by-month');
+          const response = await axios.get('http://localhost:5000/events-by-month');
           const { eventTypes, data } = response.data;
           
           // Create a dataset for each event type

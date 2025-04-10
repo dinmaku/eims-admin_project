@@ -1,6 +1,6 @@
 #routes.py
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
+from flask import Flask, request, jsonify, send_file, make_response
+from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -37,7 +37,9 @@ from .models import (
     update_wishlist_additional_service_status, delete_wishlist_outfit_direct,
     delete_wishlist_service_direct, delete_wishlist_supplier_direct, delete_wishlist_venue_direct,
     fetch_upcoming_events, create_invoice, get_invoice_by_id, get_invoice_by_event,
-    update_invoice, record_payment, get_payments_by_invoice
+    update_invoice, record_payment, get_payments_by_invoice,
+    get_all_discounts, get_active_discounts, get_inactive_discounts,
+    update_wishlist_venue_status, get_wishlist_venues
 )
 
 # Configure logging
@@ -1086,23 +1088,39 @@ def init_routes(app):
             logger.error(f"Error fetching booked wishlist: {str(e)}")
             return jsonify({'message': f'Error fetching wishlist: {str(e)}'}), 500
 
-    @app.route('/events/all', methods=['GET'])
+    @app.route('/events/all', methods=['GET', 'OPTIONS'])
     @jwt_required()
     def get_all_events_route():
+        if request.method == 'OPTIONS':
+            response = make_response()
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
         try:
             events = get_all_events()
-            return jsonify([{
-                'events_id': event['events_id'],
-                'event_name': event['event_name'],
-                'event_type': event['event_type'],
-                'schedule': event['schedule'].isoformat() if event['schedule'] else None,
-                'start_time': event['start_time'].isoformat() if event['start_time'] else None,
-                'end_time': event['end_time'].isoformat() if event['end_time'] else None,
-                'status': event['status']
-            } for event in events]), 200
+            # Convert dates to ISO format for JSON serialization
+            for event in events:
+                if event['schedule']:
+                    event['schedule'] = event['schedule'].isoformat()
+                if event['start_time']:
+                    event['start_time'] = event['start_time'].isoformat()
+                if event['end_time']:
+                    event['end_time'] = event['end_time'].isoformat()
+            
+            response = jsonify(events)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
         except Exception as e:
             logger.error(f"Error in get_all_events_route: {str(e)}")
-            return jsonify({'message': 'An error occurred while fetching events'}), 500
+            response = jsonify({'message': 'An error occurred while fetching events'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
     @app.route('/events/date/<date>', methods=['GET'])
     @jwt_required()
@@ -1563,36 +1581,47 @@ def init_routes(app):
             return response, 500
 
     @app.route('/events/schedules', methods=['GET', 'OPTIONS'])
-    @jwt_required()
+    @cross_origin(supports_credentials=True, origins=['http://localhost:5173'])
     def get_event_schedules():
         if request.method == 'OPTIONS':
-            response = jsonify({'message': 'OK'})
+            response = make_response()
             response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response, 200
-            
+            return response
+
         try:
-            events = get_all_events()  # This should return all events with their schedules
+            # Get all events with their schedules
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT e.events_id, e.event_name, e.schedule, e.start_time, e.end_time, e.status
+                FROM events e
+                WHERE e.schedule IS NOT NULL
+                ORDER BY e.schedule
+            """)
+            events = cur.fetchall()
+            cur.close()
+            conn.close()
+
+            # Format the response
             schedules = []
             for event in events:
-                if event['schedule']:  # Only include events with schedules
-                    schedules.append({
-                        'date': event['schedule'],
-                        'start_time': event['start_time'],
-                        'end_time': event['end_time']
-                    })
-            response = jsonify(schedules)
-            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response, 200
+                schedules.append({
+                    'events_id': event[0],
+                    'event_name': event[1],
+                    'schedule': event[2].strftime('%Y-%m-%d') if event[2] else None,
+                    'start_time': event[3].strftime('%H:%M') if event[3] else None,
+                    'end_time': event[4].strftime('%H:%M') if event[4] else None,
+                    'status': event[5]
+                })
+
+            return jsonify(schedules)
+
         except Exception as e:
-            logger.error(f"Error fetching event schedules: {str(e)}")
-            response = jsonify({'message': 'An error occurred while fetching event schedules'})
-            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response, 500
+            app.logger.error(f"Error fetching event schedules: {str(e)}")
+            return jsonify({'error': str(e)}), 500
 
     @app.route('/additional-services', methods=['GET', 'OPTIONS'])
     @jwt_required()
@@ -2098,8 +2127,33 @@ def init_routes(app):
         try:
             data = request.get_json()
             
-            if not data:
-                return jsonify({"error": "No data provided"}), 400
+            # Validate input data
+            required_fields = []  # No strictly required fields for update
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                return jsonify({
+                    "error": f"Missing required fields: {', '.join(missing_fields)}"
+                }), 400
+                
+            # Get the current invoice to check if it already has a discount
+            current_invoice = get_invoice_by_id(invoice_id)
+            if not current_invoice:
+                return jsonify({"error": "Invoice not found"}), 404
+                
+            # If trying to update discount and invoice already has a discount set, prevent it
+            if ('discount_id' in data or 'discount_amount' in data) and current_invoice.get('discount_id') is not None:
+                return jsonify({
+                    "error": "A discount has already been applied to this invoice and cannot be changed"
+                }), 400
+            
+            # Handle discount fields
+            if 'discount_id' in data:
+                if data['discount_id'] == '' or data['discount_id'] is None:
+                    data['discount_id'] = None
+                    # If removing discount, also set discount_amount to 0
+                    if 'discount_amount' not in data:
+                        data['discount_amount'] = 0
             
             updated_invoice = update_invoice(invoice_id, data)
             
@@ -2485,5 +2539,409 @@ def init_routes(app):
         finally:
             cursor.close()
             conn.close()
+
+    # Discount routes
+    @app.route('/api/discounts', methods=['GET'])
+    def get_discounts():
+        try:
+            discounts = get_all_discounts()
+            return jsonify({'success': True, 'data': discounts})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/discounts/active', methods=['GET'])
+    def get_active_discounts():
+        try:
+            discounts = get_active_discounts()
+            return jsonify({'success': True, 'data': discounts})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/discounts', methods=['POST'])
+    def create_discount():
+        try:
+            data = request.json
+            required_fields = ['name', 'type', 'value']
+            for field in required_fields:
+                if field not in data:
+                    return jsonify({'success': False, 'error': f'Missing required field: {field}'}), 400
+
+            conn = get_db_connection()
+            cur = conn.cursor()
+            
+            cur.execute("""
+                INSERT INTO discounts (name, description, type, value, start_date, end_date, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING discount_id
+            """, (
+                data['name'],
+                data.get('description'),
+                data['type'],
+                data['value'],
+                data.get('start_date'),
+                data.get('end_date'),
+                data.get('status', 'active')
+            ))
+            
+            discount_id = cur.fetchone()[0]
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return jsonify({'success': True, 'data': {'discount_id': discount_id}})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/discounts/<int:discount_id>', methods=['PUT'])
+    def update_discount(discount_id):
+        try:
+            data = request.json
+            conn = get_db_connection()
+            cur = conn.cursor()
+            
+            update_fields = []
+            params = []
+            
+            for field in ['name', 'description', 'type', 'value', 'start_date', 'end_date', 'status']:
+                if field in data:
+                    update_fields.append(f"{field} = %s")
+                    params.append(data[field])
+            
+            if not update_fields:
+                return jsonify({'success': False, 'error': 'No fields to update'}), 400
+            
+            params.append(discount_id)
+            query = f"""
+                UPDATE discounts 
+                SET {', '.join(update_fields)}, updated_at = CURRENT_TIMESTAMP
+                WHERE discount_id = %s
+                RETURNING discount_id
+            """
+            
+            cur.execute(query, params)
+            result = cur.fetchone()
+            
+            if not result:
+                return jsonify({'success': False, 'error': 'Discount not found'}), 404
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return jsonify({'success': True, 'data': {'discount_id': discount_id}})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/discounts/<int:discount_id>/status', methods=['PUT'])
+    def toggle_discount_status(discount_id):
+        try:
+            data = request.json
+            new_status = data.get('status')
+            
+            if new_status not in ['active', 'inactive']:
+                return jsonify({'success': False, 'error': 'Invalid status'}), 400
+            
+            conn = get_db_connection()
+            cur = conn.cursor()
+            
+            cur.execute("""
+                UPDATE discounts 
+                SET status = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE discount_id = %s
+                RETURNING discount_id
+            """, (new_status, discount_id))
+            
+            result = cur.fetchone()
+            
+            if not result:
+                return jsonify({'success': False, 'error': 'Discount not found'}), 404
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return jsonify({'success': True, 'data': {'discount_id': discount_id, 'status': new_status}})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/invoices/<int:invoice_id>/discount', methods=['POST'])
+    @jwt_required()
+    def apply_discount_to_invoice(invoice_id):
+        try:
+            data = request.get_json()
+            required_fields = ['discount_id', 'discount_amount']
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                return jsonify({
+                    "error": f"Missing required fields: {', '.join(missing_fields)}"
+                }), 400
+            
+            # Get the current invoice to check if it already has a discount
+            current_invoice = get_invoice_by_id(invoice_id)
+            if not current_invoice:
+                return jsonify({"error": "Invoice not found"}), 404
+            
+            # If invoice already has a discount set, prevent changing it
+            if current_invoice.get('discount_id') is not None:
+                return jsonify({
+                    "error": "A discount has already been applied to this invoice and cannot be changed"
+                }), 400
+            
+            # Create the update data
+            update_data = {
+                'discount_id': data['discount_id'],
+                'discount_amount': data['discount_amount'],
+                # Subtract discount amount from the final amount
+                'final_amount': float(current_invoice['total_amount']) - float(data['discount_amount'])
+            }
+            
+            # Update the invoice with the discount information
+            updated_invoice = update_invoice(invoice_id, update_data)
+            
+            if not updated_invoice:
+                return jsonify({"error": "Failed to update invoice with discount"}), 500
+            
+            return jsonify(updated_invoice), 200
+            
+        except Exception as e:
+            logger.error(f"Error applying discount to invoice: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/api/invoices/<int:invoice_id>/discount', methods=['DELETE'])
+    @jwt_required()
+    def remove_discount_from_invoice(invoice_id):
+        try:
+            # Get the current invoice
+            current_invoice = get_invoice_by_id(invoice_id)
+            if not current_invoice:
+                return jsonify({"error": "Invoice not found"}), 404
+            
+            # If there's no discount to remove
+            if current_invoice.get('discount_id') is None:
+                return jsonify({"message": "No discount to remove"}), 200
+            
+            # Create the update data to remove the discount
+            update_data = {
+                'discount_id': None,
+                'discount_amount': 0,
+                # Reset the final amount to the total amount
+                'final_amount': current_invoice['total_amount']
+            }
+            
+            # Update the invoice to remove the discount
+            updated_invoice = update_invoice(invoice_id, update_data)
+            
+            if not updated_invoice:
+                return jsonify({"error": "Failed to remove discount from invoice"}), 500
+            
+            return jsonify(updated_invoice), 200
+            
+        except Exception as e:
+            logger.error(f"Error removing discount from invoice: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/api/discounts/inactive', methods=['GET'])
+    def get_inactive_discounts():
+        try:
+            from app.db import get_inactive_discounts as fetch_inactive_discounts
+            inactive_discounts = fetch_inactive_discounts()
+            return jsonify({'success': True, 'data': inactive_discounts})
+        except Exception as e:
+            logger.error(f"Error fetching inactive discounts: {str(e)}")
+            return jsonify({
+                'success': False, 
+                'error': str(e)
+            }), 500
+
+    @app.route('/api/wishlist-venues/<int:wishlist_venue_id>/status', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    @cross_origin(supports_credentials=True)
+    def update_wishlist_venue_route(wishlist_venue_id):
+        if request.method == 'OPTIONS':
+            return jsonify({'success': True}), 200
+
+        try:
+            current_user = get_jwt_identity()
+            data = request.get_json()
+            
+            if not data or 'status' not in data:
+                return jsonify({'success': False, 'error': 'Status is required'}), 400
+
+            success, message = update_wishlist_venue_status(wishlist_venue_id, data['status'])
+            if success:
+                return jsonify({'success': True, 'message': message}), 200
+            else:
+                return jsonify({'success': False, 'error': message}), 400
+        except Exception as e:
+            print(f"Error updating venue status: {str(e)}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/wishlist-venues', methods=['POST', 'OPTIONS'])
+    @jwt_required()
+    def create_wishlist_venue_route():
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            data = request.get_json()
+            if not data:
+                return jsonify({'message': 'No data provided'}), 400
+
+            # Get user ID from token
+            email = get_jwt_identity()
+            userid = get_user_id_by_email(email)
+            
+            if userid is None:
+                return jsonify({'message': 'User not found'}), 404
+
+            # Create the wishlist venue
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute("""
+                    INSERT INTO wishlist_venues (
+                        wishlist_id, venue_id, price, remarks, status
+                    ) VALUES (
+                        %s, %s, %s, %s, %s
+                    ) RETURNING wishlist_venue_id
+                """, (
+                    data.get('wishlist_id'),
+                    data.get('venue_id'),
+                    data.get('price', 0),
+                    data.get('remarks', ''),
+                    data.get('status', 'Pending')
+                ))
+                
+                wishlist_venue_id = cursor.fetchone()[0]
+                conn.commit()
+                
+                response = jsonify({
+                    'success': True,
+                    'message': 'Venue added successfully',
+                    'wishlist_venue_id': wishlist_venue_id
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 201
+                
+            except Exception as e:
+                conn.rollback()
+                logger.error(f"Error creating wishlist venue: {e}")
+                return jsonify({'message': 'Failed to create wishlist venue'}), 500
+            finally:
+                cursor.close()
+                conn.close()
+                
+        except Exception as e:
+            logger.error(f"Error in create_wishlist_venue_route: {e}")
+            return jsonify({'message': 'An error occurred while creating wishlist venue'}), 500
+
+    @app.route('/api/wishlist-packages/<int:wishlist_id>/venue', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def remove_wishlist_package_venue_route(wishlist_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # Update the wishlist_package to remove venue reference
+            cursor.execute("""
+                UPDATE wishlist_packages 
+                SET venue_id = NULL, venue_status = NULL
+                WHERE wishlist_id = %s
+                RETURNING wishlist_id
+            """, (wishlist_id,))
+            
+            result = cursor.fetchone()
+            conn.commit()
+            
+            if result:
+                response = jsonify({
+                    'success': True,
+                    'message': 'Venue reference removed successfully'
+                })
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+                response.headers.add('Access-Control-Allow-Credentials', 'true')
+                return response, 200
+            else:
+                return jsonify({'message': 'Wishlist package not found'}), 404
+                
+        except Exception as e:
+            logger.error(f"Error removing venue reference: {e}")
+            if conn:
+                conn.rollback()
+            return jsonify({'message': 'An error occurred while removing venue reference'}), 500
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    @app.route('/api/wishlist-packages/<int:wishlist_id>', methods=['GET', 'OPTIONS'])
+    @jwt_required()
+    def get_wishlist_package_route(wishlist_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            # Get wishlist package details
+            wishlist_data = get_wishlist_package(wishlist_id)
+            
+            if not wishlist_data:
+                return jsonify({'message': 'Wishlist package not found'}), 404
+            
+            response = jsonify(wishlist_data)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        except Exception as e:
+            logger.error(f"Error getting wishlist package: {e}")
+            return jsonify({'message': 'An error occurred while getting wishlist package'}), 500
+
+    @app.route('/api/wishlist-venues/<int:wishlist_id>', methods=['GET', 'OPTIONS'])
+    @jwt_required(optional=True)  # Make JWT optional to handle OPTIONS requests
+    def get_wishlist_venues_route(wishlist_id):
+        if request.method == 'OPTIONS':
+            response = jsonify({'message': 'OK'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+
+        try:
+            # Get wishlist venues
+            venues = get_wishlist_venues(wishlist_id)
+            
+            response = jsonify(venues)
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
+            
+        except Exception as e:
+            logger.error(f"Error getting wishlist venues: {e}")
+            response = jsonify({'message': 'An error occurred while getting wishlist venues'})
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 500
 
     return app

@@ -930,7 +930,7 @@ export default {
             }
             
             console.log('Fetching booked dates...');
-            const response = await axios.get('http://localhost:5000/schedules', {
+            const response = await axios.get('http://localhost:5000/events/schedules', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -1472,13 +1472,24 @@ export default {
 
         // Transform outfits into the new format
         const outfits = this.inclusions
-            .filter(inclusion => inclusion.type === 'outfit')
-            .map(inclusion => ({
-                outfit_id: inclusion.data.outfit_id,
-                gown_package_id: inclusion.data.gown_package_id,
-                price: inclusion.data.price,
-                remarks: inclusion.data.remarks || ''
-            }));
+            .filter(inclusion => inclusion.type === 'outfit_package' || inclusion.type === 'individual_outfit')
+            .map(inclusion => {
+                if (inclusion.type === 'outfit_package') {
+                    return {
+                        outfit_id: null,
+                        gown_package_id: inclusion.data.gown_package_id,
+                        price: parseFloat(inclusion.data.gown_package_price || 0),
+                        remarks: inclusion.data.remarks || ''
+                    };
+                } else {
+                    return {
+                        outfit_id: inclusion.data.outfit_id,
+                        gown_package_id: null,
+                        price: parseFloat(inclusion.data.rent_price || 0),
+                        remarks: inclusion.data.remarks || ''
+                    };
+                }
+            });
 
         // Transform services into the new format
         const services = this.inclusions
@@ -1488,6 +1499,15 @@ export default {
                 price: inclusion.data.price || 0,
                 remarks: inclusion.data.remarks || ''
             }));
+
+        // Get venue data from inclusions
+        const venueInclusion = this.inclusions.find(inclusion => inclusion.type === 'venue');
+        const venueData = venueInclusion ? {
+            venue_id: venueInclusion.data.venue_id,
+            venue_price: parseFloat(venueInclusion.data.venue_price || 0),
+            venue_status: 'Pending',  // Set initial status as Pending
+            remarks: ''  // Add empty remarks field
+        } : null;
 
         // First create the event
         const eventData = {
@@ -1525,7 +1545,7 @@ export default {
             package_name: this.selectedPackage.package_name,
             capacity: this.selectedPackage.capacity,
             description: this.selectedPackage.description,
-            venue_id: this.selectedPackage.venue_id,
+            venue_id: venueData ? venueData.venue_id : null,
             gown_package_id: this.selectedPackage.gown_package_id,
             additional_capacity_charges: this.selectedPackage.additional_capacity_charges,
             charge_unit: this.selectedPackage.charge_unit,
@@ -1533,7 +1553,8 @@ export default {
             event_type_id: this.selectedPackage.event_type_id,
             suppliers: suppliers,
             outfits: outfits,
-            services: services
+            services: services,
+            venue: venueData  // Include venue data for wishlist_venues table
         };
             
         console.log('Submitting wishlist data:', wishlistData);
@@ -1769,7 +1790,8 @@ export default {
             venue_id: this.selectedVenue.venue_id,
             venue_name: this.selectedVenue.venue_name,
             location: this.selectedVenue.location,
-            venue_price: price  // Changed from price to venue_price
+            venue_price: price,
+            venue_status: 'Pending'  // Add default status
         };
         console.log('Venue data to add:', venueData);
         this.inclusions = [...this.inclusions, {

@@ -169,6 +169,22 @@ CREATE TABLE IF NOT EXISTS invoices (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create discounts table if not exists
+CREATE TABLE IF NOT EXISTS discounts (
+    discount_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('percentage', 'fixed')),
+    value DECIMAL(10, 2) NOT NULL,
+    code VARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    minimum_purchase DECIMAL(10, 2) DEFAULT 0.00,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create payments table if not exists
 CREATE TABLE IF NOT EXISTS payments (
     payment_id SERIAL PRIMARY KEY,

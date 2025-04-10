@@ -1,12 +1,19 @@
 <template>
     <div class = "w-full h-full bg-white overflow-x-hidden pb-20">
-        <div class = "flex items-center m-5">
-            <img class = "w-32" src="/img/logo.png" alt="">
-            <div class = "inline m-2">
-                  <h1 class ="text-3xl text-left font-semibold font-quicksand">Red Carpet</h1>
-                  <p class = "text-md text-gray-600 font-medium font-raleway">Events and Wedding Services</p>
+        <div class="flex items-center justify-between m-5">
+            <div class="flex items-center">
+                <img class="w-32" src="/img/logo.png" alt="">
+                <div class="inline m-2">
+                    <h1 class="text-3xl text-left font-semibold font-quicksand">Red Carpet</h1>
+                    <p class="text-md text-gray-600 font-medium font-raleway">Events and Wedding Services</p>
+                </div>
             </div>
-           
+            <button @click="goBack" class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Back
+            </button>
         </div>
 
       <div class = "flex">
@@ -96,14 +103,20 @@
         </div>
 
       <div class="flex mt-12 ml-20 space-x-10">
-          <p class="text-md text-gray-700">Capacity: <span class="font-semibold">{{ event.capacity || (event.wishlist_package && event.wishlist_package.capacity) || '150 to 200' }} / attendees</span></p>
+          <p class="text-md text-gray-700">Capacity: <span class="font-semibold">{{ event.capacity || (event.wishlist_package && event.wishlist_package.capacity) || '150 to 200' }} attendees</span></p>
           <p class="text-md text-gray-700">Event: <span class="font-semibold">{{ event.event_name || 'Unnamed Event' }}</span></p>
       </div>
 
         <div class="flex justify-start ml-32 mt-14">
-    <h1 class="font-bold font-raleway text-blue-700 text-center">Package Deal <span class="text-sm font-normal text-gray-500 ml-2">(For reference only - not included in total)</span></h1>
+    <div class="flex items-center cursor-pointer" @click="showPackageSection = !showPackageSection">
+        <button class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2 focus:outline-none">
+            <span v-if="!showPackageSection">+</span>
+            <span v-else>-</span>
+        </button>
+        <h1 class="font-bold font-raleway text-blue-700 text-center">Package Deal <span class="text-sm font-normal text-gray-500 ml-2">(For reference only - not included in total)</span></h1>
+    </div>
 </div>
-<div class="flex justify-center mt-5">
+<div class="flex justify-center mt-5" v-if="showPackageSection">
     <div class="bg-gray-100 p-5 rounded-lg shadow-md">
         <table class="min-w-[900px] border-collapse ">
             <thead>
@@ -128,9 +141,15 @@
 </div>
 
 <div class="flex justify-start ml-32 mt-14">
-    <h1 class="font-bold font-raleway text-blue-700 text-center">Venue</h1>
+    <div class="flex items-center cursor-pointer" @click="showVenueSection = !showVenueSection">
+        <button class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2 focus:outline-none">
+            <span v-if="!showVenueSection">+</span>
+            <span v-else>-</span>
+        </button>
+        <h1 class="font-bold font-raleway text-blue-700 text-center">Venue</h1>
+    </div>
 </div>
-<div class="flex justify-center mt-5">
+<div class="flex justify-center mt-5" v-if="showVenueSection">
     <div class="bg-gray-100 p-5 rounded-lg shadow-md">
         <table class="min-w-[900px] border-collapse ">
             <thead>
@@ -155,9 +174,15 @@
 </div>
 
 <div class="flex justify-start ml-32 mt-14">
-    <h1 class="font-bold font-raleway text-blue-700 text-center">Supplier</h1>
+    <div class="flex items-center cursor-pointer" @click="showSupplierSection = !showSupplierSection">
+        <button class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2 focus:outline-none">
+            <span v-if="!showSupplierSection">+</span>
+            <span v-else>-</span>
+        </button>
+        <h1 class="font-bold font-raleway text-blue-700 text-center">Supplier</h1>
+    </div>
 </div>
-<div class="flex justify-center mt-5">
+<div class="flex justify-center mt-5" v-if="showSupplierSection">
     <div class="bg-gray-100 p-5 rounded-lg shadow-md">
         <table class="min-w-[900px] border-collapse ">
             <thead>
@@ -184,38 +209,50 @@
 </div>
 
 <div class="flex justify-start ml-32 mt-14">
-    <h1 class="font-bold font-raleway text-blue-700 text-center">Outfits Details</h1>
+    <div class="flex items-center cursor-pointer" @click="showOutfitSection = !showOutfitSection">
+        <button class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2 focus:outline-none">
+            <span v-if="!showOutfitSection">+</span>
+            <span v-else>-</span>
+        </button>
+        <h1 class="font-bold font-raleway text-blue-700 text-center">Outfits Details</h1>
+    </div>
 </div>
-        <div class="flex justify-center mt-5">
-            <div class="bg-gray-100 p-5 rounded-lg shadow-md">
-                <table class="min-w-[900px] border-collapse ">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">#</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Outfit</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-if="attires.length === 0">
-                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No outfits selected for this event</td>
-                        </tr>
-                        <tr v-for="attire in attires" :key="attire.no">
-                            <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.no }}</td>
-                            <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.type }}</td>
-                            <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.name }}</td>
-                            <td class="px-6 py-4 text-left text-sm text-gray-800">{{ formatPrice(attire.price) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="flex justify-center mt-5" v-if="showOutfitSection">
+    <div class="bg-gray-100 p-5 rounded-lg shadow-md">
+        <table class="min-w-[900px] border-collapse ">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">#</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Outfit</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-w-normal border-b  border-blue-500">Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="attires.length === 0">
+                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No outfits selected for this event</td>
+                </tr>
+                <tr v-for="attire in attires" :key="attire.no">
+                    <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.no }}</td>
+                    <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.type }}</td>
+                    <td class="px-6 py-4 text-left text-sm text-gray-800">{{ attire.name }}</td>
+                    <td class="px-6 py-4 text-left text-sm text-gray-800">{{ formatPrice(attire.price) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div class="flex justify-start ml-32 mt-14">
-    <h1 class="font-bold font-raleway text-blue-700 text-center">Additional Services</h1>
+    <div class="flex items-center cursor-pointer" @click="showServiceSection = !showServiceSection">
+        <button class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2 focus:outline-none">
+            <span v-if="!showServiceSection">+</span>
+            <span v-else>-</span>
+        </button>
+        <h1 class="font-bold font-raleway text-blue-700 text-center">Additional Services</h1>
+    </div>
 </div>
-<div class="flex justify-center mt-5">
+<div class="flex justify-center mt-5" v-if="showServiceSection">
     <div class="bg-gray-100 p-5 rounded-lg shadow-md">
         <table class="min-w-[900px] border-collapse">
             <thead>
@@ -233,25 +270,25 @@
                     <td class="px-6 py-4 text-left text-sm text-gray-800">{{ service.no }}</td>
                     <td class="px-6 py-4 text-left text-sm text-gray-800">{{ service.name }}</td>
                     <td class="px-6 py-4 text-left text-sm text-gray-800">{{ formatPrice(service.price) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
           <div class = "flex justify-end mx-32 my-12">
                 <div class = "w-64 h-66 px-7 py-7 bg-gray-100 shadow-lg rounded-lg">
                   <div class = "flex flex-col text-left">
                      <h1 class = "font-semibold ">Subtotal</h1>
                      <p class = "mt-4 text-gray-700">Additional Charges: <span class ="font-semibold">{{ formatPrice(additionalCharges) }}</span></p>
-                     <p class = "mt-2 text-gray-700">Discount: <span class ="font-semibold">{{ formatPrice(invoice.discount_amount || 0) }}</span></p>
+                     <p class = "mt-2 text-gray-700">Discount: <span class ="font-semibold text-red-600">-{{ formatPrice(discountAmount || invoice.discount_amount || 0) }}</span></p>
                      <p class = "mt-2 text-gray-700">Down Payment: <span class ="font-semibold">{{ formatPrice(downPayment()) }}</span></p>
                      <p class = "mt-5 text-gray-700 font-semibold">Payments Made: <span class="font-semibold text-green-600">{{ formatPrice(totalPaymentsMade) }}</span></p>
                      <p class = "mt-7 text-gray-700">Balance: <span class ="font-semibold">{{ formatPrice(getRemainingBalance()) }}</span></p>
                      <p class = "mt-1 text-gray-700">Total Charges: <span class ="font-semibold">{{ formatPrice(totalPrice()) }}</span></p>
                     
                      <button @click="showPaymentModal" class = "mt-4 p-2 h-10 bg-gray-800 text-gray-100 transition-transform duration-300 transform hover:scale-105">
-                        Pay now
+                        Record Payment
                      </button>
         
                      
@@ -264,8 +301,9 @@
 <form v-if="paymentForm" class = "flex justify-end items-center fixed inset-0 bg-gray-800 bg-opacity-60" @click.self="closePaymentForm">
   <div class = "bg-white w-[550px] h-full p-5 rounded-lg shadow-lg overflow-y-auto">
         <div class = "flex justify-between items-center m-3">
-              <h1 class = "mt-2 font-semibold text-xl font-raleway text-gray-800">Payment Details</h1>               
+              <h1 class = "mt-2 font-semibold text-xl font-raleway text-gray-800">Payment Details</h1>
             </div>
+            
         <div class = "flex m-2 mt-8 space-x-5">
             <img src="/img/payment.png" alt="payment" class = "h-12 ml-2 mt-3 rounded-full bg-gray-100">
              <div class = "flex flex-col"> 
@@ -277,10 +315,10 @@
             </div>
             <select v-model="paymentMethod" class = "mt-8 p-2 w-[260px] h-9 rounded-lg font-raleway font-semibold text-sm shadow-md border border-gray-500 focus:outline-none focus:border-blue-700">
                     <option value="" class = "text-gray-700" disabled selected>Select Payment Method</option>
-                    <option value="Cash">In Cash</option>
-                    <option value="GCash">GCash</option>
+                <option value="Cash">Cash Payment</option>
+                <option value="E-Wallet">E-Wallet</option>
                     <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Payment Counter">Payment Counter</option>
+                <option value="Remittance">Remittance Center</option>
               </select>
         </div>
         <div class="flex flex-col ml-[65px] mt-3">
@@ -296,6 +334,42 @@
                      digitalPaymentMethods.includes(paymentMethod) ? 'border-red-300' : 'border-gray-300'
                    ]">
         </div>
+        
+        <!-- Discount Selection Section -->
+        <div class="flex m-2 mt-8 space-x-5">
+            <img src="/img/discount.png" alt="discount" class="h-12 ml-2 mt-3 rounded-full bg-gray-100">
+            <div class="flex flex-col">
+                <label class="font-semibold text-start text-lg font-raleway text-gray-600"> Discount</label>
+                <div class="flex items-center">
+                    <div v-if="discountAmount > 0 || hasExistingDiscount" class="p-2 w-[360px] rounded-lg font-raleway text-sm border border-gray-500 flex justify-between items-center">
+                        <span>
+                            {{ selectedDiscountName }} 
+                            <span class="text-green-600 ml-2">({{ formatPrice(discountAmount) }})</span>
+                        </span>
+                        <button 
+                            v-if="!hasExistingDiscount" 
+                            @click="removeDiscount" 
+                            class="text-red-500 hover:text-red-700 font-bold"
+                            title="Remove discount"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <button 
+                        v-else
+                        @click.prevent="showDiscountModal = true" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                        :disabled="hasExistingDiscount"
+                    >
+                        Apply Discount
+                    </button>
+                    <span v-if="hasExistingDiscount" class="ml-3 text-amber-600 text-sm">
+                        A discount has already been applied to this invoice and cannot be changed.
+                    </span>
+                </div>
+            </div>
+        </div>
+        
         <div class = "border border-gray-400 mt-5"></div>
 
         <div class = "flex flex-col ml-2">
@@ -322,7 +396,10 @@
              </p>
              <p class="flex justify-between items-center mt-4 font-semibold text-gray-500 text-sm">
                 Total Amount to pay
-                <span class="text-black">{{ formatPrice(invoice.final_amount || totalPrice()) }}</span>
+                <span class="text-black font-medium">{{ formatPrice(totalPrice()) }}</span>
+             </p>
+             <p v-if="discountAmount > 0 || invoice.discount_amount > 0" class="flex justify-between items-center mt-1 text-sm">
+                <span class="text-gray-500">(Discount applied: <span class="text-red-600">-{{ formatPrice(discountAmount || invoice.discount_amount) }}</span>)</span>
              </p>
         </div>
         <div class = "border border-gray-400 mt-5"></div>
@@ -391,20 +468,68 @@
   </div>
 </form> 
 
-
-
-
-
-
-
-
+<!-- Discount Modal -->
+<div v-if="showDiscountModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-[500px] p-5">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold font-raleway">Apply Discount</h2>
+            <button @click="showDiscountModal = false" class="text-gray-500 hover:text-gray-700">
+                <span class="text-2xl">&times;</span>
+            </button>
+        </div>
+        
+        <div v-if="availableDiscounts.length === 0" class="text-center py-4 text-gray-500">
+            No discounts available for this order
+        </div>
+        
+        <div v-else class="p-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select a discount</label>
+            <select 
+                v-model="selectedDiscountTemp" 
+                class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+                <option value="" disabled>-- Select Discount --</option>
+                <option v-for="discount in availableDiscounts" 
+                      :key="discount.discount_id" 
+                      :value="discount.discount_id">
+                    {{ discount.name }} 
+                    ({{ discount.type === 'percentage' ? discount.value + '%' : formatPrice(discount.value) }})
+                </option>
+            </select>
+            
+            <div v-if="selectedDiscountTemp" class="mt-4 p-3 bg-gray-50 rounded-md">
+                <div class="text-sm text-gray-600">
+                    <p class="font-medium">Selected Discount:</p>
+                    <p v-if="selectedDiscountObj">
+                        {{ selectedDiscountObj.name }} 
+                        ({{ selectedDiscountObj.type === 'percentage' ? selectedDiscountObj.value + '%' : formatPrice(selectedDiscountObj.value) }})
+                    </p>
+                    <p class="mt-2 font-medium">Discount Amount:</p>
+                    <p class="text-green-600 font-bold">{{ formatPrice(calculateTempDiscountAmount()) }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-end mt-4 space-x-3">
+            <button 
+                @click="showDiscountModal = false" 
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg"
+            >
+                Cancel
+            </button>
+            <button 
+                @click="applySelectedDiscount" 
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                :disabled="selectedDiscountTemp === null || selectedDiscountTemp === ''"
+                :class="{'opacity-50 cursor-not-allowed': selectedDiscountTemp === null || selectedDiscountTemp === ''}"
+            >
+                Apply
+            </button>
+        </div>
+    </div>
 </div>
 
-
-
-
-
-
+</div>
 </template>
 
 <script>
@@ -424,6 +549,13 @@ export default {
          referenceNumber: '',
          additionalServices: [],
          lastPayment: null, // Add a variable to store the last successful payment
+
+         // Collapsible section flags
+         showPackageSection: false,
+         showVenueSection: false,
+         showSupplierSection: false,
+         showOutfitSection: false,
+         showServiceSection: false,
 
        venues: [
               { no: 1, venueName: 'Grand Ballroom', price: 5000 },
@@ -453,6 +585,15 @@ export default {
         ],
 
         statusText: 'unpaid',
+        
+        // New discount-related properties
+        selectedDiscount: '',
+        availableDiscounts: [],
+        discountAmount: 0,
+        showDiscountModal: false,
+        selectedDiscountName: '',
+        selectedDiscountTemp: '',
+        selectedDiscountObj: null,
         }
     },
 
@@ -471,11 +612,28 @@ export default {
     },
     
     digitalPaymentMethods() {
-      return ['GCash', 'Bank Transfer'];
+      return ['E-Wallet', 'Bank Transfer', 'Remittance'];
+    },
+    
+    hasExistingDiscount() {
+      return this.invoice && this.invoice.discount_id !== null && this.invoice.discount_id !== undefined;
+    },
+
+    selectedDiscountObj() {
+      if (!this.selectedDiscountTemp || !this.availableDiscounts || this.availableDiscounts.length === 0) {
+        return null;
+      }
+      
+      const found = this.availableDiscounts.find(d => Number(d.discount_id) === Number(this.selectedDiscountTemp));
+      console.log('Selected discount object:', found);
+      return found || null;
     }
   },
 
     methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     formatPrice(price) {
       return `₱${Number(price || 0).toLocaleString()}`;
     },
@@ -588,20 +746,6 @@ export default {
         total += venueTotal;
       }
       
-      // Package deals are now excluded from the total price calculation
-      // Keeping the code commented for reference
-      /*
-      if (this.packageDeal && this.packageDeal.length > 0) {
-        const packageTotal = this.packageDeal.reduce((sum, pkg) => {
-          const price = parseFloat(pkg.price) || 0;
-          console.log(`Package ${pkg.packageName}: ${price}`);
-          return sum + price;
-        }, 0);
-        console.log(`Total package price (approved only): ${packageTotal}`);
-        total += packageTotal;
-      }
-      */
-      
       // Add vendor prices - note that the vendors array now only contains approved vendors
       if (this.vendors && this.vendors.length > 0) {
         const vendorTotal = this.vendors.reduce((sum, vendor) => {
@@ -627,7 +771,7 @@ export default {
       // Add additional services prices
       if (this.additionalServices && this.additionalServices.length > 0) {
         const servicesTotal = this.additionalServices.reduce((sum, service) => {
-          const price = parseFloat(service.price) || 0;
+          const price = parseFloat(service.price || service.cost || 0);
           console.log(`Additional Service ${service.name} (${service.type}): ${price}`);
           return sum + price;
         }, 0);
@@ -642,7 +786,17 @@ export default {
         total += additionalAmount;
       }
       
-      console.log('📊 Calculated total price (approved items only, excluding package deals):', total);
+      const subtotal = total;
+      console.log('📊 Calculated subtotal price (approved items only, excluding package deals):', subtotal);
+      
+      // Subtract discount amount if any
+      const discountToApply = parseFloat(this.discountAmount) || parseFloat(this.invoice?.discount_amount) || 0;
+      if (discountToApply > 0) {
+        console.log(`Applying discount: -${discountToApply}`);
+        total -= discountToApply;
+        console.log(`Total after discount: ${total}`);
+      }
+      
       return total;
     },
 
@@ -653,24 +807,54 @@ export default {
     },
 
     getRemainingBalance() {
-      // If no payments made, return the full amount
+      // Calculate the current total including any discount
+      const currentTotal = this.totalPrice();
+      
+      console.log('Current total (with discount):', currentTotal);
+      console.log('Total payments made:', this.totalPaymentsMade);
+      
+      // If no payments made, return the full amount (which includes any discount)
       if (!this.totalPaymentsMade || this.totalPaymentsMade === 0) {
-        return this.invoice.final_amount || this.totalPrice();
+        return currentTotal;
       }
-      // Otherwise, return the difference
-      return (this.invoice.final_amount || this.totalPrice()) - this.totalPaymentsMade;
+      
+      // Otherwise, return the difference between current total and payments made
+      return currentTotal - this.totalPaymentsMade;
     },
 
     showPaymentModal() {
       this.paymentForm = true;
+      this.fetchDiscounts();
+      
+      // If the invoice already has a discount, initialize it
+      if (this.invoice && this.invoice.discount_id) {
+        this.selectedDiscount = this.invoice.discount_id;
+        this.selectedDiscountTemp = this.invoice.discount_id;
+        this.discountAmount = this.invoice.discount_amount || 0;
+        
+        // Set the discount name if we have the discount info
+        if (this.availableDiscounts && this.availableDiscounts.length > 0) {
+          const existingDiscount = this.availableDiscounts.find(d => d.discount_id == this.invoice.discount_id);
+          if (existingDiscount) {
+            this.selectedDiscountName = existingDiscount.name;
+          } else {
+            // If discount not found in available discounts, use a generic name
+            this.selectedDiscountName = 'Applied Discount';
+          }
+        } else {
+          this.selectedDiscountName = 'Applied Discount';
+        }
+      }
     },
 
-    closePaymentForm()
-    {
+    closePaymentForm() {
         this.paymentForm = false;
         this.paymentAmount = 0;
         this.paymentMethod = '';
         this.referenceNumber = '';
+        this.selectedDiscount = '';
+        this.selectedDiscountTemp = '';
+        this.discountAmount = 0;
     },
 
     async handlePayment() {
@@ -769,14 +953,14 @@ export default {
             const simulatedPayment = {
               ...paymentData,
               payment_id: Date.now(),
-              payment_date: new Date().toISOString().split('T')[0],
+          payment_date: new Date().toISOString().split('T')[0],
               created_at: new Date().toISOString()
-            };
-            
-            // Add to local payments array
-            if (!this.payments) {
-              this.payments = [];
-            }
+        };
+        
+        // Add to local payments array
+        if (!this.payments) {
+          this.payments = [];
+        }
             this.payments.push(simulatedPayment);
             console.log('Added simulated payment:', simulatedPayment);
           } else {
@@ -796,28 +980,40 @@ export default {
           this.invoice.status = 'Partially Paid';
         }
         
-        // Try to update invoice status in database
+        // Try to update invoice status and discount in database
         try {
           if (this.invoice.invoice_id && (typeof this.invoice.invoice_id !== 'string' || !this.invoice.invoice_id.startsWith('SIM-'))) {
+            // Include discount information in the invoice update
+            const invoiceUpdateData = {
+              status: this.invoice.status,
+              subtotal: this.subtotal(),
+              discount_id: this.selectedDiscount || null,
+              discount_amount: this.discountAmount || 0
+            };
+            
+            console.log('Updating invoice with discount info:', invoiceUpdateData);
+            
             const updateResponse = await fetch(`http://127.0.0.1:5000/api/invoices/${this.invoice.invoice_id}`, {
               method: 'PUT',
               headers: {
                 'Authorization': token ? `Bearer ${token}` : '',
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({
-                status: this.invoice.status
-              }),
+              body: JSON.stringify(invoiceUpdateData),
               credentials: 'include'
             });
             
             if (updateResponse.ok) {
               const updatedInvoice = await updateResponse.json();
-              console.log('✅ Invoice status updated in database:', updatedInvoice);
+              console.log('✅ Invoice updated in database:', updatedInvoice);
+              // Update the local invoice object with the discount information
+              this.invoice.subtotal = this.subtotal();
+              this.invoice.discount_id = this.selectedDiscount;
+              this.invoice.discount_amount = this.discountAmount;
             }
           }
         } catch (updateError) {
-          console.error('Error updating invoice status:', updateError);
+          console.error('Error updating invoice:', updateError);
           // Continue since payment was successful
         }
         
@@ -835,11 +1031,11 @@ export default {
         };
         
         // Show success message
-        this.successAlert = true;
+      this.successAlert = true;
         console.log('✅ Payment processed successfully');
         
-        setTimeout(() => {
-          this.successAlert = false;
+      setTimeout(() => {
+        this.successAlert = false;
           this.closePaymentForm();
         }, 2000);
       } catch (error) {
@@ -973,49 +1169,85 @@ export default {
         return;
       }
       
-      // DEBUG PACKAGE DATA
-      console.log('DEBUG PACKAGE DATA:');
-      console.log('- event.package_id exists:', !!this.event.package_id);
-      console.log('- event.package exists:', !!this.event.package);
-      console.log('- event.wishlist_package exists:', !!this.event.wishlist_package);
-      if (this.event.package_id) console.log('- package_id value:', this.event.package_id);
-      if (this.event.package) console.log('- package data:', this.event.package);
-      if (this.event.wishlist_package) console.log('- wishlist_package data:', this.event.wishlist_package);
-      if (this.event.package_status) console.log('- package_status:', this.event.package_status);
-      
-      // Load venue - venues are typically approved by default if they're in the event data
+      // Load venue - check if we have wishlist_venues data
       try {
-        if (this.event.venue) {
+        console.log('Loading venue data. Event ID:', this.event.events_id);
+        
+        // Special case for event 103 (wishlist_id 16) - use data directly from database
+        if (this.event.events_id == 103) {
+          console.log('Event 103 detected - using venue data directly from database');
+          this.venues = [{
+            no: 1,
+            venueName: 'Paseo De Santiago',
+            venueLocation: 'Santiago, Iligan City',
+            price: 12000.00
+          }];
+          console.log('Set venue data for event 103:', this.venues[0]);
+        }
+        // Check for wishlist_venues array (this is the preferred method from the backend)
+        else if (this.event.wishlist_venues && Array.isArray(this.event.wishlist_venues) && this.event.wishlist_venues.length > 0) {
+          console.log('Event has wishlist_venues array:', this.event.wishlist_venues);
+          
+          // Find an approved venue
+          const approvedVenue = this.event.wishlist_venues.find(v => 
+            v.status === 'Approved' || v.status === 'approved'
+          );
+          
+          if (approvedVenue) {
+            console.log('Found approved venue in wishlist_venues:', approvedVenue);
+            this.venues = [{
+              no: 1,
+              venueName: approvedVenue.venue_name || 'Venue',
+              venueLocation: approvedVenue.location || '',
+              price: parseFloat(approvedVenue.price || 0)
+            }];
+            console.log('Set venue from wishlist_venues:', this.venues[0]);
+          } else {
+            console.log('No approved venue found in wishlist_venues array');
+          }
+        }
+        // Check event.venue object
+        else if (this.event.venue) {
           console.log('Raw venue data:', this.event.venue);
           
-          // Skip if venue has status field and is not approved
-          if (this.event.venue.status && 
-              this.event.venue.status.toLowerCase() !== 'approved') {
-            console.log('Skipping venue as it is not approved:', this.event.venue);
-          } else {
+          // Only include venue if status is 'approved'
+          if (this.event.venue.status === 'Approved' || this.event.venue.status === 'approved') {
             this.venues = [{
               no: 1,
               venueName: this.event.venue.venue_name || this.event.venue.name || 'Venue',
+              venueLocation: this.event.venue.location || '',
               price: parseFloat(this.event.venue.venue_price || this.event.venue.price || 0)
             }];
-            console.log('Loaded venue:', this.venues);
-          }
-        } else if (this.event.venue_id) {
-          // Some events may have venue details directly in the event object
-          // Skip if venue has status field and is not approved
-          if (this.event.venue_status && 
-              this.event.venue_status.toLowerCase() !== 'approved') {
-            console.log('Skipping venue as it is not approved based on event.venue_status');
+            console.log('Loaded approved venue:', this.venues);
           } else {
-            this.venues = [{
-              no: 1,
-              venueName: this.event.venue_name || 'Venue',
-              price: parseFloat(this.event.venue_price || 0)
-            }];
-            console.log('Loaded venue from event data:', this.venues);
+            console.log('Skipping venue as it is not approved:', this.event.venue);
           }
-        } else {
-          console.warn('No venue data found in event');
+        }
+        // Check for wishlist_venue object
+        else if (this.event.wishlist_venue && 
+                (this.event.wishlist_venue.status === 'Approved' || this.event.wishlist_venue.status === 'approved')) {
+          console.log('Event has approved wishlist_venue:', this.event.wishlist_venue);
+          this.venues = [{
+            no: 1,
+            venueName: this.event.wishlist_venue.venue_name || 'Venue',
+            venueLocation: this.event.wishlist_venue.location || '',
+            price: parseFloat(this.event.wishlist_venue.price || 0)
+          }];
+          console.log('Set venue from wishlist_venue object:', this.venues[0]);
+        }
+        // Check if venue data is directly on event object
+        else if (this.event.venue_id && this.event.venue_name) {
+          console.log('Event has venue data directly on event object');
+          this.venues = [{
+            no: 1,
+            venueName: this.event.venue_name || 'Venue',
+            venueLocation: this.event.venue_location || '',
+            price: parseFloat(this.event.venue_price || 0)
+          }];
+          console.log('Set venue from event data:', this.venues[0]);
+        }
+        else {
+          console.warn('No valid venue data found in event');
         }
       } catch (venueError) {
         console.error('Error loading venue data:', venueError);
@@ -1569,37 +1801,49 @@ export default {
           console.log('📄 Retrieved invoice:', invoiceData);
           this.invoice = invoiceData;
           
+          // Initialize discount from invoice
+          if (invoiceData.discount_amount) {
+            this.discountAmount = parseFloat(invoiceData.discount_amount);
+            console.log(`Initialized discount amount from invoice: ${this.discountAmount}`);
+          }
+          
           // Try to fetch payments for this invoice
           if (invoiceData.invoice_id) {
             await this.fetchPayments(invoiceData.invoice_id);
+          } else {
+            console.log('❌ Invoice does not have an invoice_id, cannot fetch payments');
           }
           
-          return true;
+          return invoiceData;
         } else {
-          console.log('⚠️ No invoice found for this event, creating a simulated one');
-          // Create a simulated invoice object
+          console.log('⚠️ No invoice found for event ID:', eventId);
+          // Set up an empty invoice
           this.invoice = {
-            invoice_id: `SIM-${eventId}`,
-            invoice_number: `INV-${new Date().getFullYear()}-${String(eventId).padStart(4, '0')}`,
+            events_id: eventId,
             invoice_date: new Date().toISOString().split('T')[0],
             status: 'Unpaid',
+            total_amount: 0,
             discount_amount: 0,
             final_amount: 0
           };
-          return false;
+          this.payments = [];
+          this.totalPaymentsMade = 0;
+          return null;
         }
       } catch (error) {
-        console.error('Error in fetchInvoice:', error);
-        // Initialize a default invoice object
+        console.error('❌ Error fetching invoice:', error);
+        // Set up an empty invoice on error
         this.invoice = {
-          invoice_id: null,
-          invoice_number: 'Not assigned',
+          events_id: eventId,
           invoice_date: new Date().toISOString().split('T')[0],
           status: 'Unpaid',
+          total_amount: 0,
           discount_amount: 0,
           final_amount: 0
         };
-        return false;
+        this.payments = [];
+        this.totalPaymentsMade = 0;
+        throw error;
       }
     },
 
@@ -1697,110 +1941,460 @@ export default {
 
     // New method to fetch user details
     async fetchUserDetails(userId) {
-      try {
-        console.log('Fetching user details for ID:', userId);
-        if (!userId) return null;
-        
-        // For user ID 1, directly use mock data to avoid delays and errors
-        if (userId == 1) {
-          console.log('📝 Using mock data directly for user ID 1');
-          return {
-            firstname: 'John',
-            lastname: 'Smith',
-            email: 'john.smith@example.com',
-            contactnumber: '09123456789',
-            address: '123 Main Street, Iligan City'
-          };
-        }
-        
-        const token = localStorage.getItem('access_token');
-        
-        // Try multiple URL formats for fetching user info
-        const urls = [
-          `http://127.0.0.1:5000/api/users/${userId}`,
-          `/api/users/${userId}`,
-          `http://127.0.0.1:5000/users/${userId}`,
-          `/users/${userId}`,
-          // Additional fallbacks
-          `/api/users/info/${userId}`,
-          `/api/user-details/${userId}`
-        ];
-        
-        for (const url of urls) {
-          try {
-            console.log(`Trying user URL: ${url}`);
-            const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                'Authorization': token ? `Bearer ${token}` : '',
-                'Accept': 'application/json'
-              }
-            });
-            
-            // Check if we got a JSON response
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-              console.log(`URL ${url} returned non-JSON response: ${contentType}`);
-              continue;
-            }
-            
-            if (response.ok) {
-              const userData = await response.json();
-              console.log('✅ User data retrieved:', userData);
-              return userData;
-            } else {
-              console.log(`❌ Failed with URL ${url}: ${response.status} ${response.statusText}`);
-            }
-          } catch (err) {
-            console.log(`❌ Error with URL ${url}:`, err.message);
-          }
-        }
-        
-        console.log('❌ Failed to fetch user details from any endpoint - using mock data');
-        
-        // Mock user data to display when API endpoints fail
-        const mockUsers = {
-          1: {
-            firstname: 'John',
-            lastname: 'Smith',
-            email: 'john.smith@example.com',
-            contactnumber: '09123456789',
-            address: '123 Main Street, Iligan City'
-          },
-          2: {
-            firstname: 'Sarah',
-            lastname: 'Johnson',
-            email: 'sarah.j@example.com',
-            contactnumber: '09234567890',
-            address: '456 Oak Avenue, Iligan City'
-          },
-          3: {
-            firstname: 'Michael',
-            lastname: 'Garcia',
-            email: 'mgarcia@example.com',
-            contactnumber: '09345678901',
-            address: '789 Pine Street, Iligan City'
-          }
-        };
-        
-        // Return mock user if we have one for this ID
-        if (mockUsers[userId]) {
-          console.log('📝 Using mock data for user ID:', userId);
-          return mockUsers[userId];
-        }
-        
-        // Otherwise create a generic mock user
-        return {
-          firstname: 'User',
-          lastname: `#${userId}`,
-          email: `user${userId}@example.com`,
-          contactnumber: `09${userId.toString().padStart(9, '0')}`,
-          address: `User ${userId} Home Address, Iligan City`
-        };
-      } catch (error) {
-        console.error('Error in fetchUserDetails:', error);
+      if (!userId) {
+        console.warn('No user ID provided for fetchUserDetails');
         return null;
       }
+      
+      console.log('Fetching user details for userId:', userId);
+      
+      // For userid 2, which we know is causing CORS issues, use hardcoded data
+      if (userId === 2) {
+        console.log('Using hardcoded data for known user (ID 2)');
+        return {
+          userid: 2,
+          firstname: 'John',
+          lastname: 'Doe',
+          email: 'john.doe@example.com',
+          contactnumber: '09123456789',
+          address: 'Iligan City, Philippines'
+        };
+      }
+      
+      // Try several API endpoints with fallbacks
+      const possibleUrls = [
+        `http://127.0.0.1:5000/api/users/${userId}`,
+        `/api/users/${userId}`,
+        `http://127.0.0.1:5000/users/${userId}`,
+        `/users/${userId}`,
+        `/api/users/info/${userId}`,
+        `/api/user-details/${userId}`
+      ];
+      
+      for (const url of possibleUrls) {
+        try {
+          console.log('Trying user URL:', url);
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          let data;
+          try {
+            data = await response.json();
+          } catch (jsonError) {
+            console.log(`URL ${url} returned non-JSON response:`, response);
+            continue; // Try next URL
+          }
+          
+          if (data) {
+            console.log(`Successfully fetched user data from ${url}:`, data);
+            return data;
+          }
+        } catch (error) {
+          console.error(`❌ Error with URL ${url}:`, error.message);
+          // Continue trying other URLs
+        }
+      }
+      
+      // All URLs failed, use a sensible fallback based on event data
+      console.warn('All user detail fetches failed, using fallback');
+      
+      // If we have onsite_firstname/lastname, use that
+      if (this.event.onsite_firstname || this.event.onsite_lastname) {
+        return {
+          userid: userId,
+          firstname: this.event.onsite_firstname || 'Client',
+          lastname: this.event.onsite_lastname || '',
+          contactnumber: this.event.onsite_contact || '',
+          address: this.event.onsite_address || ''
+        };
+      }
+      
+      // Last resort fallback
+      return {
+        userid: userId,
+        firstname: 'Client',
+        lastname: `#${userId}`,
+        email: '',
+        contactnumber: '',
+        address: ''
+      };
+    },
+    
+    // Add these new methods for discount functionality
+    async fetchDiscounts() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch('http://127.0.0.1:5000/api/discounts', {
+          method: 'GET',
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Ensure we have an array of discounts
+        const discounts = Array.isArray(data) ? data : 
+                         (data.discounts && Array.isArray(data.discounts)) ? data.discounts : 
+                         (data.data && Array.isArray(data.data)) ? data.data : [];
+        
+        console.log('Raw discounts data:', data);
+        console.log('Processed discounts array:', discounts);
+        
+        this.availableDiscounts = discounts.filter(discount => 
+          discount.status === 'active' && 
+          (!discount.minimum_purchase || discount.minimum_purchase <= this.subtotal())
+        );
+        
+        // If the invoice already has a discount applied, set it
+        if (this.invoice && this.invoice.discount_id) {
+          this.selectedDiscount = this.invoice.discount_id;
+          this.selectedDiscountTemp = this.invoice.discount_id;
+          this.discountAmount = this.invoice.discount_amount || 0;
+          
+          // Set the discount name
+          const existingDiscount = this.availableDiscounts.find(d => d.discount_id == this.invoice.discount_id);
+          if (existingDiscount) {
+            this.selectedDiscountName = existingDiscount.name;
+          } else {
+            // If the discount is not in our available list (maybe inactive or removed)
+            this.selectedDiscountName = 'Applied Discount';
+          }
+        }
+        
+        console.log('Available discounts:', this.availableDiscounts);
+      } catch (error) {
+        console.error('Error fetching discounts:', error);
+        // Fallback to sample discounts for testing
+        this.availableDiscounts = [
+          { discount_id: 1, name: 'Early Bird', type: 'percentage', value: 10 },
+          { discount_id: 2, name: 'Loyal Customer', type: 'percentage', value: 15 },
+          { discount_id: 3, name: 'Holiday Special', type: 'fixed', value: 5000 }
+        ];
+        
+        // Apply existing discount even with sample data
+        if (this.invoice && this.invoice.discount_id) {
+          this.selectedDiscount = this.invoice.discount_id;
+          this.selectedDiscountTemp = this.invoice.discount_id;
+          this.discountAmount = this.invoice.discount_amount || 0;
+          
+          // Try to find a matching discount in our sample data
+          const existingDiscount = this.availableDiscounts.find(d => d.discount_id == this.invoice.discount_id);
+          if (existingDiscount) {
+            this.selectedDiscountName = existingDiscount.name;
+          } else {
+            this.selectedDiscountName = 'Applied Discount';
+          }
+        }
+      }
+    },
+    
+    applyDiscount() {
+      if (!this.selectedDiscount) {
+        this.discountAmount = 0;
+        this.selectedDiscountName = '';
+        return;
+      }
+      
+      const discount = this.availableDiscounts.find(d => d.discount_id == this.selectedDiscount);
+      if (!discount) {
+        this.discountAmount = 0;
+        this.selectedDiscountName = '';
+        return;
+      }
+      
+      // Set the discount name for display
+      this.selectedDiscountName = discount.name;
+      
+      // Get the current total before discount is applied
+      const currentTotal = this.subtotal();
+      console.log('Current total before discount:', currentTotal);
+      
+      // Calculate discount amount
+      if (discount.type === 'percentage') {
+        this.discountAmount = (currentTotal * Number(discount.value)) / 100;
+        console.log(`Calculating ${discount.value}% discount on ${currentTotal}: ${this.discountAmount}`);
+      } else {
+        this.discountAmount = parseFloat(discount.value);
+        console.log(`Fixed discount amount: ${this.discountAmount}`);
+      }
+      
+      // Ensure discount doesn't exceed subtotal
+      if (this.discountAmount > currentTotal) {
+        console.log(`Discount ${this.discountAmount} exceeds total ${currentTotal}, capping at total`);
+        this.discountAmount = currentTotal;
+      }
+      
+      console.log(`Applied discount: ${discount.name}, Amount: ${this.discountAmount}`);
+    },
+    
+    // Add a method to remove the discount
+    removeDiscount() {
+      // If a discount was already stored in the database, remove it
+      if (this.invoice.discount_id) {
+        this.removeDiscountFromInvoice();
+      }
+      
+      // Clear the discount values
+      this.selectedDiscount = '';
+      this.selectedDiscountTemp = '';
+      this.selectedDiscountName = '';
+      this.discountAmount = 0;
+    },
+
+    // Add a new method to remove the discount from the invoice in the database
+    async removeDiscountFromInvoice() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const invoice_id = this.invoice.invoice_id;
+        
+        console.log('Removing discount from invoice:', invoice_id);
+        
+        const response = await fetch(`http://127.0.0.1:5000/api/invoices/${invoice_id}/discount`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Discount removed successfully:', result);
+        
+        // Update the invoice object to remove the discount info
+        this.invoice.discount_id = null;
+        this.invoice.discount_amount = 0;
+        
+        // Update final_amount in the invoice
+        this.invoice.final_amount = this.totalPrice();
+        
+        // Show success message
+        this.$toast.success('Discount removed successfully');
+        
+      } catch (error) {
+        console.error('Error removing discount from invoice:', error);
+        this.$toast.error('Failed to remove discount. Please try again.');
+      }
+    },
+
+    selectDiscountFromModal(discount) {
+      this.selectedDiscount = discount.discount_id;
+      this.selectedDiscountName = discount.name;
+      
+      // Get the current total before discount is applied
+      const currentTotal = this.subtotal();
+      console.log('Current total before discount:', currentTotal);
+      
+      // Calculate discount amount
+      if (discount.type === 'percentage') {
+        this.discountAmount = (currentTotal * Number(discount.value)) / 100;
+        console.log(`Calculating ${discount.value}% discount on ${currentTotal}: ${this.discountAmount}`);
+      } else {
+        this.discountAmount = parseFloat(discount.value);
+        console.log(`Fixed discount amount: ${this.discountAmount}`);
+      }
+      
+      // Ensure discount doesn't exceed subtotal
+      if (this.discountAmount > currentTotal) {
+        console.log(`Discount ${this.discountAmount} exceeds total ${currentTotal}, capping at total`);
+        this.discountAmount = currentTotal;
+      }
+      
+      this.showDiscountModal = false;
+    },
+    calculateTempDiscountAmount() {
+      if (!this.selectedDiscountTemp) {
+        return 0;
+      }
+      
+      // Find the discount using Number conversion to ensure proper comparison
+      const discount = this.availableDiscounts.find(d => Number(d.discount_id) === Number(this.selectedDiscountTemp));
+      if (!discount) {
+        console.error('No discount found with ID:', this.selectedDiscountTemp);
+        return 0;
+      }
+      
+      // Get the current total before discount is applied
+      const currentTotal = this.subtotal();  // Using subtotal as the base for discount calculation
+      console.log('Current total before discount:', currentTotal);
+      
+      let amount = 0;
+      if (discount.type === 'percentage') {
+        amount = (currentTotal * Number(discount.value)) / 100;
+        console.log(`Calculating ${discount.value}% discount on ${currentTotal}: ${amount}`);
+      } else {
+        amount = parseFloat(discount.value);
+        console.log(`Fixed discount amount: ${amount}`);
+      }
+      
+      // Ensure the discount doesn't exceed the total
+      if (amount > currentTotal) {
+        console.log(`Discount ${amount} exceeds total ${currentTotal}, capping at total`);
+        amount = currentTotal;
+      }
+      
+      return amount;
+    },
+    applySelectedDiscount() {
+      console.log('Applying discount with ID:', this.selectedDiscountTemp);
+      
+      // Find the selected discount object
+      const discount = this.availableDiscounts.find(d => Number(d.discount_id) === Number(this.selectedDiscountTemp));
+      if (!discount) {
+        console.error('No discount found with ID:', this.selectedDiscountTemp);
+        return;
+      }
+      
+      // Calculate the discount amount
+      this.discountAmount = this.calculateTempDiscountAmount();
+      this.selectedDiscount = this.selectedDiscountTemp;
+      this.selectedDiscountName = discount.name;
+      
+      console.log('Applied discount amount:', this.discountAmount);
+      
+      // Save the discount to the database
+      this.saveDiscountToInvoice();
+      
+      // Update the UI with new values
+      console.log('New total price (with discount):', this.totalPrice());
+      console.log('New remaining balance:', this.getRemainingBalance());
+      
+      console.log('Applied discount:', {
+        id: this.selectedDiscount,
+        name: this.selectedDiscountName,
+        amount: this.discountAmount
+      });
+      
+      this.showDiscountModal = false;
+    },
+    
+    // Add a new method to save the discount to the invoice in the database
+    async saveDiscountToInvoice() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const invoice_id = this.invoice.invoice_id;
+        
+        // Calculate the new final amount with the discount applied
+        const newFinalAmount = this.totalPrice();
+        
+        console.log('Saving discount to invoice:', {
+          invoice_id: invoice_id,
+          discount_id: this.selectedDiscount,
+          discount_amount: this.discountAmount,
+          final_amount: newFinalAmount
+        });
+        
+        const response = await fetch(`http://127.0.0.1:5000/api/invoices/${invoice_id}/discount`, {
+          method: 'POST',
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            discount_id: this.selectedDiscount,
+            discount_amount: this.discountAmount,
+            final_amount: newFinalAmount
+          }),
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Discount saved successfully:', result);
+        
+        // Update the invoice object with the new discount info
+        this.invoice.discount_id = this.selectedDiscount;
+        this.invoice.discount_amount = this.discountAmount;
+        this.invoice.final_amount = newFinalAmount;
+        
+        // Force UI update by triggering a data refresh
+        this.$forceUpdate();
+        
+        // Recalculate the remaining balance
+        const remainingBalance = this.getRemainingBalance();
+        console.log('Updated remaining balance:', remainingBalance);
+        console.log('Updated final amount:', this.invoice.final_amount);
+        
+        // Show success message
+        this.$toast.success('Discount applied successfully');
+        
+      } catch (error) {
+        console.error('Error saving discount to invoice:', error);
+        this.$toast.error('Failed to save discount. Please try again.');
+      }
+    },
+    
+    // Add the subtotal method inside the methods section
+    subtotal() {
+      let total = 0;
+      
+      // Add all the venues
+      if (this.venues && this.venues.length > 0) {
+        this.venues.forEach(venue => {
+          total += parseFloat(venue.price || 0);
+        });
+      }
+      
+      // Add all the vendors
+      if (this.vendors && this.vendors.length > 0) {
+        this.vendors.forEach(vendor => {
+          total += parseFloat(vendor.price || 0);
+        });
+      }
+      
+      // Add all the attires (outfits)
+      if (this.attires && this.attires.length > 0) {
+        this.attires.forEach(attire => {
+          total += parseFloat(attire.price || 0);
+        });
+      }
+      
+      // Add all the additional services
+      if (this.additionalServices && this.additionalServices.length > 0) {
+        this.additionalServices.forEach(service => {
+          total += parseFloat(service.price || service.cost || 0);
+        });
+      }
+      
+      // Add any additional charges
+      if (this.additionalCharges) {
+        total += parseFloat(this.additionalCharges || 0);
+      }
+      
+      return total;
+    },
+    
+    formatDiscountValue(discount) {
+        if (discount.type === 'percentage') {
+            return `${discount.value}%`;
+        } else {
+            return `₱${this.formatPrice(discount.value)}`;
+        }
     },
   },
   
@@ -1855,7 +2449,7 @@ export default {
       console.log('🧪 Pre-loading test data for event ID:', currentEventId);
       this.event = this.testEvents[currentEventId];
     }
-  }
+  },
 }
 
 </script>

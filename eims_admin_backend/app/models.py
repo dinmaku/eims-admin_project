@@ -4,9 +4,10 @@ from . import db
 import logging
 from datetime import date, time
 import json
+import psycopg2
 
-
-logging.basicConfig(level=logging.INFO)
+# Configure logging
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
@@ -844,16 +845,28 @@ def get_all_booked_wishlist():
                 'outfits': []
             }
             
-            # Add venue to venues array if it exists
-            if event['venue_id']:
-                event['venues'] = [{
-                    'venue_id': event['venue_id'],
-                    'venue_name': event['venue_name'],
-                    'location': event['venue_location'],
-                    'description': event['venue_description'],
-                    'venue_price': event['venue_price'],
-                    'venue_capacity': event['venue_capacity']
-                }]
+            # Get wishlist venues for this event
+            if event['wishlist_id']:
+                cursor.execute("""
+                    SELECT 
+                        wv.wishlist_venue_id, wv.venue_id, wv.price, wv.status,
+                        v.venue_name, v.location, v.description, v.venue_capacity
+                    FROM wishlist_venues wv
+                    JOIN venues v ON wv.venue_id = v.venue_id
+                    WHERE wv.wishlist_id = %s
+                """, (event['wishlist_id'],))
+                
+                wishlist_venues = cursor.fetchall()
+                event['wishlist_venues'] = [{
+                    'wishlist_venue_id': wv[0],
+                    'venue_id': wv[1],
+                    'price': float(wv[2]) if wv[2] else 0,
+                    'status': wv[3],
+                    'venue_name': wv[4],
+                    'location': wv[5],
+                    'description': wv[6],
+                    'venue_capacity': wv[7]
+                } for wv in wishlist_venues]
             
             # Get suppliers for this event
             if event['wishlist_id']:
@@ -877,86 +890,37 @@ def get_all_booked_wishlist():
                     'lastname': s[5],
                     'price': float(s[6]) if s[6] else 0
                 } for s in suppliers]
-
-                # Get outfits for this event
-                cursor.execute("""
-                    SELECT 
-                        wo.wishlist_outfit_id, wo.outfit_id, wo.gown_package_id, wo.price, wo.remarks,
-                        o.outfit_name, o.outfit_type, o.outfit_color, o.outfit_desc, o.rent_price,
-                        gp.gown_package_name, gp.gown_package_price,
-                        wo.status
-                    FROM wishlist_outfits wo
-                    LEFT JOIN outfits o ON wo.outfit_id = o.outfit_id
-                    LEFT JOIN gown_package gp ON wo.gown_package_id = gp.gown_package_id
-                    WHERE wo.wishlist_id = %s
-                """, (event['wishlist_id'],))
-                
-                outfits = cursor.fetchall()
-                event['outfits'] = [{
-                    'wishlist_outfit_id': o[0],
-                    'outfit_id': o[1],
-                    'gown_package_id': o[2],
-                    'price': float(o[3]) if o[3] else 0,
-                    'remarks': o[4],
-                    'outfit_name': o[5],
-                    'outfit_type': o[6],
-                    'outfit_color': o[7],
-                    'outfit_desc': o[8],
-                    'rent_price': float(o[9]) if o[9] else 0,
-                    'gown_package_name': o[10],
-                    'gown_package_price': float(o[11]) if o[11] else 0,
-                    'status': o[12] if o[12] else 'Pending'
-                } for o in outfits]
-
-                # Get services for this event
-                cursor.execute("""
-                    SELECT 
-                        was.id, was.wishlist_id, was.add_service_id, was.price, was.remarks, was.status,
-                        a.add_service_name, a.add_service_description, a.add_service_price
-                    FROM wishlist_additional_services was
-                    JOIN additional_services a ON was.add_service_id = a.add_service_id
-                    WHERE was.wishlist_id = %s
-                """, (event['wishlist_id'],))
-                
-                services = cursor.fetchall()
-                event['services'] = [{
-                    'id': s[0],
-                    'add_service_id': s[2],
-                    'price': float(s[3]) if s[3] is not None else float(s[8]) if s[8] is not None else 0,  # Use wishlist price if exists, otherwise use service price
-                    'remarks': s[4],
-                    'status': s[5] if s[5] else 'Pending',
-                    'add_service_name': s[6],
-                    'add_service_description': s[7],
-                    'add_service_price': float(s[8]) if s[8] is not None else 0  # Always use service's default price
-                } for s in services]
-
-            # If there's a gown package but no outfits, add it as an initialized outfit
-            if event['gown_package_id'] and not event['outfits']:
-                event['outfits'] = [{
-                    'wishlist_outfit_id': None,  # No wishlist_outfit_id for initialized outfit
-                    'outfit_id': None,
-                    'gown_package_id': event['gown_package_id'],
-                    'price': float(event['gown_package_price']) if event['gown_package_price'] else 0,
-                    'remarks': None,
-                    'outfit_name': None,
-                    'outfit_type': 'outfit_package',
-                    'outfit_color': None,
-                    'outfit_desc': None,
-                    'rent_price': 0,
-                    'gown_package_name': event['gown_package_name'],
-                    'gown_package_price': float(event['gown_package_price']) if event['gown_package_price'] else 0,
-                    'status': 'Pending',
-                    'is_initialized': True
-                }]
-
+            
+            # Get services for this event
+            cursor.execute("""
+                SELECT 
+                    was.id, was.wishlist_id, was.add_service_id, was.price, was.remarks, was.status,
+                    a.add_service_name, a.add_service_description, a.add_service_price
+                FROM wishlist_additional_services was
+                JOIN additional_services a ON was.add_service_id = a.add_service_id
+                WHERE was.wishlist_id = %s
+            """, (event['wishlist_id'],))
+            
+            services = cursor.fetchall()
+            event['services'] = [{
+                'id': s[0],
+                'wishlist_id': s[1],
+                'add_service_id': s[2],
+                'price': float(s[3]) if s[3] is not None else float(s[8]) if s[8] is not None else 0,
+                'remarks': s[4] if s[4] else '',
+                'status': s[5] if s[5] else 'Pending',
+                'add_service_name': s[6],
+                'add_service_description': s[7],
+                'add_service_price': float(s[8]) if s[8] is not None else 0,
+                'total': float(s[3]) if s[3] is not None else float(s[8]) if s[8] is not None else 0
+            } for s in services]
+            
             events.append(event)
-            logger.info(f"Added event to list: {event['event_name']} (ID: {event['events_id']})")
-        
-        logger.info(f"Total events found: {len(events)}")
+            
         return events
     except Exception as e:
-        logger.error(f"Error getting booked wishlist: {str(e)}")
-        raise
+        print(f"Error in get_all_booked_wishlist: {str(e)}")
+        return []
     finally:
         cursor.close()
         conn.close()
@@ -2195,13 +2159,36 @@ def get_all_events():
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            SELECT events_id, event_name, event_type, schedule, 
-                   start_time, end_time, status
-            FROM events
-            ORDER BY schedule
+            SELECT e.events_id, e.event_name, e.event_type, e.schedule, 
+                   e.start_time, e.end_time, e.status, e.package_id,
+                   e.onsite_firstname, e.onsite_lastname, e.onsite_contact,
+                   e.total_price, e.booking_type, p.package_name,
+                   v.venue_name, v.location as venue_location
+            FROM events e
+            LEFT JOIN event_packages p ON e.package_id = p.package_id
+            LEFT JOIN event_venues ev ON e.events_id = ev.events_id
+            LEFT JOIN venues v ON ev.venue_id = v.venue_id
+            ORDER BY e.schedule DESC
         """)
         events = cursor.fetchall()
-        return events
+        return [{
+            'events_id': event[0],
+            'event_name': event[1],
+            'event_type': event[2],
+            'schedule': event[3],
+            'start_time': event[4],
+            'end_time': event[5],
+            'status': event[6],
+            'package_id': event[7],
+            'onsite_firstname': event[8],
+            'onsite_lastname': event[9],
+            'onsite_contact': event[10],
+            'total_price': float(event[11]) if event[11] else 0,
+            'booking_type': event[12],
+            'package_name': event[13],
+            'venue_name': event[14],
+            'venue_location': event[15]
+        } for event in events]
     except Exception as e:
         logger.error(f"Error in get_all_events: {str(e)}")
         raise
@@ -2878,6 +2865,23 @@ def create_wishlist_package(events_id, package_data):
         
         wishlist_id = cursor.fetchone()[0]
         
+        # Add venue to wishlist_venues if provided
+        if package_data.get('venue'):
+            venue_data = package_data['venue']
+            cursor.execute("""
+                INSERT INTO wishlist_venues (
+                    wishlist_id, venue_id, price, remarks, status
+                ) VALUES (
+                    %s, %s, %s, %s, %s
+                )
+            """, (
+                wishlist_id,
+                venue_data.get('venue_id'),
+                venue_data.get('venue_price', 0),
+                venue_data.get('remarks', ''),
+                'Pending'  # Set initial status to Pending
+            ))
+        
         # Add services if provided
         if package_data.get('services'):
             for service in package_data['services']:
@@ -3036,6 +3040,48 @@ def update_wishlist_package(wishlist_id, package_data):
             venue_status,
             wishlist_id
         ))
+
+        # Update venue in wishlist_venues if provided
+        if package_data.get('venue'):
+            venue_data = package_data['venue']
+            # First check if venue exists
+            cursor.execute("""
+                SELECT wishlist_venue_id FROM wishlist_venues 
+                WHERE wishlist_id = %s
+            """, (wishlist_id,))
+            existing_venue = cursor.fetchone()
+
+            if existing_venue:
+                # Update existing venue
+                cursor.execute("""
+                    UPDATE wishlist_venues SET
+                        venue_id = %s,
+                        price = %s,
+                        remarks = %s,
+                        status = %s
+                    WHERE wishlist_id = %s
+                """, (
+                    venue_data.get('venue_id'),
+                    venue_data.get('venue_price', 0),
+                    venue_data.get('remarks', ''),
+                    venue_status,
+                    wishlist_id
+                ))
+            else:
+                # Insert new venue
+                cursor.execute("""
+                    INSERT INTO wishlist_venues (
+                        wishlist_id, venue_id, price, remarks, status
+                    ) VALUES (
+                        %s, %s, %s, %s, %s
+                    )
+                """, (
+                    wishlist_id,
+                    venue_data.get('venue_id'),
+                    venue_data.get('venue_price', 0),
+                    venue_data.get('remarks', ''),
+                    venue_status
+                ))
         
         # Update services
         if 'services' in package_data:
@@ -3063,9 +3109,11 @@ def update_wishlist_package(wishlist_id, package_data):
         
         # Update suppliers
         if 'suppliers' in package_data:
+            # Delete existing suppliers
             cursor.execute("DELETE FROM wishlist_suppliers WHERE wishlist_id = %s", (wishlist_id,))
+            
+            # Insert updated suppliers
             for supplier in package_data['suppliers']:
-                status = supplier.get('status', 'Pending')  # Get status from data or default to 'Pending'
                 cursor.execute("""
                     INSERT INTO wishlist_suppliers (wishlist_id, supplier_id, price, remarks, status)
                     VALUES (%s, %s, %s, %s, %s)
@@ -3074,14 +3122,16 @@ def update_wishlist_package(wishlist_id, package_data):
                     supplier['supplier_id'],
                     supplier.get('price', 0),
                     supplier.get('remarks', ''),
-                    status
+                    supplier.get('status', 'Pending')
                 ))
         
         # Update outfits
         if 'outfits' in package_data:
+            # Delete existing outfits
             cursor.execute("DELETE FROM wishlist_outfits WHERE wishlist_id = %s", (wishlist_id,))
+            
+            # Insert updated outfits
             for outfit in package_data['outfits']:
-                status = outfit.get('status', 'Pending')  # Get status from data or default to 'Pending'
                 cursor.execute("""
                     INSERT INTO wishlist_outfits (wishlist_id, outfit_id, gown_package_id, price, remarks, status)
                     VALUES (%s, %s, %s, %s, %s, %s)
@@ -3091,7 +3141,7 @@ def update_wishlist_package(wishlist_id, package_data):
                     outfit.get('gown_package_id'),
                     outfit.get('price', 0),
                     outfit.get('remarks', ''),
-                    status
+                    outfit.get('status', 'Pending')
                 ))
         
         conn.commit()
@@ -3194,41 +3244,45 @@ def update_wishlist_outfit_status(wishlist_outfit_id, status):
         cursor.close()
         conn.close()
 
-def update_wishlist_additional_service_status(id, status):
-    conn = db.get_db_connection()
-    cursor = conn.cursor()
+def update_wishlist_additional_service_status(wishlist_id, service_id, status):
     try:
-        # Check if the service has been updated before
-        cursor.execute("""
-            SELECT status, has_been_updated 
-            FROM wishlist_package_services 
-            WHERE wishlist_service_id = %s
-        """, (id,))
-        result = cursor.fetchone()
+        conn = psycopg2.connect(**DATABASE_CONFIG)
+        cur = conn.cursor()
         
-        if not result:
-            return False, "Service not found"
-            
-        current_status, has_been_updated = result
+        # First check if this service has been updated before
+        cur.execute("""
+            SELECT has_been_updated 
+            FROM wishlist_additional_services 
+            WHERE wishlist_id = %s AND service_id = %s
+        """, (wishlist_id, service_id))
         
-        # If already updated once, prevent further updates
-        if has_been_updated:
-            return False, "This service has already been updated once. You cannot update it again."
-            
-        # Update the status and mark as updated
-        cursor.execute(
-            "UPDATE wishlist_package_services SET status = %s, has_been_updated = TRUE WHERE wishlist_service_id = %s",
-            (status, id)
-        )
-            
+        result = cur.fetchone()
+        if result and result[0]:
+            return False, "This service has already been updated once"
+        
+        # Update the status
+        cur.execute("""
+            UPDATE wishlist_additional_services 
+            SET status = %s, has_been_updated = TRUE 
+            WHERE wishlist_id = %s AND service_id = %s
+            RETURNING *
+        """, (status, wishlist_id, service_id))
+        
+        updated_service = cur.fetchone()
         conn.commit()
-        return True, "Status updated successfully"
+        
+        if updated_service:
+            return True, "Service status updated successfully"
+        return False, "Service not found"
+        
     except Exception as e:
-        conn.rollback()
+        logger.error(f"Error updating additional service status: {str(e)}")
         return False, str(e)
     finally:
-        cursor.close()
-        conn.close()
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 def delete_wishlist_outfit_direct(wishlist_outfit_id):
     """Directly delete a wishlist outfit from the database"""
@@ -3451,15 +3505,15 @@ def create_invoice(data):
                 logger.error(f"Error closing connection: {close_error}")
 
 def get_invoice_by_id(invoice_id):
-    """Retrieve an invoice by its ID."""
+    """Retrieve invoice by ID."""
     try:
         conn = db.get_db_connection()
         cursor = conn.cursor()
         
         query = """
         SELECT invoice_id, events_id, invoice_number, invoice_date,
-               total_amount, discount_amount, final_amount, status, notes,
-               created_at, updated_at
+               total_amount, subtotal, discount_id, discount_amount, final_amount, 
+               status, notes, created_at, updated_at
         FROM invoices
         WHERE invoice_id = %s;
         """
@@ -3474,7 +3528,7 @@ def get_invoice_by_id(invoice_id):
         invoice_dict = dict(zip(cols, invoice))
         
         # Convert decimal values to float for JSON serialization
-        for key in ['total_amount', 'discount_amount', 'final_amount']:
+        for key in ['total_amount', 'subtotal', 'discount_amount', 'final_amount']:
             if key in invoice_dict and invoice_dict[key] is not None:
                 invoice_dict[key] = float(invoice_dict[key])
         
@@ -3492,15 +3546,15 @@ def get_invoice_by_id(invoice_id):
             conn.close()
 
 def get_invoice_by_event(event_id):
-    """Retrieve invoice details for a specific event."""
+    """Retrieve invoice by event ID."""
     try:
         conn = db.get_db_connection()
         cursor = conn.cursor()
         
         query = """
         SELECT invoice_id, events_id, invoice_number, invoice_date,
-               total_amount, discount_amount, final_amount, status, notes,
-               created_at, updated_at
+               total_amount, subtotal, discount_id, discount_amount, final_amount, 
+               status, notes, created_at, updated_at
         FROM invoices
         WHERE events_id = %s
         ORDER BY invoice_date DESC
@@ -3517,7 +3571,7 @@ def get_invoice_by_event(event_id):
         invoice_dict = dict(zip(cols, invoice))
         
         # Convert decimal values to float for JSON serialization
-        for key in ['total_amount', 'discount_amount', 'final_amount']:
+        for key in ['total_amount', 'subtotal', 'discount_amount', 'final_amount']:
             if key in invoice_dict and invoice_dict[key] is not None:
                 invoice_dict[key] = float(invoice_dict[key])
         
@@ -3545,8 +3599,8 @@ def update_invoice(invoice_id, data):
         values = []
         
         allowed_fields = [
-            'invoice_number', 'invoice_date', 'total_amount', 
-            'discount_amount', 'final_amount', 'status', 'notes'
+            'invoice_number', 'invoice_date', 'total_amount', 'subtotal',
+            'discount_id', 'discount_amount', 'final_amount', 'status', 'notes'
         ]
         
         for field in allowed_fields:
@@ -3706,25 +3760,23 @@ def get_payments_by_invoice(invoice_id):
         cursor.execute(query, (invoice_id,))
         payments = cursor.fetchall()
         
-        if not payments:
-            return []
-        
-        cols = [desc[0] for desc in cursor.description]
         result = []
-        
-        for payment in payments:
-            payment_dict = dict(zip(cols, payment))
+        if payments:
+            cols = [desc[0] for desc in cursor.description]
             
-            # Convert decimal values to float for JSON serialization
-            if 'amount' in payment_dict and payment_dict['amount'] is not None:
-                payment_dict['amount'] = float(payment_dict['amount'])
-            
-            # Convert dates to string
-            for key in ['payment_date', 'created_at']:
-                if key in payment_dict and payment_dict[key] is not None:
-                    payment_dict[key] = payment_dict[key].isoformat()
-            
-            result.append(payment_dict)
+            for payment in payments:
+                payment_dict = dict(zip(cols, payment))
+                
+                # Convert decimal values to float for JSON serialization
+                if 'amount' in payment_dict and payment_dict['amount'] is not None:
+                    payment_dict['amount'] = float(payment_dict['amount'])
+                
+                # Convert dates to string
+                for key in ['payment_date', 'created_at']:
+                    if key in payment_dict and payment_dict[key] is not None:
+                        payment_dict[key] = payment_dict[key].isoformat()
+                
+                result.append(payment_dict)
         
         return result
     except Exception as e:
@@ -3733,3 +3785,213 @@ def get_payments_by_invoice(invoice_id):
     finally:
         if 'conn' in locals() and conn:
             conn.close()
+
+def get_all_discounts():
+    """Get all discounts from the database."""
+    try:
+        conn = db.get_db_connection()
+        cursor = conn.cursor()
+        
+        query = """
+        SELECT discount_id, name, description, type, value,
+               start_date, end_date, status,
+               created_at, updated_at
+        FROM discounts
+        ORDER BY name;
+        """
+        
+        cursor.execute(query)
+        discounts = cursor.fetchall()
+        
+        result = []
+        if discounts:
+            cols = [desc[0] for desc in cursor.description]
+            
+            for discount in discounts:
+                discount_dict = dict(zip(cols, discount))
+                
+                # Convert decimal values to float for JSON serialization
+                for key in ['value']:
+                    if key in discount_dict and discount_dict[key] is not None:
+                        discount_dict[key] = float(discount_dict[key])
+                
+                # Convert dates to string
+                for key in ['start_date', 'end_date', 'created_at', 'updated_at']:
+                    if key in discount_dict and discount_dict[key] is not None:
+                        discount_dict[key] = discount_dict[key].isoformat()
+                
+                result.append(discount_dict)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_all_discounts: {e}")
+        raise
+    finally:
+        if 'conn' in locals() and conn:
+            conn.close()
+
+def get_active_discounts():
+    """Get all active discounts that are currently valid."""
+    try:
+        conn = db.get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get only active discounts that are either:
+        # 1. Not time-limited (start_date and end_date are null)
+        # 2. Currently within the valid date range
+        query = """
+        SELECT discount_id, name, description, type, value, code,
+               start_date, end_date, status,
+               created_at, updated_at
+        FROM discounts
+        WHERE status = 'active'
+        AND (
+            (start_date IS NULL AND end_date IS NULL) OR
+            (start_date IS NULL AND end_date >= CURRENT_DATE) OR
+            (end_date IS NULL AND start_date <= CURRENT_DATE) OR
+            (start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE)
+        )
+        ORDER BY name;
+        """
+        
+        cursor.execute(query)
+        discounts = cursor.fetchall()
+        
+        result = []
+        if discounts:
+            cols = [desc[0] for desc in cursor.description]
+            
+            for discount in discounts:
+                discount_dict = dict(zip(cols, discount))
+                
+                # Convert decimal values to float for JSON serialization
+                for key in ['value']:
+                    if key in discount_dict and discount_dict[key] is not None:
+                        discount_dict[key] = float(discount_dict[key])
+                
+                # Convert dates to string
+                for key in ['start_date', 'end_date', 'created_at', 'updated_at']:
+                    if key in discount_dict and discount_dict[key] is not None:
+                        discount_dict[key] = discount_dict[key].isoformat()
+                
+                result.append(discount_dict)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_active_discounts: {e}")
+        raise
+    finally:
+        if 'conn' in locals() and conn:
+            conn.close()
+
+def get_inactive_discounts():
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT discount_id, name, description, type, value,
+                   start_date, end_date, status,
+                   created_at, updated_at
+            FROM discounts
+            WHERE status = 'inactive'
+            ORDER BY name
+        """)
+        
+        discounts = []
+        for row in cursor.fetchall():
+            discount = {
+                'discount_id': row[0],
+                'name': row[1],
+                'description': row[2],
+                'type': row[3],
+                'value': float(row[4]) if row[4] is not None else None,
+                'start_date': row[5].isoformat() if row[5] else None,
+                'end_date': row[6].isoformat() if row[6] else None,
+                'status': row[7],
+                'created_at': row[8].isoformat() if row[8] else None,
+                'updated_at': row[9].isoformat() if row[9] else None
+            }
+            discounts.append(discount)
+        
+        return discounts
+        
+    except Exception as e:
+        logger.error(f"Database error in get_inactive_discounts: {str(e)}")
+        raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def update_wishlist_venue_status(wishlist_venue_id, status):
+    """Update the status of a venue in the wishlist_venues table"""
+    conn = db.get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Check if the venue has been updated before
+        cursor.execute("""
+            SELECT status, has_been_updated 
+            FROM wishlist_venues 
+            WHERE wishlist_venue_id = %s
+        """, (wishlist_venue_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            return False, "Venue not found"
+            
+        current_status, has_been_updated = result
+        
+        # If already updated once, prevent further updates
+        if has_been_updated:
+            return False, "This venue has already been updated once. You cannot update it again."
+            
+        # Update the status and mark as updated
+        cursor.execute(
+            "UPDATE wishlist_venues SET status = %s, has_been_updated = TRUE WHERE wishlist_venue_id = %s",
+            (status, wishlist_venue_id)
+        )
+            
+        conn.commit()
+        return True, "Status updated successfully"
+    except Exception as e:
+        conn.rollback()
+        return False, str(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_wishlist_venues(wishlist_id):
+    """Get all venues for a specific wishlist"""
+    conn = db.get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT 
+                wv.wishlist_venue_id, wv.venue_id, wv.price, wv.status,
+                v.venue_name, v.location, v.description, v.venue_capacity
+            FROM wishlist_venues wv
+            JOIN venues v ON wv.venue_id = v.venue_id
+            WHERE wv.wishlist_id = %s
+        """, (wishlist_id,))
+        
+        venues = cursor.fetchall()
+        return [{
+            'wishlist_venue_id': wv[0],
+            'venue_id': wv[1],
+            'price': float(wv[2]) if wv[2] else 0,
+            'status': wv[3],
+            'venue_name': wv[4],
+            'location': wv[5],
+            'description': wv[6],
+            'venue_capacity': wv[7]
+        } for wv in venues]
+    except Exception as e:
+        logger.error(f"Error getting wishlist venues: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
